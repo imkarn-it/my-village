@@ -12,6 +12,13 @@ type ResidentLayoutProps = {
 // Component
 // ==========================================
 
+import { SOSButton } from "@/components/dashboard/sos-button"
+
 export default function ResidentLayout({ children }: ResidentLayoutProps): React.JSX.Element {
-    return <DashboardLayout>{children}</DashboardLayout>
+    return (
+        <DashboardLayout>
+            {children}
+            <SOSButton />
+        </DashboardLayout>
+    )
 }

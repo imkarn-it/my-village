@@ -26,17 +26,19 @@ import { parcels, units, users } from "@/lib/db/schema";
 import { eq, like, or, and, desc, isNull, isNotNull } from "drizzle-orm";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
+import { ParcelActions } from "./parcel-actions";
 
 interface ParcelsPageProps {
-    searchParams: {
+    searchParams: Promise<{
         q?: string;
         status?: string;
-    };
+    }>;
 }
 
 export default async function ParcelsPage({ searchParams }: ParcelsPageProps): Promise<React.JSX.Element> {
-    const query = searchParams.q || "";
-    const status = searchParams.status || "all"; // all, pending, picked_up
+    const { q, status: statusParam } = await searchParams;
+    const query = q || "";
+    const status = statusParam || "all"; // all, pending, picked_up
 
     // Build query conditions
     const conditions = [
@@ -178,27 +180,7 @@ export default async function ParcelsPage({ searchParams }: ParcelsPageProps): P
                                         )}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-800">
-                                                    <MoreHorizontal className="w-4 h-4 text-slate-500" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>จัดการ</DropdownMenuLabel>
-                                                {!parcel.pickedUpAt && (
-                                                    <DropdownMenuItem className="text-emerald-600 dark:text-emerald-400">
-                                                        <CheckCircle2 className="w-4 h-4 mr-2" />
-                                                        ยืนยันการรับของ
-                                                    </DropdownMenuItem>
-                                                )}
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem className="text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-500/10">
-                                                    <Trash2 className="w-4 h-4 mr-2" />
-                                                    ลบรายการ
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <ParcelActions parcelId={parcel.id} isPickedUp={!!parcel.pickedUpAt} />
                                     </TableCell>
                                 </TableRow>
                             ))

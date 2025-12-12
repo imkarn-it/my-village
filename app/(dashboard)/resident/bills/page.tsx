@@ -26,6 +26,7 @@ import { api } from "@/lib/api/client"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { th } from "date-fns/locale"
+import Link from "next/link"
 
 const getBillTypeStyle = (type: string) => {
     switch (type) {
@@ -236,12 +237,14 @@ export default function BillsPage(): React.JSX.Element {
                                                 <p className="text-xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent">
                                                     ฿{Number(bill.amount).toLocaleString()}
                                                 </p>
-                                                <Button
-                                                    size="sm"
-                                                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300"
-                                                >
-                                                    ชำระเงิน
-                                                </Button>
+                                                <Link href={`/resident/bills/${bill.id}`}>
+                                                    <Button
+                                                        size="sm"
+                                                        className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300"
+                                                    >
+                                                        ชำระเงิน
+                                                    </Button>
+                                                </Link>
                                             </div>
                                         </div>
                                     </CardContent>

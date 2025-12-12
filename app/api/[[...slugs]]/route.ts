@@ -4,12 +4,13 @@ import { swagger } from '@elysiajs/swagger'
 import { db } from '@/lib/db'
 import {
     users, announcements, units, parcels, visitors,
-    bills, maintenanceRequests, facilities, bookings, sosAlerts, supportTickets
+    bills, maintenanceRequests, facilities, bookings, sosAlerts, supportTickets, paymentSettings, notifications
 } from '@/lib/db/schema'
 import { eq, desc, and, sql } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 import { randomUUID } from 'crypto'
+import { NotificationService } from '@/lib/services'
 
 const app = new Elysia({ prefix: '/api' })
     .use(cors())
@@ -62,6 +63,17 @@ const app = new Elysia({ prefix: '/api' })
         detail: { tags: ['units'], summary: 'Get all units' }
     })
 
+    // Users endpoints
+    .get('/users/me', async () => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+        return { success: true, data: session.user }
+    }, {
+        detail: { tags: ['users'], summary: 'Get current user' }
+    })
+
     // Announcements endpoints
     .get('/announcements', async ({ query }) => {
         const data = await db.query.announcements.findMany({
@@ -93,6 +105,15 @@ const app = new Elysia({ prefix: '/api' })
             createdBy: session.user.id,
             projectId: (session.user as any).projectId || 'default-project',
         }).returning()
+
+        // Notify all residents
+        await NotificationService.createForRole('resident', {
+            title: 'ประกาศใหม่จากนิติบุคคล',
+            message: body.title,
+            type: 'info',
+            link: '/resident/announcements'
+        })
+
         return { success: true, data: result }
     }, {
         body: t.Object({
@@ -255,6 +276,21 @@ const app = new Elysia({ prefix: '/api' })
             receivedBy: session.user.id,
         }).returning()
 
+        // Notify residents in the unit
+        const residents = await db.query.users.findMany({
+            where: eq(users.unitId, body.unitId)
+        })
+
+        for (const resident of residents) {
+            await NotificationService.create({
+                userId: resident.id,
+                title: 'มีพัสดุมาใหม่',
+                message: `มีพัสดุจาก ${body.courier || 'ไม่ระบุขนส่ง'} มาส่งถึงคุณ`,
+                type: 'info',
+                link: '/resident/parcels'
+            })
+        }
+
         return { success: true, data: result }
     }, {
         body: t.Object({
@@ -330,6 +366,22 @@ const app = new Elysia({ prefix: '/api' })
             ...body,
             qrCode: randomUUID(),
         }).returning()
+
+        // Notify residents in the unit
+        const residents = await db.query.users.findMany({
+            where: eq(users.unitId, body.unitId)
+        })
+
+        for (const resident of residents) {
+            await NotificationService.create({
+                userId: resident.id,
+                title: 'มีผู้มาติดต่อ',
+                message: `คุณ ${body.visitorName} ได้เข้ามาติดต่อ (ทะเบียน: ${body.licensePlate || '-'})`,
+                type: 'info',
+                link: '/resident/visitors'
+            })
+        }
+
         return { success: true, data: result }
     }, {
         body: t.Object({
@@ -369,6 +421,29 @@ const app = new Elysia({ prefix: '/api' })
         detail: { tags: ['visitors'], summary: 'Update visitor status' },
     })
 
+    .get('/visitors/verify/:qrCode', async ({ params }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'security' && session.user.role !== 'admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const visitor = await db.query.visitors.findFirst({
+            where: eq(visitors.qrCode, params.qrCode),
+            with: {
+                unit: true,
+            },
+        })
+
+        if (!visitor) {
+            return { success: false, error: 'Invalid QR Code' }
+        }
+
+        return { success: true, data: visitor }
+    }, {
+        params: t.Object({ qrCode: t.String() }),
+        detail: { tags: ['visitors'], summary: 'Verify visitor QR code' },
+    })
+
     // Bills endpoints
     .get('/bills', async ({ query }) => {
         const session = await auth()
@@ -403,6 +478,22 @@ const app = new Elysia({ prefix: '/api' })
         }
 
         const [result] = await db.insert(bills).values(body).returning()
+
+        // Notify residents in the unit
+        const residents = await db.query.users.findMany({
+            where: eq(users.unitId, body.unitId)
+        })
+
+        for (const resident of residents) {
+            await NotificationService.create({
+                userId: resident.id,
+                title: 'บิลค่าใช้จ่ายใหม่',
+                message: `มีบิลค่า ${body.billType} ยอด ${body.amount} บาท`,
+                type: 'info',
+                link: `/resident/bills/${result.id}`
+            })
+        }
+
         return { success: true, data: result }
     }, {
         body: t.Object({
@@ -413,6 +504,43 @@ const app = new Elysia({ prefix: '/api' })
             status: t.Optional(t.String()),
         }),
         detail: { tags: ['bills'], summary: 'Create bill (Admin only)' },
+    })
+
+    .get('/bills/:id', async ({ params }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const bill = await db.query.bills.findFirst({
+            where: eq(bills.id, params.id),
+            with: {
+                unit: true,
+            },
+        })
+
+        if (!bill) {
+            return { success: false, error: 'Bill not found' }
+        }
+
+        const settings = await db.query.paymentSettings.findFirst({
+            where: eq(paymentSettings.projectId, bill.unit.projectId)
+        })
+
+        return {
+            success: true,
+            data: {
+                ...bill,
+                projectPaymentMethod: settings?.paymentMethod === 'gateway' ? 'bank_transfer' :
+                    settings?.paymentMethod === 'self_qr' ? 'promptpay' :
+                        settings?.paymentMethod || 'promptpay'
+            }
+        }
+    }, {
+        params: t.Object({
+            id: t.String(),
+        }),
+        detail: { tags: ['bills'], summary: 'Get bill by ID' },
     })
 
     .patch('/bills/:id', async ({ params, body }) => {
@@ -433,6 +561,30 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Bill not found' }
         }
 
+        // Notify residents if status changed to paid
+        if (body.status === 'paid') {
+            const bill = await db.query.bills.findFirst({
+                where: eq(bills.id, params.id),
+                with: { unit: true }
+            })
+
+            if (bill) {
+                const residents = await db.query.users.findMany({
+                    where: eq(users.unitId, bill.unitId)
+                })
+
+                for (const resident of residents) {
+                    await NotificationService.create({
+                        userId: resident.id,
+                        title: 'การชำระเงินสำเร็จ',
+                        message: `บิลค่า ${bill.billType} ได้รับการยืนยันการชำระเงินแล้ว`,
+                        type: 'success',
+                        link: `/resident/bills/${bill.id}`
+                    })
+                }
+            }
+        }
+
         return { success: true, data: result }
     }, {
         params: t.Object({ id: t.String() }),
@@ -442,6 +594,120 @@ const app = new Elysia({ prefix: '/api' })
             paymentRef: t.Optional(t.String()),
         }),
         detail: { tags: ['bills'], summary: 'Update bill (Admin only)' },
+    })
+
+    .post('/bills/:id/generate-qr', async ({ params }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const bill = await db.query.bills.findFirst({
+            where: eq(bills.id, params.id),
+            with: { unit: true },
+        })
+
+        if (!bill) {
+            return { success: false, error: 'Bill not found' }
+        }
+
+        const projectId = bill.unit.projectId
+        console.log('🔍 Generate QR - Bill projectId:', projectId)
+
+        const settings = await db.query.paymentSettings.findFirst({
+            where: eq(paymentSettings.projectId, projectId)
+        })
+
+        console.log('🔍 Generate QR - Settings found:', settings ? 'YES' : 'NO')
+        if (settings) {
+            console.log('🔍 Settings data:', {
+                paymentMethod: settings.paymentMethod,
+                promptpayId: settings.promptpayId
+            })
+        } else {
+            // Debug: check all settings
+            const allSettings = await db.query.paymentSettings.findMany()
+            console.log('🔍 All payment settings in DB:', allSettings.map(s => ({
+                projectId: s.projectId,
+                paymentMethod: s.paymentMethod
+            })))
+        }
+
+        if (!settings) {
+            return { success: false, error: 'Payment settings not configured' }
+        }
+
+        // Check payment method
+        // 'gateway' is now used for 'Bank Transfer'
+        if (settings.paymentMethod === 'gateway' || settings.paymentMethod === 'bank_transfer') {
+            return {
+                success: true,
+                data: {
+                    type: 'bank_transfer',
+                    amount: bill.amount,
+                    accountInfo: {
+                        bankName: settings.bankName,
+                        accountName: settings.accountName,
+                        accountNumber: settings.gatewayMerchantId, // We stored account number here
+                    },
+                },
+            }
+        }
+
+        // Default to PromptPay QR
+        if (!settings.promptpayId) {
+            return { success: false, error: 'PromptPay ID not configured' }
+        }
+
+        const { generatePromptPayQR } = await import('@/lib/qr-generator')
+        const qr = await generatePromptPayQR({
+            promptpayId: settings.promptpayId,
+            amount: Number(bill.amount),
+        })
+
+        return {
+            success: true,
+            data: {
+                type: 'promptpay',
+                qrDataUrl: qr.dataUrl,
+                amount: bill.amount,
+                accountInfo: {
+                    promptpayId: settings.promptpayId,
+                    accountName: settings.accountName,
+                    bankName: settings.bankName,
+                },
+            },
+        }
+    }, {
+        params: t.Object({ id: t.String() }),
+        detail: { tags: ['bills'], summary: 'Generate PromptPay QR code' },
+    })
+
+    .post('/bills/:id/upload-slip', async ({ params, body }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const [result] = await db.update(bills)
+            .set({
+                paymentSlipUrl: body.slipUrl,
+                status: 'pending_verification',
+            })
+            .where(eq(bills.id, params.id))
+            .returning()
+
+        if (!result) {
+            return { success: false, error: 'Bill not found' }
+        }
+
+        return { success: true, data: result }
+    }, {
+        params: t.Object({ id: t.String() }),
+        body: t.Object({
+            slipUrl: t.String(),
+        }),
+        detail: { tags: ['bills'], summary: 'Upload payment slip' },
     })
 
     // Maintenance endpoints
@@ -483,6 +749,14 @@ const app = new Elysia({ prefix: '/api' })
             createdBy: session.user.id,
         }).returning()
 
+        // Notify Admins
+        await NotificationService.createForRole('admin', {
+            title: 'มีการแจ้งซ่อมใหม่',
+            message: `เรื่อง: ${body.title} (ความเร่งด่วน: ${body.priority || 'ปกติ'})`,
+            type: 'warning',
+            link: '/admin/maintenance'
+        })
+
         return { success: true, data: result }
     }, {
         body: t.Object({
@@ -512,6 +786,35 @@ const app = new Elysia({ prefix: '/api' })
 
         if (!result) {
             return { success: false, error: 'Maintenance request not found' }
+        }
+
+        // Notify residents if status changed
+        if (body.status) {
+            const request = await db.query.maintenanceRequests.findFirst({
+                where: eq(maintenanceRequests.id, params.id),
+                with: { unit: true }
+            })
+
+            if (request) {
+                const residents = await db.query.users.findMany({
+                    where: eq(users.unitId, request.unitId)
+                })
+
+                const statusText =
+                    body.status === 'in_progress' ? 'กำลังดำเนินการ' :
+                        body.status === 'completed' ? 'ดำเนินการเสร็จสิ้น' :
+                            body.status === 'cancelled' ? 'ถูกยกเลิก' : body.status
+
+                for (const resident of residents) {
+                    await NotificationService.create({
+                        userId: resident.id,
+                        title: 'อัปเดตสถานะการแจ้งซ่อม',
+                        message: `เรื่อง "${request.title}" สถานะเป็น: ${statusText}`,
+                        type: body.status === 'completed' ? 'success' : 'info',
+                        link: '/resident/maintenance'
+                    })
+                }
+            }
         }
 
         return { success: true, data: result }
@@ -641,6 +944,24 @@ const app = new Elysia({ prefix: '/api' })
             userId: session.user.id as string,
         }).returning()
 
+        // Notify Admins and Security
+        const message = `มีการแจ้งเหตุฉุกเฉินจากลูกบ้าน (Unit ID: ${body.unitId})`
+
+        await Promise.all([
+            NotificationService.createForRole('admin', {
+                title: '🚨 แจ้งเหตุฉุกเฉิน (SOS)',
+                message: message,
+                type: 'error',
+                link: '/admin/sos'
+            }),
+            NotificationService.createForRole('security', {
+                title: '🚨 แจ้งเหตุฉุกเฉิน (SOS)',
+                message: message,
+                type: 'error',
+                link: '/security/sos'
+            })
+        ])
+
         return { success: true, data: result }
     }, {
         body: t.Object({
@@ -650,6 +971,30 @@ const app = new Elysia({ prefix: '/api' })
             message: t.Optional(t.String()),
         }),
         detail: { tags: ['sos'], summary: 'Create SOS alert' },
+    })
+
+    .patch('/sos/:id', async ({ params, body }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'security')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const [result] = await db.update(sosAlerts)
+            .set({
+                status: body.status,
+                resolvedAt: body.status === 'resolved' ? new Date() : undefined,
+                resolvedBy: session.user.id,
+            })
+            .where(eq(sosAlerts.id, params.id))
+            .returning()
+
+        return { success: true, data: result }
+    }, {
+        params: t.Object({ id: t.String() }),
+        body: t.Object({
+            status: t.String(),
+        }),
+        detail: { tags: ['sos'], summary: 'Update SOS alert status' },
     })
 
     // Support Tickets endpoints
@@ -696,6 +1041,174 @@ const app = new Elysia({ prefix: '/api' })
             message: t.Optional(t.String()),
         }),
         detail: { tags: ['support'], summary: 'Create support ticket' },
+    })
+
+    // Payment Settings endpoints
+    .get('/admin/payment-settings', async () => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const settings = await db.query.paymentSettings.findFirst()
+
+        // Map backend fields to frontend interface
+        if (settings) {
+            return {
+                success: true,
+                data: {
+                    ...settings,
+                    // Map gatewayMerchantId to accountNumber for frontend
+                    accountNumber: settings.gatewayMerchantId,
+                    // Map backend values to frontend values
+                    paymentMethod: settings.paymentMethod === 'gateway' ? 'bank_transfer' :
+                        settings.paymentMethod === 'self_qr' ? 'promptpay' :
+                            settings.paymentMethod,
+                }
+            }
+        }
+
+        return { success: true, data: null }
+    }, {
+        detail: { tags: ['admin'], summary: 'Get payment settings' },
+    })
+
+    .post('/admin/payment-settings', async ({ body }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        // Map frontend fields to backend schema
+        const settingsData = {
+            ...body,
+            // Map accountNumber to gatewayMerchantId
+            gatewayMerchantId: body.accountNumber,
+            // Ensure paymentMethod is valid enum value
+            paymentMethod: body.paymentMethod === 'bank_transfer' ? 'gateway' :
+                body.paymentMethod === 'promptpay' ? 'self_qr' :
+                    body.paymentMethod,
+            // Ensure projectId is set (get first project or from session if available)
+            // For now, assuming single project system, get the first project ID
+        }
+
+        // We need a projectId. Let's fetch the first project.
+        const project = await db.query.projects.findFirst()
+        if (!project) {
+            return { success: false, error: 'No project found' }
+        }
+
+        const dataToSave = {
+            ...settingsData,
+            projectId: project.id,
+            // Remove fields that are not in schema if necessary, but Drizzle usually ignores extra fields
+            accountNumber: undefined, // Remove this as it's not in DB
+        }
+
+        // Check if settings exist
+        const existing = await db.query.paymentSettings.findFirst({
+            where: eq(paymentSettings.projectId, project.id)
+        })
+
+        let result;
+        if (existing) {
+            [result] = await db.update(paymentSettings)
+                .set(dataToSave)
+                .where(eq(paymentSettings.id, existing.id))
+                .returning()
+        } else {
+            [result] = await db.insert(paymentSettings)
+                .values(dataToSave)
+                .returning()
+        }
+
+        return { success: true, data: result }
+    }, {
+        body: t.Object({
+            paymentMethod: t.String(),
+            promptpayType: t.Optional(t.String()),
+            promptpayId: t.Optional(t.String()),
+            accountName: t.Optional(t.String()),
+            bankName: t.Optional(t.String()),
+            accountNumber: t.Optional(t.String()), // Frontend sends this
+            requireSlipUpload: t.Optional(t.Boolean()),
+            autoVerifyPayment: t.Optional(t.Boolean()),
+            // Allow other fields to pass through
+            gatewayProvider: t.Optional(t.String()),
+            gatewayPublicKey: t.Optional(t.String()),
+            gatewaySecretKey: t.Optional(t.String()),
+            gatewayMerchantId: t.Optional(t.String()),
+        }),
+        detail: { tags: ['admin'], summary: 'Update payment settings' },
+    })
+
+    // Notifications endpoints
+    .get('/notifications', async () => {
+        const session = await auth()
+        if (!session?.user?.id) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const data = await db.query.notifications.findMany({
+            where: eq(notifications.userId, session.user.id),
+            orderBy: desc(notifications.createdAt),
+            limit: 50,
+        })
+
+        return { success: true, data }
+    }, {
+        detail: { tags: ['notifications'], summary: 'Get user notifications' }
+    })
+    .get('/notifications/unread-count', async () => {
+        const session = await auth()
+        if (!session?.user?.id) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const [result] = await db.select({ count: sql<number>`count(*)` })
+            .from(notifications)
+            .where(and(
+                eq(notifications.userId, session.user.id),
+                eq(notifications.isRead, false)
+            ))
+
+        return { success: true, data: { count: Number(result.count) } }
+    }, {
+        detail: { tags: ['notifications'], summary: 'Get unread notifications count' }
+    })
+    .patch('/notifications/:id/read', async ({ params }) => {
+        const session = await auth()
+        if (!session?.user?.id) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        await db.update(notifications)
+            .set({ isRead: true })
+            .where(and(
+                eq(notifications.id, params.id),
+                eq(notifications.userId, session.user.id)
+            ))
+
+        return { success: true }
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        detail: { tags: ['notifications'], summary: 'Mark notification as read' }
+    })
+    .patch('/notifications/read-all', async () => {
+        const session = await auth()
+        if (!session?.user?.id) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        await db.update(notifications)
+            .set({ isRead: true })
+            .where(eq(notifications.userId, session.user.id))
+
+        return { success: true }
+    }, {
+        detail: { tags: ['notifications'], summary: 'Mark all notifications as read' }
     })
 
 // Export type for Eden Treaty

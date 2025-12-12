@@ -29,6 +29,7 @@ export default async function ResidentProfilePage(): Promise<React.JSX.Element> 
 
     // Cast role to proper type since DB returns string
     const userProfile = {
+        id: session.user.id,
         name: user.name,
         email: user.email,
         phone: user.phone,

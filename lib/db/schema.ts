@@ -135,6 +135,45 @@ export const bills = pgTable('bills', {
     paidAt: timestamp('paid_at'),
     paymentRef: varchar('payment_ref', { length: 100 }),
     status: varchar('status', { length: 50 }).default('pending'),
+
+    // Payment tracking fields
+    paymentMethod: varchar('payment_method', { length: 50 }), // 'self_qr' | 'gateway'
+    paymentSlipUrl: text('payment_slip_url'), // URL ของสลิปที่อัพโหลด
+    paymentVerifiedAt: timestamp('payment_verified_at'),
+    paymentVerifiedBy: uuid('payment_verified_by').references(() => users.id),
+    gatewayTransactionId: varchar('gateway_transaction_id', { length: 255 }),
+    gatewayResponse: jsonb('gateway_response'),
+
+    createdAt: timestamp('created_at').defaultNow(),
+})
+
+// ==========================================
+// 8.1 Payment Settings (การตั้งค่าชำระเงิน)
+// ==========================================
+export const paymentSettings = pgTable('payment_settings', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id').references(() => projects.id).notNull().unique(),
+
+    // Payment Method Toggle
+    paymentMethod: varchar('payment_method', { length: 50 }).notNull().default('self_qr'), // 'self_qr' | 'gateway'
+
+    // Self QR Configuration
+    promptpayType: varchar('promptpay_type', { length: 20 }), // 'phone' | 'tax_id' | 'ewallet'
+    promptpayId: varchar('promptpay_id', { length: 50 }), // เบอร์โทร, เลขประจำตัวผู้เสียภาษี, หรือ ID
+    accountName: varchar('account_name', { length: 255 }),
+    bankName: varchar('bank_name', { length: 100 }),
+
+    // Payment Gateway Configuration
+    gatewayProvider: varchar('gateway_provider', { length: 50 }), // 'gb_primepay' | 'omise' | 'stripe'
+    gatewayPublicKey: text('gateway_public_key'),
+    gatewaySecretKey: text('gateway_secret_key'),
+    gatewayMerchantId: varchar('gateway_merchant_id', { length: 100 }),
+
+    // Features
+    requireSlipUpload: boolean('require_slip_upload').default(true),
+    autoVerifyPayment: boolean('auto_verify_payment').default(false),
+
+    updatedAt: timestamp('updated_at').defaultNow(),
     createdAt: timestamp('created_at').defaultNow(),
 })
 
@@ -233,6 +272,7 @@ export const projectsRelations = relations(projects, ({ many }) => ({
     announcements: many(announcements),
     facilities: many(facilities),
     guardCheckpoints: many(guardCheckpoints),
+    paymentSettings: many(paymentSettings),
 }))
 
 export const unitsRelations = relations(units, ({ one, many }) => ({
@@ -250,13 +290,21 @@ export const unitsRelations = relations(units, ({ one, many }) => ({
     supportTickets: many(supportTickets),
 }))
 
-export const usersRelations = relations(users, ({ one }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
     project: one(projects, {
         fields: [users.projectId],
         references: [projects.id],
     }),
     unit: one(units, {
         fields: [users.unitId],
+        references: [units.id],
+    }),
+    notifications: many(notifications),
+}))
+
+export const billsRelations = relations(bills, ({ one }) => ({
+    unit: one(units, {
+        fields: [bills.unitId],
         references: [units.id],
     }),
 }))
@@ -316,3 +364,30 @@ export type NewGuardCheckpoint = typeof guardCheckpoints.$inferInsert
 
 export type GuardPatrol = typeof guardPatrols.$inferSelect
 export type NewGuardPatrol = typeof guardPatrols.$inferInsert
+
+export type PaymentSettings = typeof paymentSettings.$inferSelect
+export type NewPaymentSettings = typeof paymentSettings.$inferInsert
+
+// ==========================================
+// 15. Notifications (การแจ้งเตือน)
+// ==========================================
+export const notifications = pgTable('notifications', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').references(() => users.id).notNull(),
+    title: varchar('title', { length: 255 }).notNull(),
+    message: text('message'),
+    type: varchar('type', { length: 50 }).default('info'), // info, success, warning, error
+    link: text('link'),
+    isRead: boolean('is_read').default(false),
+    createdAt: timestamp('created_at').defaultNow(),
+})
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+    user: one(users, {
+        fields: [notifications.userId],
+        references: [users.id],
+    }),
+}))
+
+export type Notification = typeof notifications.$inferSelect
+export type NewNotification = typeof notifications.$inferInsert

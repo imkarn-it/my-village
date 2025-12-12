@@ -12,6 +12,7 @@ import { ROLE_LABELS, type Role } from "@/lib/constants"
 import { getInitials } from "@/lib/utils"
 import { api } from "@/lib/api/client"
 import { useRouter } from "next/navigation"
+import { ImageUpload } from "@/components/shared/image-upload"
 
 // ==========================================
 // Types
@@ -35,6 +36,7 @@ type ProfileFormProps = {
 export function ProfileForm({ user }: ProfileFormProps): React.JSX.Element {
     const router = useRouter()
     const [isPending, setIsPending] = useState(false)
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(user.avatar ?? null)
 
     // Form state
     const [formData, setFormData] = useState({
@@ -59,6 +61,7 @@ export function ProfileForm({ user }: ProfileFormProps): React.JSX.Element {
             const updateData: any = {
                 name: formData.name,
                 phone: formData.phone,
+                avatar: avatarUrl,
             }
 
             // Only send password if new password is provided
@@ -99,20 +102,33 @@ export function ProfileForm({ user }: ProfileFormProps): React.JSX.Element {
             <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                 <CardHeader>
                     <CardTitle>รูปโปรไฟล์</CardTitle>
-                    <CardDescription>คลิกที่รูปเพื่ออัปโหลดรูปใหม่ (ยังไม่เปิดใช้งาน)</CardDescription>
+                    <CardDescription>คลิกที่รูปเพื่ออัปโหลดรูปใหม่</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center gap-4">
-                    <div className="relative group cursor-pointer opacity-80 hover:opacity-100">
-                        <Avatar className="w-32 h-32 ring-4 ring-slate-100 dark:ring-slate-800 shadow-xl transition-transform duration-300 group-hover:scale-105">
-                            <AvatarImage src={user.avatar ?? ""} />
-                            <AvatarFallback className="text-4xl bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800">
-                                {getInitials(user.name)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <Camera className="w-8 h-8 text-white" />
-                        </div>
-                    </div>
+                    <ImageUpload
+                        value={avatarUrl}
+                        onChange={async (url) => {
+                            setAvatarUrl(url)
+                            // Auto-save when image is uploaded
+                            if (url) {
+                                try {
+                                    const { error } = await api.users({ id: user.id }).patch({
+                                        avatar: url
+                                    })
+                                    if (error) throw error
+                                    toast.success("อัปเดตรูปโปรไฟล์เรียบร้อยแล้ว")
+                                    router.refresh()
+                                } catch (err) {
+                                    console.error("Error saving avatar:", err)
+                                    toast.error("บันทึกรูปโปรไฟล์ไม่สำเร็จ")
+                                }
+                            }
+                        }}
+                        bucket="profiles"
+                        shape="circle"
+                        folder={`avatars/${user.id}`}
+                        disabled={isPending}
+                    />
                 </CardContent>
             </Card>
 

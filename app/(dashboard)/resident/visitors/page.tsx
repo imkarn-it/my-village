@@ -29,6 +29,15 @@ import { api } from "@/lib/api/client"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { th } from "date-fns/locale"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { QRCodeDisplay } from "@/components/ui/qr-code-display"
 
 const getStatusBadge = (status: string) => {
     switch (status) {
@@ -260,6 +269,39 @@ export default function VisitorsPage(): React.JSX.Element {
                                                         <Car className="w-4 h-4" />
                                                         {visitor.licensePlate}
                                                     </span>
+                                                )}
+                                                {visitor.qrCode && (
+                                                    <Dialog>
+                                                        <DialogTrigger asChild>
+                                                            <Button variant="outline" size="sm" className="h-6 text-xs">
+                                                                <QrCode className="w-3 h-3 mr-1" />
+                                                                QR Code
+                                                            </Button>
+                                                        </DialogTrigger>
+                                                        <DialogContent>
+                                                            <DialogHeader>
+                                                                <DialogTitle>QR Code สำหรับผู้มาติดต่อ</DialogTitle>
+                                                                <DialogDescription>
+                                                                    แสดง QR Code นี้ให้เจ้าหน้าที่รักษาความปลอดภัยสแกนเพื่อเข้าโครงการ
+                                                                </DialogDescription>
+                                                            </DialogHeader>
+                                                            <div className="flex flex-col items-center justify-center p-4 space-y-4">
+                                                                <div className="bg-white p-4 rounded-lg shadow-sm">
+                                                                    {/* We need to generate the QR image here. 
+                                                                        Since we stored the UUID in DB, we need to generate it on the fly or fetch it.
+                                                                        For simplicity, let's use a client-side QR generator component or just use the API if we had one.
+                                                                        Wait, I can use the qrcode library on client side too if I import it.
+                                                                        Or I can create a simple component that takes text and renders QR.
+                                                                     */}
+                                                                    <QRCodeDisplay text={visitor.qrCode} />
+                                                                </div>
+                                                                <div className="text-center space-y-1">
+                                                                    <p className="font-medium">{visitor.visitorName}</p>
+                                                                    <p className="text-sm text-muted-foreground">ทะเบียน: {visitor.licensePlate || '-'}</p>
+                                                                </div>
+                                                            </div>
+                                                        </DialogContent>
+                                                    </Dialog>
                                                 )}
                                             </div>
 

@@ -8,7 +8,6 @@ import type { NextAuthConfig } from "next-auth"
 export const authConfig = {
     pages: {
         signIn: "/login",
-        signOut: "/logout",
         error: "/login",
         newUser: "/register",
     },

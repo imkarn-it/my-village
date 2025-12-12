@@ -18,6 +18,7 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { api } from "@/lib/api/client"
+import { ImageUpload } from "@/components/shared/image-upload"
 
 const CATEGORIES = [
     { value: "plumbing", label: "ประปา" },
@@ -38,6 +39,7 @@ export default function NewMaintenancePage(): React.JSX.Element {
     const router = useRouter()
     const [isPending, setIsPending] = useState(false)
     const [units, setUnits] = useState<any[]>([])
+    const [imageUrl, setImageUrl] = useState<string | null>(null)
 
     useEffect(() => {
         const fetchUnits = async () => {
@@ -71,7 +73,7 @@ export default function NewMaintenancePage(): React.JSX.Element {
                 category,
                 priority,
                 unitId,
-                images: [], // TODO: Implement image upload
+                images: imageUrl ? [imageUrl] : [],
             })
 
             if (error) {
@@ -194,14 +196,15 @@ export default function NewMaintenancePage(): React.JSX.Element {
 
                         <div className="space-y-2">
                             <Label>รูปภาพประกอบ</Label>
-                            <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
-                                <ImageIcon className="w-8 h-8 mb-2 opacity-50" />
-                                <p className="text-sm text-center">
-                                    ระบบอัปโหลดรูปภาพกำลังปรับปรุง
-                                    <br />
-                                    <span className="text-xs opacity-70">(สามารถแจ้งซ่อมโดยไม่มีรูปภาพได้)</span>
-                                </p>
-                            </div>
+                            <ImageUpload
+                                value={imageUrl}
+                                onChange={setImageUrl}
+                                bucket="maintenance"
+                                disabled={isPending}
+                            />
+                            <p className="text-xs text-slate-500 mt-2">
+                                * รองรับไฟล์รูปภาพขนาดไม่เกิน 5MB
+                            </p>
                         </div>
 
                         <div className="flex justify-end pt-4">

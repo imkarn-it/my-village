@@ -23,23 +23,59 @@ export default function AdminBillsPage(): React.JSX.Element {
     const [bills, setBills] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
+    const [verifyingBill, setVerifyingBill] = useState<any>(null)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const fetchBills = async () => {
+        try {
+            setIsLoading(true)
+            const { data, error } = await api.bills.get()
+
+            if (error) {
+                console.error("API Error:", error)
+                toast.error("ไม่สามารถดึงข้อมูลบิลได้")
+                return
+            }
+
+            if (data && data.success && data.data) {
+                setBills(data.data)
+            }
+        } catch (error) {
+            console.error("Failed to fetch bills:", error)
+            toast.error("ไม่สามารถดึงข้อมูลบิลได้")
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     useEffect(() => {
-        const fetchBills = async () => {
-            try {
-                const { data } = await api.bills.get()
-                if (data && data.success && data.data) {
-                    setBills(data.data)
-                }
-            } catch (error) {
-                console.error("Failed to fetch bills:", error)
-                toast.error("ไม่สามารถดึงข้อมูลบิลได้")
-            } finally {
-                setIsLoading(false)
-            }
-        }
         fetchBills()
     }, [])
+
+    const handleVerify = async (status: 'paid' | 'pending', billId: string) => {
+        try {
+            setIsSubmitting(true)
+            const { data, error } = await api.bills({ id: billId }).patch({
+                status: status,
+                paidAt: status === 'paid' ? new Date().toISOString() : undefined
+            })
+
+            if (error) {
+                throw new Error(String(error.value))
+            }
+
+            if (data?.success) {
+                toast.success(status === 'paid' ? "อนุมัติการชำระเงินแล้ว" : "ปฏิเสธการชำระเงินแล้ว")
+                setVerifyingBill(null)
+                fetchBills()
+            }
+        } catch (error) {
+            console.error("Failed to update bill:", error)
+            toast.error("เกิดข้อผิดพลาดในการอัพเดทสถานะ")
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     const filteredBills = bills.filter(bill =>
         bill.billType.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -139,6 +175,11 @@ export default function AdminBillsPage(): React.JSX.Element {
                                                 <CheckCircle2 className="w-3 h-3 mr-1" />
                                                 ชำระแล้ว
                                             </Badge>
+                                        ) : bill.status === 'pending_verification' ? (
+                                            <Badge className="bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20">
+                                                <Clock className="w-3 h-3 mr-1" />
+                                                รอตรวจสอบ
+                                            </Badge>
                                         ) : bill.status === 'overdue' ? (
                                             <Badge variant="destructive" className="bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20">
                                                 <AlertCircle className="w-3 h-3 mr-1" />
@@ -152,9 +193,19 @@ export default function AdminBillsPage(): React.JSX.Element {
                                         )}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-800">
-                                            <MoreHorizontal className="w-4 h-4 text-slate-500" />
-                                        </Button>
+                                        {bill.status === 'pending_verification' ? (
+                                            <Button
+                                                size="sm"
+                                                onClick={() => setVerifyingBill(bill)}
+                                                className="bg-amber-500 hover:bg-amber-600 text-white"
+                                            >
+                                                ตรวจสอบ
+                                            </Button>
+                                        ) : (
+                                            <Button variant="ghost" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-800">
+                                                <MoreHorizontal className="w-4 h-4 text-slate-500" />
+                                            </Button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -168,6 +219,85 @@ export default function AdminBillsPage(): React.JSX.Element {
                     </TableBody>
                 </Table>
             </div>
+
+            {/* Verification Dialog */}
+            {verifyingBill && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl max-w-lg w-full overflow-hidden">
+                        <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                                ตรวจสอบการชำระเงิน
+                            </h2>
+                            <p className="text-slate-600 dark:text-slate-400 mt-1">
+                                ห้อง {verifyingBill.unit?.unitNumber} - {verifyingBill.billType}
+                            </p>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                <span className="text-slate-600 dark:text-slate-400">ยอดที่ต้องชำระ</span>
+                                <span className="text-xl font-bold text-slate-900 dark:text-white">
+                                    ฿{Number(verifyingBill.amount).toLocaleString()}
+                                </span>
+                            </div>
+
+                            <div className="space-y-2">
+                                <span className="text-sm font-medium text-slate-900 dark:text-white">
+                                    หลักฐานการโอนเงิน
+                                </span>
+                                {verifyingBill.paymentSlipUrl ? (
+                                    <div className="relative aspect-[3/4] w-full bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={verifyingBill.paymentSlipUrl}
+                                            alt="Payment Slip"
+                                            className="object-contain w-full h-full"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-center h-48 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400">
+                                        ไม่พบรูปภาพสลิป
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="p-6 border-t border-slate-200 dark:border-slate-700 flex gap-3 justify-end bg-slate-50 dark:bg-slate-800/50">
+                            <Button
+                                variant="outline"
+                                onClick={() => setVerifyingBill(null)}
+                                disabled={isSubmitting}
+                            >
+                                ยกเลิก
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                onClick={() => handleVerify('pending', verifyingBill.id)}
+                                disabled={isSubmitting}
+                            >
+                                ปฏิเสธ
+                            </Button>
+                            <Button
+                                className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                                onClick={() => handleVerify('paid', verifyingBill.id)}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        กำลังบันทึก...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CheckCircle2 className="w-4 h-4 mr-2" />
+                                        อนุมัติ
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

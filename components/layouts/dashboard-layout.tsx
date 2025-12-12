@@ -4,15 +4,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
     Sidebar,
     SidebarContent,
@@ -39,14 +30,13 @@ import {
     AlertTriangle,
     MessageSquare,
     Settings,
-    LogOut,
     User,
-    ChevronUp,
     type LucideIcon,
 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { signOut } from "next-auth/react"
 import type { ReactNode } from "react"
+import dynamic from "next/dynamic"
+import { NotificationBell } from "@/components/dashboard/notification-bell"
 
 // ==========================================
 // Types
@@ -156,59 +146,12 @@ function SosButton(): React.JSX.Element {
     )
 }
 
-function UserMenu(): React.JSX.Element {
-    const handleLogout = (): void => {
-        void signOut()
-    }
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-3 p-2 h-auto hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-300"
-                >
-                    <Avatar className="w-9 h-9 ring-2 ring-emerald-500/30">
-                        <AvatarImage src="" />
-                        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white font-semibold">
-                            ส
-                        </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 text-left">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">สมชาย ใจดี</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">ห้อง A101</p>
-                    </div>
-                    <ChevronUp className="w-4 h-4 text-slate-400" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-                align="end"
-                className="w-56 bg-white dark:bg-slate-900/95 dark:backdrop-blur-xl border-slate-200 dark:border-slate-700/50"
-            >
-                <DropdownMenuLabel className="text-slate-500 dark:text-slate-400">
-                    บัญชีของฉัน
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700/50" />
-                <DropdownMenuItem className="text-slate-700 dark:text-slate-300 focus:bg-slate-100 dark:focus:bg-slate-800/50 focus:text-slate-900 dark:focus:text-white cursor-pointer rounded-lg">
-                    <User className="mr-2 h-4 w-4" />
-                    โปรไฟล์
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-slate-700 dark:text-slate-300 focus:bg-slate-100 dark:focus:bg-slate-800/50 focus:text-slate-900 dark:focus:text-white cursor-pointer rounded-lg">
-                    <Settings className="mr-2 h-4 w-4" />
-                    ตั้งค่า
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700/50" />
-                <DropdownMenuItem
-                    className="text-red-500 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-500/10 focus:text-red-600 dark:focus:text-red-400 cursor-pointer rounded-lg"
-                    onClick={handleLogout}
-                >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    ออกจากระบบ
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+const UserMenu = dynamic(() => import("@/components/dashboard/user-menu").then(mod => mod.UserMenu), {
+    ssr: false,
+    loading: () => (
+        <div className="w-full h-14 bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse" />
     )
-}
+})
 
 export function AppSidebar(): React.JSX.Element {
     const pathname = usePathname()
@@ -267,7 +210,7 @@ export function AppSidebar(): React.JSX.Element {
 export function DashboardLayout({ children }: DashboardLayoutProps): React.JSX.Element {
     return (
         <SidebarProvider>
-            <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+            <div className="min-h-screen flex w-full bg-slate-50 dark:bg-slate-950">
                 {/* Background decoration */}
                 <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] pointer-events-none opacity-0 dark:opacity-20" />
                 <div className="fixed top-0 left-1/4 w-96 h-96 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -283,16 +226,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps): React.JSX.E
                         </div>
                         <div className="flex items-center gap-2">
                             <ThemeToggle />
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50 relative"
-                            >
-                                <Bell className="w-5 h-5" />
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-red-500 to-orange-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
-                                    3
-                                </span>
-                            </Button>
+                            <NotificationBell />
                         </div>
                     </header>
 

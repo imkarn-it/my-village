@@ -24,16 +24,15 @@ import {
     Wrench,
     Home,
     Settings,
-    LogOut,
     Menu,
     X,
-    ChevronDown,
-    UserCog,
-    FileText,
     BarChart3,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { getInitials } from "@/lib/utils";
+import { HeaderUserMenu } from "@/components/dashboard/header-user-menu";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 
 interface AdminLayoutProps {
     children: ReactNode;
@@ -64,6 +63,16 @@ const menuItems = [
         label: "บิล/ชำระเงิน",
         href: "/admin/bills",
         icon: CreditCard,
+        submenu: [
+            {
+                label: "ทั้งหมด",
+                href: "/admin/bills",
+            },
+            {
+                label: "ตรวจสอบการชำระเงิน",
+                href: "/admin/bills/verify",
+            },
+        ],
     },
     {
         label: "แจ้งซ่อม",
@@ -80,14 +89,23 @@ const menuItems = [
         href: "/admin/reports",
         icon: BarChart3,
     },
+    {
+        label: "ตั้งค่าการชำระเงิน",
+        href: "/admin/payment-settings",
+        icon: Settings,
+    },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps): React.JSX.Element {
     const pathname = usePathname();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { data: session } = useSession();
+    const user = session?.user;
+    const initials = getInitials(user?.name || "Admin");
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative">
+        // ... (wrapper div and background decoration remain same)
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative">
             {/* Background decoration */}
             <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] pointer-events-none opacity-0 dark:opacity-50" />
             <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -104,7 +122,7 @@ export default function AdminLayout({ children }: AdminLayoutProps): React.JSX.E
             {/* Sidebar */}
             <aside
                 className={cn(
-                    "fixed left-0 top-0 z-50 h-full w-72 transform border-r border-slate-200 dark:border-slate-700/50 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900/80 dark:to-slate-900/80 dark:backdrop-blur-xl transition-transform duration-300 ease-in-out lg:translate-x-0",
+                    "fixed left-0 top-0 z-50 h-full w-72 transform border-r border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl transition-transform duration-300 ease-in-out lg:translate-x-0",
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
@@ -183,52 +201,11 @@ export default function AdminLayout({ children }: AdminLayoutProps): React.JSX.E
                         <ThemeToggle />
 
                         {/* Notifications */}
-                        <Button variant="ghost" size="icon" className="relative text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50">
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-orange-500 rounded-full text-xs text-white flex items-center justify-center font-medium shadow-lg shadow-red-500/25">
-                                5
-                            </span>
-                        </Button>
+                        {/* Notifications */}
+                        <NotificationBell />
 
                         {/* User Menu */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800/50">
-                                    <Avatar className="w-8 h-8 ring-2 ring-purple-500/30">
-                                        <AvatarImage src="" />
-                                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-sm font-semibold">
-                                            A
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <span className="hidden sm:block text-slate-700 dark:text-slate-300 text-sm font-medium">Admin</span>
-                                    <ChevronDown className="w-4 h-4 text-slate-500" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-slate-900/95 border-slate-200 dark:border-slate-700/50 dark:backdrop-blur-xl">
-                                <DropdownMenuLabel className="text-slate-500 dark:text-slate-300">บัญชีของฉัน</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700/50" />
-                                <DropdownMenuItem asChild className="text-slate-700 dark:text-slate-300 focus:bg-slate-100 dark:focus:bg-slate-800/50 focus:text-slate-900 dark:focus:text-white cursor-pointer">
-                                    <Link href="/admin/profile">
-                                        <UserCog className="w-4 h-4 mr-2" />
-                                        โปรไฟล์
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild className="text-slate-700 dark:text-slate-300 focus:bg-slate-100 dark:focus:bg-slate-800/50 focus:text-slate-900 dark:focus:text-white cursor-pointer">
-                                    <Link href="/admin/settings">
-                                        <Settings className="w-4 h-4 mr-2" />
-                                        ตั้งค่า
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700/50" />
-                                <DropdownMenuItem
-                                    onClick={() => signOut()}
-                                    className="text-red-500 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-500/10 focus:text-red-600 dark:focus:text-red-400 cursor-pointer"
-                                >
-                                    <LogOut className="w-4 h-4 mr-2" />
-                                    ออกจากระบบ
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <HeaderUserMenu role="admin" />
                     </div>
                 </header>
 

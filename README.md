@@ -11,11 +11,14 @@
 | **Language** | TypeScript |
 | **Styling** | TailwindCSS 4 |
 | **UI Components** | shadcn/ui |
-| **Backend** | Elysia.js |
 | **Database** | PostgreSQL (Supabase) |
 | **ORM** | Drizzle ORM |
-| **Authentication** | Auth.js v5 + Supabase |
-| **File Storage** | Supabase Storage |
+| **Authentication** | Auth.js v5 |
+
+### API Layer
+- **Elysia.js** - Fast and type-safe API framework
+- **Eden Treaty** - Type-safe API client (end-to-end type safety)
+- **@elysiajs/cors** - CORS middleware
 
 ## 🎨 Design Features
 
@@ -25,13 +28,40 @@
 - 🎯 **Micro-animations** - Smooth hover effects and transitions
 - 📱 **Mobile-first** - Responsive design for all devices
 
+## ✨ Features & Status
+
+### Completed Features (v1.1)
+- ✅ **Authentication** - NextAuth v5 with credentials and role-based access
+- ✅ **Admin Dashboard** - Statistics and analytics
+- ✅ **Resident Dashboard** - Personal dashboard with quick actions
+- ✅ **Announcements** - Create and view announcements (with creator info)
+- ✅ **Parcel Management** - Track parcels with delivery status
+- ✅ **Visitor Management** - Approve/reject visitors, QR code pre-registration
+- ✅ **Bill Management** - Create bills, view payment status
+- ✅ **Maintenance Requests** - Submit and track repair requests
+- ✅ **User Profile** - Update personal information
+- ✅ **Role-based Access Control** - Granular permissions per role
+- ✅ **QR Code System** - Visitor generation & Security scanning
+- ✅ **SOS Emergency** - Real-time alerts with GPS location
+- ✅ **Notifications** - Real-time updates for all major actions
+
+### In Progress
+- 🔄 **Facilities Booking** - Booking system for common areas (Next)
+- 🔄 **Image Upload** - File upload for maintenance and parcels (postponed)
+
+### Migration Status
+**Frontend-API Integration: 80% Complete**
+- ✅ Migrated from Server Actions to Elysia API + Eden Treaty
+- ✅ All pages now use Client Components with direct API calls
+- ✅ Type-safe end-to-end communication
+
 ## 👥 User Roles
 
-1. **Resident (ลูกบ้าน)** - View announcements, parcels, bills, maintenance
-2. **Property Management (นิติบุคคล)** - Manage village operations
-3. **Security Guard (รปภ.)** - Handle visitors and parcels
-4. **Maintenance Staff (ช่างซ่อม)** - Manage repair requests
-5. **Super Admin (ผู้ดูแลระบบ)** - System administration
+1. **Resident (ลูกบ้าน)** - View announcements, parcels, bills, manage visitors
+2. **Admin (นิติบุคคล)** - Manage village operations, create bills, manage residents
+3. **Security Guard (รปภ.)** - Handle visitor check-ins and parcel deliveries
+4. **Maintenance Staff (ช่างซ่อม)** - Manage repair requests *(coming soon)*
+5. **Super Admin (ผู้ดูแลระบบ)** - System administration *(coming soon)*
 
 ## 🏗️ Project Structure
 
@@ -42,35 +72,125 @@ village-app/
 │   │   ├── login/page.tsx        # Login page
 │   │   └── register/page.tsx     # Registration page
 │   ├── (dashboard)/
-│   │   └── resident/
-│   │       ├── page.tsx          # Dashboard
-│   │       ├── announcements/    # Announcements
-│   │       ├── parcels/          # Parcel tracking
-│   │       ├── bills/            # Bill payments
-│   │       ├── maintenance/      # Repair requests
-│   │       ├── visitors/         # Visitor management
-│   │       ├── facilities/       # Facility booking
-│   │       └── support/          # Contact management
+│   │   ├── admin/                # Admin pages
+│   │   │   ├── page.tsx          # Dashboard
+│   │   │   ├── announcements/
+│   │   │   ├── bills/
+│   │   │   │   └── new/          # Create bill
+│   │   │   ├── maintenance/
+│   │   │   ├── parcels/
+│   │   │   │   └── new/          # Register parcel
+│   │   │   └── residents/
+│   │   │       └── new/          # Add resident
+│   │   ├── resident/             # Resident pages
+│   │   │   ├── page.tsx          # Dashboard
+│   │   │   ├── announcements/
+│   │   │   ├── parcels/
+│   │   │   ├── bills/
+│   │   │   ├── maintenance/
+│   │   │   │   └── new/          # Create request
+│   │   │   ├── visitors/
+│   │   │   │   └── new/          # Pre-register visitor
+│   │   │   ├── facilities/
+│   │   │   └── support/
+│   │   └── security/             # Security pages
+│   │       ├── parcels/          # Manage deliveries
+│   │       └── visitors/
+│   │           └── new/          # Check-in visitor
 │   └── api/
-│       └── [[...slugs]]/route.ts # Elysia API
+│       └── [[...slugs]]/route.ts # Elysia API endpoints
 ├── components/
 │   ├── layouts/
 │   │   └── dashboard-layout.tsx  # Main dashboard layout
 │   ├── theme-provider.tsx        # Dark/Light mode provider
 │   ├── theme-toggle.tsx          # Theme switcher
+│   ├── profile-form.tsx          # Profile editor
 │   └── ui/                       # shadcn/ui components
 ├── lib/
+│   ├── actions/                  # Server actions (deprecated)
+│   ├── api/
+│   │   └── client.ts             # Eden Treaty API client
 │   ├── db/
-│   │   ├── schema.ts             # Drizzle schema
-│   │   └── index.ts              # DB connection
-│   ├── supabase/
-│   │   ├── client.ts             # Browser client
-│   │   └── server.ts             # Server client
-│   ├── auth.ts                   # Auth.js config
-│   ├── config.ts                 # Environment config
-│   └── constants.ts              # App constants
+│   │   ├── schema.ts             # Drizzle schema (14 tables)
+│   │   ├── index.ts              # DB connection
+│   │   └── seed.ts               # Database seeder
+│   ├── auth.ts                   # Auth.js instance
+│   ├── auth.config.ts            # Auth configuration
+│   ├── constants.ts              # App constants
+│   └── utils.ts                  # Utility functions
+├── types/                        # TypeScript type definitions
 └── public/
     └── grid.svg                  # Background pattern
+```
+
+## 🔌 API Architecture
+
+This project uses **Elysia.js** for the API layer with **Eden Treaty** for type-safe client calls.
+
+### Available Endpoints
+
+#### Authentication
+- `POST /api/auth/register` - Register new user
+
+#### Users
+- `GET /api/users` - Get all users
+- `GET /api/users?role={role}` - Filter by role
+- `PATCH /api/users/:id` - Update user profile
+
+#### Announcements
+- `GET /api/announcements` - Get announcements (includes author info)
+- `POST /api/announcements` - Create announcement (admin only)
+
+#### Visitors
+- `GET /api/visitors?unitId={unitId}` - Get visitors by unit
+- `POST /api/visitors` - Check-in visitor or pre-register (security/admin/resident)
+- `PATCH /api/visitors/:id` - Update visitor status (approve/reject)
+
+#### Parcels
+- `GET /api/parcels?unitId={unitId}` - Get parcels by unit
+- `POST /api/parcels` - Register parcel (admin/security)
+- `PATCH /api/parcels/:id` - Mark as picked up
+
+#### Bills
+- `GET /api/bills?unitId={unitId}` - Get bills by unit
+- `POST /api/bills` - Create bill (admin only)
+
+#### Maintenance
+- `GET /api/maintenance?unitId={unitId}` - Get maintenance requests
+- `POST /api/maintenance` - Create request (resident)
+- `PATCH /api/maintenance/:id` - Update status (admin)
+
+#### Units
+- `GET /api/units` - Get all units
+- `GET /api/units/:id` - Get unit by ID
+
+### Usage Example
+
+```typescript
+import { api } from "@/lib/api/client"
+
+// GET request with query params
+const { data, error } = await api.visitors.get({
+  query: { unitId: 'uuid', limit: '50' }
+})
+
+// POST request
+const { data, error } = await api.visitors.post({
+  unitId: 'uuid',
+  visitorName: 'John Doe',
+  purpose: 'Meeting'
+})
+
+// PATCH request with params
+const { data, error } = await api.visitors({ id: 'uuid' }).patch({
+  status: 'approved'
+})
+
+// Error handling
+if (error) {
+  toast.error(error.value?.error || 'เกิดข้อผิดพลาด')
+  return
+}
 ```
 
 ## 🚀 Getting Started
@@ -78,23 +198,21 @@ village-app/
 ### Prerequisites
 
 - [Bun](https://bun.sh/) 1.3.4+
-- [Supabase](https://supabase.com/) account
+- [Supabase](https://supabase.com/) account (or PostgreSQL database)
 
 ### Installation
 
 ```bash
 # Clone the repository
-cd village-app
+git clone https://github.com/yourusername/my-village.git
+cd my-village
 
 # Install dependencies
 bun install
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your Supabase credentials
-
-# Run development server
-bun run dev
+# Edit .env.local with your database credentials
 ```
 
 ### Environment Variables
@@ -102,47 +220,141 @@ bun run dev
 ```env
 # App
 NEXT_PUBLIC_APP_NAME=My Village
-NEXT_PUBLIC_APP_VERSION=1.0.0
+NEXT_PUBLIC_APP_VERSION=1.1.0
 
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-DATABASE_URL=your-database-url
+# Database
+DATABASE_URL=postgresql://user:password@host:port/database
+DIRECT_URL=postgresql://user:password@host:port/database
 
 # Auth.js
-AUTH_SECRET=your-auth-secret
-AUTH_URL=http://localhost:3000
-AUTH_TRUST_HOST=true
-AUTH_GOOGLE_ID=your-google-client-id
-AUTH_GOOGLE_SECRET=your-google-client-secret
+AUTH_SECRET=your-secret-key-here
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-here
 ```
 
 ### Database Setup
 
 ```bash
-# Push schema to Supabase
+# Generate migrations
+bunx drizzle-kit generate
+
+# Push schema to database
 bunx drizzle-kit push
+
+# (Optional) Open Drizzle Studio to view/edit data
+bunx drizzle-kit studio
 ```
+
+### Seed Database (Optional)
+
+```bash
+bun run db:seed
+```
+
+This will create:
+- Sample project (My Village)
+- Sample units (A101, A102, B201, etc.)
+- Test users for each role:
+  - Admin: `admin@village.com` / `password123`
+  - Resident: `resident@village.com` / `password123`
+  - Security: `security@village.com` / `password123`
+- Sample announcements and data
+
+### Run Development Server
+
+```bash
+bun run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📱 Available Pages
 
-| Route | Description |
-|-------|-------------|
-| `/login` | User login |
-| `/register` | User registration |
-| `/resident` | Resident dashboard |
-| `/resident/announcements` | Announcements list |
-| `/resident/parcels` | Parcel tracking |
-| `/resident/bills` | Bill payments |
-| `/resident/maintenance` | Repair requests |
-| `/resident/visitors` | Visitor management |
-| `/resident/facilities` | Facility booking |
-| `/resident/support` | Contact management |
+### Authentication
+- `/login` - User login
+- `/register` - User registration
 
-## 🔧 API Documentation
+### Resident Dashboard
+- `/resident` - Dashboard with statistics
+- `/resident/announcements` - View announcements
+- `/resident/parcels` - Track parcels
+- `/resident/bills` - View and pay bills
+- `/resident/maintenance` - View repair requests
+- `/resident/maintenance/new` - Create repair request
+- `/resident/visitors` - Manage visitors (approve/reject)
+- `/resident/visitors/new` - Pre-register visitor (QR code)
+- `/resident/facilities` - Book facilities
+- `/resident/support` - Contact support
+- `/resident/profile` - Edit profile
 
-API documentation is available at `/api/swagger` when running the development server.
+### Admin Dashboard
+- `/admin` - Admin dashboard with analytics
+- `/admin/announcements` - Manage announcements
+- `/admin/bills` - View all bills
+- `/admin/bills/new` - Create new bill
+- `/admin/maintenance` - Manage repair requests
+- `/admin/parcels/new` - Register new parcel
+- `/admin/residents` - Manage residents
+- `/admin/residents/new` - Add new resident
+- `/admin/sos` - SOS Emergency Dashboard
+- `/admin/profile` - Edit profile
+
+### Security Dashboard
+- `/security/parcels` - Manage parcels (mark as delivered)
+- `/security/visitors/new` - Check-in visitor
+- `/security/scan` - QR Code Scanner
+- `/security/sos` - SOS Emergency Dashboard
+
+## 🛠️ Development
+
+### Database Commands
+
+```bash
+# Generate migration files
+bun run db:generate
+
+# Push schema changes to database
+bun run db:push
+
+# Open Drizzle Studio
+bun run db:studio
+
+# Run database migrations
+bun run db:migrate
+
+# Seed database with sample data
+bun run db:seed
+```
+
+### Build Commands
+
+```bash
+# Development
+bun run dev
+
+# Build for production
+bun run build
+
+# Start production server
+bun run start
+
+# Lint code
+bun run lint
+```
+
+## 📚 Documentation
+
+- **CLAUDE.md** - Comprehensive project documentation for AI context
+- **TASKS.md** - Development tasks and progress tracking
+- **typescript-guideline.md** - TypeScript coding standards
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
@@ -150,4 +362,6 @@ MIT License - feel free to use this project for your own purposes.
 
 ---
 
-Built with ❤️ using Next.js 16, Bun, and Supabase
+**Version:** 1.1.0  
+**Last Updated:** December 2025  
+Built with ❤️ using Next.js 16, Bun, Elysia, and Supabase

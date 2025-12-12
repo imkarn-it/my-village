@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Providers } from "@/components/providers"
 import "./globals.css"
 
 // ==========================================
@@ -48,8 +49,10 @@ export default function RootLayout({ children }: RootLayoutProps): React.JSX.Ele
     <html lang="th" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
-          <Toaster richColors position="top-right" />
+          <Providers>
+            {children}
+            <Toaster richColors position="top-right" />
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

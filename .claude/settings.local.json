@@ -1,0 +1,10 @@
+{
+  "enabledMcpjsonServers": [
+    "next-devtools",
+    "context7",
+    "supabase-mcp-server",
+    "playwright",
+    "shadcn"
+  ],
+  "enableAllProjectMcpServers": true
+}

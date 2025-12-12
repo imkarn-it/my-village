@@ -42,6 +42,31 @@
 4. **Maintenance** - ช่างซ่อมบำรุง (ยังไม่เสร็จ)
 5. **Super Admin** - ผู้ดูแลระบบ (ยังไม่เสร็จ)
 
+### อัปเดตล่าสุด (ธันวาคม 2025) - ระบบชำระเงิน
+- **ปรับปรุงระบบชำระเงิน (Payment System Overhaul)**:
+  - **ยกเลิก Payment Gateway**: นำระบบ Payment Gateway ออกตามความต้องการ
+  - **เพิ่ม Bank Transfer**: เพิ่มตัวเลือก "โอนเงินผ่านเลขบัญชี" ควบคู่กับ PromptPay QR
+  - **Admin Settings**: เพิ่มการตั้งค่าให้เลือกวิธีชำระเงินหลักได้ (PromptPay QR / Bank Transfer)
+  - **Database**: ใช้ field `gatewayMerchantId` ในตาราง `paymentSettings` เพื่อเก็บ "เลขที่บัญชี" (Account Number) ชั่วคราวเพื่อเลี่ยงการทำ Migration
+  - **API**: ปรับปรุง `POST /bills/:id/generate-qr` ให้ส่งข้อมูลบัญชีธนาคารกลับมาแทน QR Code หากเลือกวิธีชำระเงินเป็น Bank Transfer
+  - **UI**: หน้า Resident Bill Detail แสดงผลตามการตั้งค่า (QR Code หรือ ข้อมูลบัญชี)
+- **ระบบตรวจสอบสลิป (Payment Verification)**:
+  - เพิ่ม Flow การตรวจสอบสลิปสำหรับ Admin (Approve/Reject)
+  - แก้ไขปัญหา "ไม่พบรูปภาพสลิป" โดยแก้ชื่อ column `slipUrl` -> `paymentSlipUrl` ให้ตรงกับ Schema
+  - แก้ไขปัญหา `400 Bad Request` รูปภาพ โดยปรับ Storage Bucket เป็น Public
+
+- **ระบบ QR Code (Visitor Management)**:
+  - **Generation**: สร้าง QR Code สำหรับผู้มาติดต่อ (Visitors)
+  - **Scanning**: หน้าจอ Security สำหรับสแกน QR Code เพื่อ Check-in/Check-out
+  - **Verification**: API endpoint สำหรับตรวจสอบความถูกต้องของ QR Code
+- **ระบบแจ้งเหตุฉุกเฉิน (SOS System)**:
+  - **SOS Button**: ปุ่มแจ้งเหตุฉุกเฉินสำหรับลูกบ้าน พร้อมส่งพิกัด GPS
+  - **Real-time Alerts**: แจ้งเตือนทันทีไปยัง Admin และ Security
+  - **Dashboard**: หน้าจอติดตามเหตุฉุกเฉินพร้อมแผนที่ Google Maps
+- **ระบบการแจ้งเตือน (Notifications)**:
+  - **Real-time**: แจ้งเตือนผ่าน Supabase Realtime
+  - **Integration**: แจ้งเตือนเมื่อมีพัสดุ, ผู้มาติดต่อ, บิลค่าส่วนกลาง, และการแจ้งซ่อม
+
 ---
 
 ## Tech Stack
@@ -400,19 +425,19 @@ export type UserBasicInfo = Pick<User, "id" | "name" | "email" | "avatar" | "rol
 - `Booking`, `NewBooking`
 - `SosAlert`, `NewSosAlert`
 
-### Action Types (Server Actions)
+### Response Types (API)
 
 ```typescript
 // Export จาก types/actions.ts
 
-// สำหรับ Server Actions ที่ return ผลลัพธ์
+// สำหรับ API endpoints ที่ return ผลลัพธ์
 export type ActionResult = {
     readonly success: boolean
     readonly error?: string
     readonly data?: unknown
 }
 
-// สำหรับ Form Server Actions (ใช้กับ useActionState)
+// สำหรับ Form validation errors (deprecated - ใช้กับ Server Actions เก่า)
 export type FormActionState = {
     readonly error?: string
     readonly fieldErrors?: Record<string, readonly string[]>
@@ -666,14 +691,6 @@ import type { User } from "@/types/entities"
        const user = await db.query.users.findFirst({ where: eq(users.id, id) })
        return user ?? null
    }
-   
-   // ✅ ถูกต้อง - Server Actions
-   export async function createUser(
-       previousState: FormActionState,
-       formData: FormData
-   ): Promise<FormActionState> {
-       // ...
-   }
    ```
 
 6. **ใช้ `Pick`/`Omit` แทนการสร้าง Type ใหม่**
@@ -829,25 +846,6 @@ export function userProfile() {}
 export default function dashboardPage() {}
 ```
 
-### 4. การตั้งชื่อ Server Actions
-
-```typescript
-// ✅ ถูกต้อง - camelCase + Action suffix
-export async function createAnnouncement(
-    previousState: FormActionState,
-    formData: FormData
-): Promise<FormActionState> {
-    // ...
-}
-
-export async function loginAction(...) {}
-export async function updateProfile(...) {}
-
-// ❌ ผิด
-export async function CreateAnnouncement(...) {}
-export async function create_announcement(...) {}
-```
-
 ### 5. File Structure Pattern
 
 **Page Component:**
@@ -889,25 +887,22 @@ export default async function Page({ params }: PageProps): Promise<React.JSX.Ele
 }
 ```
 
-**Server Action:**
+**API Endpoint (Elysia):**
 ```typescript
-"use server"
+// File: app/api/[[...slugs]]/route.ts
+import { Elysia, t } from 'elysia'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { users } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 
-// 1. Imports
-import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { z } from "zod"
-import type { FormActionState } from "@/types"
-
-// 2. Schemas
-const createUserSchema = z.object({
-    name: z.string().min(2),
-    email: z.string().email(),
+// Request validation schema
+const createUserSchema = t.Object({
+    name: t.String({ minLength: 2 }),
+    email: t.String({ format: 'email' }),
 })
 
-type CreateUserInput = z.infer<typeof createUserSchema>
-
-// 3. Helper Functions (private)
+// Helper function
 async function validateEmail(email: string): Promise<boolean> {
     const exists = await db.query.users.findFirst({
         where: eq(users.email, email)
@@ -915,56 +910,34 @@ async function validateEmail(email: string): Promise<boolean> {
     return exists !== undefined
 }
 
-// 4. Main Action (export)
-export async function createUser(
-    previousState: FormActionState,
-    formData: FormData
-): Promise<FormActionState> {
-    try {
-        // 1. Authentication
-        const session = await auth()
-        if (!session?.user?.id) {
-            return { error: "Unauthorized" }
-        }
-        
-        // 2. Get raw data
-        const rawData = {
-            name: formData.get("name"),
-            email: formData.get("email"),
-        }
-        
-        // 3. Validation
-        const validationResult = createUserSchema.safeParse(rawData)
-        if (!validationResult.success) {
-            return {
-                error: "Invalid data",
-                fieldErrors: validationResult.error.flatten().fieldErrors,
-            }
-        }
-        
-        // 4. Business logic & Database
-        const { name, email } = validationResult.data
-        
-        const emailExists = await validateEmail(email)
-        if (emailExists) {
-            return {
-                error: "Email already exists",
-                fieldErrors: { email: ["Email already exists"] }
-            }
-        }
-        
-        await db.insert(users).values({ name, email })
-        
-        // 5. Revalidate & Redirect
-        revalidatePath("/users")
-        
-    } catch (error: unknown) {
-        console.error("Create user error:", error)
-        return { error: "Failed to create user" }
+// API endpoint
+app.post('/users', async ({ body }) => {
+    // 1. Authentication
+    const session = await auth()
+    if (!session?.user?.id) {
+        return { success: false, error: 'Unauthorized' }
     }
     
-    redirect("/users")
-}
+    // 2. Validation (handled by Elysia schema)
+    const { name, email } = body
+    
+    // 3. Business logic
+    const emailExists = await validateEmail(email)
+    if (emailExists) {
+        return {
+            success: false,
+            error: 'Email already exists'
+        }
+    }
+    
+    // 4. Database
+    const [user] = await db.insert(users).values({ name, email }).returning()
+    
+    // 5. Return response
+    return { success: true, data: user }
+}, {
+    body: createUserSchema
+})
 ```
 
 ### 6. Component Structure
@@ -1021,24 +994,33 @@ auth.config.ts → CredentialsProvider
   ↓
 Verify email/password with database
   ↓
-Create session
+Create JWT session
   ↓
-Redirect to dashboard
+NextAuth redirects to dashboard (via middleware)
 
-// 2. Protected page
+// 2. Protected page access
 User visits /admin/dashboard
   ↓
-middleware.ts checks session
+middleware.ts checks session (JWT)
   ↓
 If not logged in → redirect to /login
 If logged in → allow access
+
+// 3. API endpoint protection
+Client calls API endpoint
+  ↓
+API checks session via auth()
+  ↓
+If not authenticated → return { error: "Unauthorized" }
+If authenticated → process request
 ```
 
 ### การใช้งาน Auth
 
 ```typescript
-// ✅ Server Component
+// ✅ Server Component (Protected Page)
 import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
 export default async function Page(): Promise<React.JSX.Element> {
     const session = await auth()
@@ -1050,18 +1032,18 @@ export default async function Page(): Promise<React.JSX.Element> {
     return <div>Welcome {session.user.name}</div>
 }
 
-// ✅ Server Action
-import { auth } from "@/lib/auth"
+// ✅ API Endpoint (Elysia)
+import { auth } from '@/lib/auth'
 
-export async function createItem(): Promise<FormActionState> {
+.get('/protected', async () => {
     const session = await auth()
-    
     if (!session?.user?.id) {
-        return { error: "Unauthorized" }
+        return { success: false, error: 'Unauthorized' }
     }
     
     // ... rest of logic
-}
+    return { success: true, data: {...} }
+})
 
 // ✅ Client Component (ใช้ useSession hook)
 "use client"
@@ -1405,43 +1387,7 @@ export async function register(
 }
 ```
 
-### 4. Revalidation
-
-```typescript
-// ✅ ถูกต้อง - Revalidate หลังจาก mutate data
-await db.insert(announcements).values(data)
-revalidatePath("/announcements")
-revalidatePath("/admin/announcements")
-
-// ถ้าต้องการ revalidate ทั้งหมดใน layout
-revalidatePath("/admin", "layout")
-```
-
-### 5. Redirect
-
-```typescript
-// ✅ ถูกต้อง - Redirect อยู่นอก try-catch
-export async function createItem(...): Promise<FormActionState> {
-    try {
-        // ... logic
-        revalidatePath("/items")
-    } catch (error: unknown) {
-        return { error: "Failed" }
-    }
-    
-    // Redirect นอก try-catch!
-    redirect("/items")
-}
-
-// ❌ ผิด - Redirect ใน try-catch จะทำให้ error
-try {
-    redirect("/items")  // throws internally!
-} catch (error) {
-    // จะ catch redirect error ด้วย!
-}
-```
-
-### 6. Loading States
+### 4. Loading States
 
 ```typescript
 // ✅ ถูกต้อง - ใช้ loading.tsx
@@ -1520,26 +1466,21 @@ export default function NewFeaturePage(): React.JSX.Element {
 }
 ```
 
-### Task 2: สร้าง Server Action ใหม่
+### Task 2: เพิ่ม API Endpoint ใหม่
 
 ```typescript
-// lib/actions/new-feature.ts
-"use server"
+// app/api/[[...slugs]]/route.ts
+import { Elysia, t } from 'elysia'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { items } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 
-import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
-import { z } from "zod"
-import type { FormActionState } from "@/types"
-
-// 1. Schema
-const createItemSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    description: z.string().optional(),
+// 1. Schema (Elysia validation)
+const createItemSchema = t.Object({
+    name: t.String({ minLength: 2 }),
+    description: t.Optional(t.String()),
 })
-
-type CreateItemInput = z.infer<typeof createItemSchema>
 
 // 2. Helper functions
 async function checkPermission(userId: string): Promise<boolean> {
@@ -1547,60 +1488,37 @@ async function checkPermission(userId: string): Promise<boolean> {
         where: eq(users.id, userId),
         columns: { role: true }
     })
-    return user?.role === "admin"
+    return user?.role === 'admin'
 }
 
-// 3. Main action
-export async function createItem(
-    previousState: FormActionState,
-    formData: FormData
-): Promise<FormActionState> {
-    try {
-        // Auth
-        const session = await auth()
-        if (!session?.user?.id) {
-            return { error: "Unauthorized" }
-        }
-        
-        // Permission
-        const hasPermission = await checkPermission(session.user.id)
-        if (!hasPermission) {
-            return { error: "Insufficient permissions" }
-        }
-        
-        // Get data
-        const rawData = {
-            name: formData.get("name"),
-            description: formData.get("description") || undefined,
-        }
-        
-        // Validate
-        const validationResult = createItemSchema.safeParse(rawData)
-        if (!validationResult.success) {
-            return {
-                error: "Invalid data",
-                fieldErrors: validationResult.error.flatten().fieldErrors,
-            }
-        }
-        
-        // Insert
-        const { name, description } = validationResult.data
-        await db.insert(items).values({
-            name,
-            description,
-            createdBy: session.user.id,
-        })
-        
-        // Revalidate
-        revalidatePath("/items")
-        
-    } catch (error: unknown) {
-        console.error("Create item error:", error)
-        return { error: "Failed to create item" }
+// 3. API endpoint
+app.post('/items', async ({ body }) => {
+    // Auth
+    const session = await auth()
+    if (!session?.user?.id) {
+        return { success: false, error: 'Unauthorized' }
     }
     
-    redirect("/items")
-}
+    // Permission
+    const hasPermission = await checkPermission(session.user.id)
+    if (!hasPermission) {
+        return { success: false, error: 'Insufficient permissions' }
+    }
+    
+    // Validation (handled by Elysia schema)
+    const { name, description } = body
+    
+    // Insert
+    const [item] = await db.insert(items).values({
+        name,
+        description,
+        createdBy: session.user.id,
+    }).returning()
+    
+    return { success: true, data: item }
+}, {
+    body: createItemSchema
+})
 ```
 
 ### Task 3: เพิ่ม Table ใหม่ใน Database
@@ -1687,16 +1605,7 @@ const user: Pick<User, "id" | "name"> = data
 const user = pick(data, ["id", "name"])
 ```
 
-### Problem 2: Server Action ไม่ทำงาน
-
-**Checklist:**
-1. ✅ มี `"use server"` ด้านบนไฟล์
-2. ✅ Function เป็น `async`
-3. ✅ Return type เป็น `Promise<FormActionState>` หรือ `Promise<ActionResult>`
-4. ✅ `redirect()` อยู่นอก `try-catch`
-5. ✅ Import ถูกต้อง
-
-### Problem 3: Database Query Error
+### Problem 2: Database Query Error
 
 **Solution:**
 ```typescript

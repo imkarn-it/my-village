@@ -90,13 +90,13 @@ export default function FacilitiesPage(): React.JSX.Element {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/25">
                             <CalendarDays className="w-5 h-5 text-white" />
                         </div>
                         จองพื้นที่ส่วนกลาง
                     </h1>
-                    <p className="text-slate-400 mt-1">
+                    <p className="text-slate-500 dark:text-slate-400 mt-1">
                         จองพื้นที่และสิ่งอำนวยความสะดวก
                     </p>
                 </div>
@@ -105,31 +105,31 @@ export default function FacilitiesPage(): React.JSX.Element {
             {/* My Bookings */}
             {myBookings.length > 0 && (
                 <div className="space-y-4">
-                    <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-emerald-400" />
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
                         การจองของฉัน
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {myBookings.map((booking) => (
                             <Card
                                 key={booking.id}
-                                className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300 group"
+                                className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300 group"
                             >
                                 <CardContent className="p-5">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-1">
-                                            <h3 className="font-semibold text-white group-hover:text-emerald-400 transition-colors">
+                                            <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                                 {booking.facility}
                                             </h3>
-                                            <p className="text-sm text-slate-400">
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">
                                                 {booking.date} • {booking.time}
                                             </p>
                                         </div>
                                         <Badge
                                             className={
                                                 booking.status === "approved"
-                                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                                    : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                                                    : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
                                             }
                                         >
                                             {booking.status === "approved" ? "อนุมัติแล้ว" : "รออนุมัติ"}
@@ -147,7 +147,7 @@ export default function FacilitiesPage(): React.JSX.Element {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <Input
                     placeholder="ค้นหาพื้นที่..."
-                    className="pl-10 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20"
+                    className="pl-10 bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20"
                 />
             </div>
 
@@ -156,15 +156,15 @@ export default function FacilitiesPage(): React.JSX.Element {
                 {facilities.map((facility) => (
                     <Card
                         key={facility.id}
-                        className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm overflow-hidden group hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/50"
+                        className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm overflow-hidden group hover:border-slate-300 dark:hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50"
                     >
                         {/* Image/Icon Header */}
                         <div className={`h-32 bg-gradient-to-br ${facility.color} flex items-center justify-center relative overflow-hidden`}>
-                            <div className="absolute inset-0 bg-black/20" />
+                            <div className="absolute inset-0 bg-black/10 dark:bg-black/20" />
                             <facility.icon className="w-16 h-16 text-white/90 relative z-10 group-hover:scale-110 transition-transform duration-300" />
                             {!facility.available && (
-                                <div className="absolute inset-0 bg-slate-900/80 flex items-center justify-center">
-                                    <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                                <div className="absolute inset-0 bg-slate-100/80 dark:bg-slate-900/80 flex items-center justify-center">
+                                    <Badge className="bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30">
                                         ไม่ว่าง
                                     </Badge>
                                 </div>
@@ -173,10 +173,10 @@ export default function FacilitiesPage(): React.JSX.Element {
 
                         <CardContent className="p-5 space-y-4">
                             <div>
-                                <h3 className="font-semibold text-lg text-white group-hover:text-emerald-400 transition-colors">
+                                <h3 className="font-semibold text-lg text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                     {facility.name}
                                 </h3>
-                                <p className="text-sm text-slate-400 mt-1">
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                                     {facility.description}
                                 </p>
                             </div>
@@ -195,7 +195,7 @@ export default function FacilitiesPage(): React.JSX.Element {
                             <Button
                                 className={`w-full transition-all duration-300 ${facility.available
                                     ? "bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02]"
-                                    : "bg-slate-800 text-slate-500 cursor-not-allowed"
+                                    : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed"
                                     }`}
                                 disabled={!facility.available}
                             >

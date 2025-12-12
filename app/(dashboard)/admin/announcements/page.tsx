@@ -17,143 +17,32 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, MoreHorizontal, Bell, Pin, Calendar, Trash2, Edit, Loader2, AlertCircle } from "lucide-react";
+import { Search, Plus, MoreHorizontal, Bell, Pin, Calendar, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
-import { api } from "@/lib/api/client";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-
-// Define types based on API response
-type Announcement = {
-    id: string;
-    title: string;
-    content: string;
-    image: string | null;
-    isPinned: boolean | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    createdBy: string;
-    projectId: string;
-};
-
-type User = {
-    id: string;
-    name: string | null;
-    email: string;
-    role: string;
-};
-
-// Combined type for display
-type AnnouncementWithCreator = {
-    announcement: Announcement;
-    creator: User | null;
-};
+import { useState } from "react";
+import { useAnnouncements } from "@/lib/hooks/use-announcements";
+import { AnnouncementsSkeleton } from "@/components/shared/skeletons";
+import { ErrorMessage } from "@/components/shared/error-message";
 
 export default function AnnouncementsPage() {
-    const router = useRouter();
-    const [announcements, setAnnouncements] = useState<AnnouncementWithCreator[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { announcements, loading, error, refresh, deleteAnnouncement, togglePin } = useAnnouncements();
     const [searchQuery, setSearchQuery] = useState("");
-
-    // Fetch announcements
-    const fetchAnnouncements = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            // Use Eden Treaty to fetch data
-            const { data, error } = await api.announcements.get({
-                query: {}
-            });
-
-            if (error) {
-                throw new Error(error.value ? String(error.value) : "Failed to fetch announcements");
-            }
-
-            if (data && data.success && Array.isArray(data.data)) {
-                // Transform API data to match UI needs
-                // The API returns raw announcement objects, we might need to fetch creators or adjust API to return them
-                // For now, let's assume the API returns what we need or we adapt
-
-                // Note: The current API implementation returns just the announcements array
-                // We might need to update the API to include creator info (JOIN)
-                // For this MVP, we'll display without creator name or fetch separately if needed
-                // But wait, the previous code did a JOIN. 
-                // Let's check if we should update the API to return joined data.
-                // For now, map to expected structure
-
-                const mappedData = data.data.map((item: any) => ({
-                    announcement: {
-                        ...item,
-                        createdAt: item.createdAt ? new Date(item.createdAt) : null,
-                        updatedAt: item.updatedAt ? new Date(item.updatedAt) : null,
-                    },
-                    creator: item.author || null // Use item.author from API
-                }));
-
-                setAnnouncements(mappedData);
-            }
-        } catch (err) {
-            console.error("Error fetching announcements:", err);
-            setError("ไม่สามารถโหลดข้อมูลประกาศได้ กรุณาลองใหม่อีกครั้ง");
-            toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchAnnouncements();
-    }, []);
 
     // Filter announcements based on search
     const filteredAnnouncements = announcements.filter(item =>
         item.announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.announcement.content.toLowerCase().includes(searchQuery.toLowerCase())
+        (item.announcement.content?.toLowerCase() || "").includes(searchQuery.toLowerCase())
     );
 
     const handleDelete = async (id: string) => {
         if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการลบประกาศนี้?")) return;
-
-        try {
-            const { data, error } = await api.announcements({ id }).delete();
-
-            if (error) {
-                throw new Error(String(error.value));
-            }
-
-            if (data && data.success) {
-                toast.success("ลบประกาศเรียบร้อยแล้ว");
-                fetchAnnouncements(); // Refresh list
-            }
-        } catch (err) {
-            toast.error("ไม่สามารถลบประกาศได้");
-            console.error(err);
-        }
+        await deleteAnnouncement(id);
     };
 
     const handleTogglePin = async (id: string, currentStatus: boolean) => {
-        try {
-            const { data, error } = await api.announcements({ id }).patch({
-                isPinned: !currentStatus
-            });
-
-            if (error) {
-                throw new Error(String(error.value));
-            }
-
-            if (data && data.success) {
-                toast.success(currentStatus ? "เลิกปักหมุดแล้ว" : "ปักหมุดเรียบร้อยแล้ว");
-                fetchAnnouncements(); // Refresh list
-            }
-        } catch (err) {
-            toast.error("ไม่สามารถแก้ไขสถานะได้");
-            console.error(err);
-        }
+        await togglePin(id, currentStatus);
     };
 
     return (
@@ -191,19 +80,9 @@ export default function AnnouncementsPage() {
 
             {/* Content */}
             {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1, 2, 3].map((i) => (
-                        <Card key={i} className="h-64 animate-pulse bg-slate-100 dark:bg-slate-800 border-none" />
-                    ))}
-                </div>
+                <AnnouncementsSkeleton />
             ) : error ? (
-                <div className="flex flex-col items-center justify-center py-12 text-red-500 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-900/20">
-                    <AlertCircle className="w-12 h-12 mb-4" />
-                    <p className="text-lg font-medium">{error}</p>
-                    <Button variant="outline" className="mt-4" onClick={fetchAnnouncements}>
-                        ลองใหม่อีกครั้ง
-                    </Button>
-                </div>
+                <ErrorMessage message={error} onRetry={refresh} />
             ) : filteredAnnouncements.length === 0 ? (
                 <div className="col-span-full flex flex-col items-center justify-center py-12 text-slate-500">
                     <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
@@ -260,7 +139,7 @@ export default function AnnouncementsPage() {
                             </CardHeader>
                             <CardContent className="flex-1">
                                 <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3">
-                                    {announcement.content}
+                                    {announcement.content || "ไม่มีรายละเอียด"}
                                 </p>
                             </CardContent>
                             <CardFooter className="pt-4 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-between text-xs text-slate-500">
