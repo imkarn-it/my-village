@@ -1,0 +1,47 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - img [ref=e10]
+      - generic [ref=e14]: My Village
+      - generic [ref=e15]: เข้าสู่ระบบเพื่อจัดการหมู่บ้านของคุณ
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: อีเมล
+          - generic [ref=e20]:
+            - img [ref=e21]
+            - textbox "อีเมล" [ref=e24]:
+              - /placeholder: example@email.com
+              - text: admin@test.com
+        - generic [ref=e25]:
+          - generic [ref=e26]: รหัสผ่าน
+          - generic [ref=e27]:
+            - img [ref=e28]
+            - textbox "รหัสผ่าน" [ref=e31]:
+              - /placeholder: ••••••••
+              - text: TestAdmin123!
+            - button [ref=e32]:
+              - img [ref=e33]
+        - link "ลืมรหัสผ่าน?" [ref=e37] [cursor=pointer]:
+          - /url: /forgot-password
+        - button "เข้าสู่ระบบ" [ref=e38]
+      - generic [ref=e43]: หรือ
+      - button "เข้าสู่ระบบด้วย Google" [ref=e45]:
+        - img
+        - text: เข้าสู่ระบบด้วย Google
+    - paragraph [ref=e47]:
+      - text: ยังไม่มีบัญชี?
+      - link "สมัครสมาชิก" [ref=e48] [cursor=pointer]:
+        - /url: /register
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=e49]:
+        - img [ref=e51]
+        - generic [ref=e56]: อีเมลหรือรหัสผ่านไม่ถูกต้อง
+  - button "Open Next.js Dev Tools" [ref=e62] [cursor=pointer]:
+    - img [ref=e63]
+  - alert [ref=e66]
+```
