@@ -252,3 +252,117 @@ if (error) {
     return
 }
 ```
+
+---
+
+## 🔒 Type Safety Patterns
+
+### ❌ ห้ามใช้ @ts-ignore
+
+`@ts-ignore` ซ่อน TypeScript errors และทำให้เกิดบัkg ที่ตรวจจับยาก
+
+```typescript
+// ❌ NEVER DO THIS
+// @ts-ignore - Eden Treaty type issue
+const { data, error } = await api.support({ id }).get();
+```
+
+### ✅ ใช้ Type Assertion ที่ชัดเจนแทน
+
+กำหนด expected response type อย่างชัดเจน:
+
+```typescript
+// ✅ CORRECT: ใช้ type assertion
+import type { ApiResponse, SupportTicketWithRelations } from '@/lib/api/types'
+
+const response = await api.support({ id }).get() as {
+    data: ApiResponse<SupportTicketWithRelations> | null;
+    error: { value: unknown } | null;
+};
+
+if (response.error) {
+    throw new Error(String(response.error.value));
+}
+
+if (response.data?.success && response.data.data) {
+    setTicket(response.data.data);
+}
+```
+
+### 📦 API Types Location
+
+Types ทั้งหมดอยู่ที่ `lib/api/types.ts`:
+
+```typescript
+import type {
+    ApiResponse,
+    SupportTicketWithRelations,
+    MaintenanceRequestWithRelations,
+    BillWithRelations,
+    BookingWithRelations,
+    ParcelWithRelations,
+    UserWithRelations,
+    // ... และอื่นๆ
+} from '@/lib/api/types'
+```
+
+### 🔄 Pattern สำหรับ Dynamic Routes (PATCH/DELETE)
+
+```typescript
+// PATCH with params
+const response = await api.support({ id }).patch({ status: newStatus }) as {
+    data: ApiResponse<SupportTicketWithRelations> | null;
+    error: { value: unknown } | null;
+};
+
+// DELETE with params
+const response = await api.bills({ id }).delete() as {
+    data: { success: boolean } | null;
+    error: { value: unknown } | null;
+};
+```
+
+### 🎯 Pattern สำหรับ List Endpoints (GET all)
+
+```typescript
+// GET list - ใช้ array type
+const { data } = await api.support.get() as {
+    data: SupportTicket[] | null;
+};
+
+if (data && Array.isArray(data)) {
+    setTickets(data);
+}
+```
+
+### ⚠️ เมื่อไหร่ควรใช้ Type Assertion
+
+| สถานการณ์ | วิธีการ |
+|-----------|--------|
+| Eden Treaty dynamic routes (`:id`) | ใช้ `as { data: Type; error: ... }` |
+| API response ที่ TypeScript infer ไม่ได้ | ใช้ `as { data: Type }` |
+| Generic API wrappers | ใช้ `ApiResponse<T>` จาก types.ts |
+
+---
+
+## 🏗️ Next.js 15 Params Pattern
+
+ใน Next.js 15 `params` เป็น Promise:
+
+```typescript
+// ✅ CORRECT: Next.js 15
+import { use } from "react";
+
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
+    // ใช้ id ตามปกติ
+}
+```
+
+```typescript
+// ❌ WRONG: Next.js 14 pattern (ไม่ใช้แล้ว)
+export default function Page({ params }: { params: { id: string } }) {
+    const { id } = params; // ❌ จะ error ใน Next.js 15
+}
+```
+
