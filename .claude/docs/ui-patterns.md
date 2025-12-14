@@ -203,3 +203,102 @@ bunx shadcn@latest add [component-name]
 - select, checkbox, radio-group
 - form, popover, calendar
 - switch, textarea, scroll-area
+
+---
+
+## 🎬 Animation & Motion
+
+### Page Transitions (AUTOMATIC)
+
+ทุก route ใน `(dashboard)` มี `template.tsx` ที่ wrap content ด้วย `PageTransition`:
+
+```
+app/(dashboard)/
+├── admin/template.tsx      ✅
+├── resident/template.tsx   ✅
+├── security/template.tsx   ✅
+├── maintenance/template.tsx ✅
+├── super-admin/template.tsx ✅
+├── bills/template.tsx      ✅
+└── reports/template.tsx    ✅
+```
+
+**ไม่ต้องเพิ่ม animation ใน pages เอง** - `template.tsx` จัดการให้แล้ว!
+
+### Animation Components
+
+Import จาก `@/components/ui/page-transition`:
+
+```tsx
+import {
+    FadeIn,
+    SlideIn,
+    ScaleIn,
+    StaggerContainer,
+    StaggerItem,
+    AnimatedCard,
+    AnimatedListItem,
+} from "@/components/ui/page-transition"
+```
+
+### Staggered Lists
+
+สำหรับ list ที่ต้องการให้ items ขึ้นมาทีละตัว:
+
+```tsx
+<StaggerContainer staggerDelay={0.1}>
+    {items.map((item, i) => (
+        <StaggerItem key={item.id}>
+            <Card>...</Card>
+        </StaggerItem>
+    ))}
+</StaggerContainer>
+```
+
+### Animated Cards
+
+สำหรับ cards ที่ต้องการ hover animation:
+
+```tsx
+<AnimatedCard delay={0.1}>
+    <Card className="...glassmorphism...">
+        ...
+    </Card>
+</AnimatedCard>
+```
+
+### Loading Skeletons
+
+Import จาก `@/components/ui/loading-skeleton`:
+
+```tsx
+import {
+    LoadingSkeleton,        // Base shimmer
+    PageLoading,            // Full page spinner
+    CardSkeleton,           // Card loading
+    TableSkeleton,          // Table loading
+    ListSkeleton,           // List loading
+    DashboardCardSkeleton,  // Stats cards loading
+} from "@/components/ui/loading-skeleton"
+```
+
+### Example: Loading State with Animation
+
+```tsx
+if (loading) {
+    return (
+        <div className="space-y-6">
+            <DashboardCardSkeleton count={4} />
+            <TableSkeleton rows={5} columns={4} />
+        </div>
+    )
+}
+```
+
+### 🚨 Animation Rules
+
+1. **ห้ามใช้ raw motion.div** ใน pages - ใช้ components ที่มีอยู่แล้ว
+2. **ไม่ต้องเพิ่ม PageTransition ใน pages** - template.tsx จัดการให้
+3. **ใช้ StaggerContainer/StaggerItem** สำหรับ lists
+4. **ใช้ loading-skeleton components** สำหรับ loading states
+

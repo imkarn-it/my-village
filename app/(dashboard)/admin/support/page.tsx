@@ -15,16 +15,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-    Plus,
     MessageSquare,
     Clock,
     CheckCircle,
     AlertCircle,
     MoreHorizontal,
     Eye,
-    Reply,
     Search,
-    Filter,
     Home,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -36,7 +33,8 @@ type SupportTicket = {
     unitId: string;
     unit?: {
         id: string;
-        number: string;
+        unitNumber?: string;
+        number?: string;
     };
     user?: {
         id: string;
@@ -44,10 +42,10 @@ type SupportTicket = {
         email: string;
     };
     subject: string;
-    message?: string;
+    message?: string | null;
     status: "open" | "in_progress" | "resolved" | "closed";
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: string;
 };
 
 const getStatusBadge = (status: string) => {
@@ -55,9 +53,9 @@ const getStatusBadge = (status: string) => {
         case "open":
             return <Badge variant="default">เปิดใหม่</Badge>;
         case "in_progress":
-            return <Badge className="bg-blue-100 text-blue-800">กำลังดำเนินการ</Badge>;
+            return <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">กำลังดำเนินการ</Badge>;
         case "resolved":
-            return <Badge className="bg-green-100 text-green-800">แก้ไขแล้ว</Badge>;
+            return <Badge className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">แก้ไขแล้ว</Badge>;
         case "closed":
             return <Badge variant="outline">ปิดแล้ว</Badge>;
         default:
@@ -68,15 +66,15 @@ const getStatusBadge = (status: string) => {
 const getStatusColor = (status: string) => {
     switch (status) {
         case "open":
-            return "bg-red-50 border-red-200";
+            return "bg-red-50/80 dark:bg-red-900/20 border-red-200 dark:border-red-800/50";
         case "in_progress":
-            return "bg-blue-50 border-blue-200";
+            return "bg-blue-50/80 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/50";
         case "resolved":
-            return "bg-green-50 border-green-200";
+            return "bg-green-50/80 dark:bg-green-900/20 border-green-200 dark:border-green-800/50";
         case "closed":
-            return "bg-gray-50 border-gray-200";
+            return "bg-slate-50/80 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700";
         default:
-            return "bg-white border-gray-200";
+            return "bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50";
     }
 };
 
@@ -96,9 +94,7 @@ export default function AdminSupportPage() {
             setLoading(true);
             const { data } = await api.support.get();
             if (data && Array.isArray(data)) {
-                // Sort by date and status priority
                 const sortedTickets = data.sort((a: SupportTicket, b: SupportTicket) => {
-                    // Priority: open > in_progress > resolved > closed
                     const statusPriority = { open: 0, in_progress: 1, resolved: 2, closed: 3 };
                     const aPriority = statusPriority[a.status] || 999;
                     const bPriority = statusPriority[b.status] || 999;
@@ -107,15 +103,14 @@ export default function AdminSupportPage() {
                         return aPriority - bPriority;
                     }
 
-                    // Then by date (newest first)
                     const dateA = new Date(a.createdAt);
                     const dateB = new Date(b.createdAt);
                     return dateB.getTime() - dateA.getTime();
                 });
                 setTickets(sortedTickets);
             }
-        } catch (err) {
-            setError("ไม่สามารถโหลดข้อมูลตั๋วงความได้");
+        } catch {
+            setError("ไม่สามารถโหลดข้อมูลแจ้งปัญหาได้");
         } finally {
             setLoading(false);
         }
@@ -123,35 +118,35 @@ export default function AdminSupportPage() {
 
     const handleStatusUpdate = async (id: string, newStatus: string) => {
         try {
-            // @ts-ignore - Eden Treaty type inference issue
-            const { data, error } = await api.support({ id }).patch({
-                status: newStatus
-            });
+            const response = await api.support({ id }).patch({ status: newStatus }) as {
+                data: { success: boolean } | null;
+                error: { value: unknown } | null;
+            };
 
-            if (error) {
-                throw new Error(String(error.value));
+            if (response.error) {
+                throw new Error(String(response.error.value));
             }
 
-            if (data && data.success) {
+            if (response.data?.success) {
                 await fetchTickets();
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Failed to update ticket:", err);
-            setError(err.message || "ไม่สามารถอัปเดตสถานะได้");
+            const message = err instanceof Error ? err.message : "ไม่สามารถอัปเดตสถานะได้";
+            setError(message);
         }
     };
 
     const filteredTickets = tickets.filter((ticket) => {
-        // Status filter
         if (filter !== "all" && ticket.status !== filter) return false;
 
-        // Search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
+            const unitNumber = ticket.unit?.unitNumber || ticket.unit?.number || "";
             return (
                 ticket.subject.toLowerCase().includes(query) ||
                 ticket.message?.toLowerCase().includes(query) ||
-                ticket.unit?.number.toLowerCase().includes(query) ||
+                unitNumber.toLowerCase().includes(query) ||
                 ticket.user?.name.toLowerCase().includes(query) ||
                 ticket.user?.email.toLowerCase().includes(query)
             );
@@ -165,21 +160,21 @@ export default function AdminSupportPage() {
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">จัดการตั๋วงความ</h1>
-                        <p className="text-gray-600 mt-1">ตรวจสอบและดำเนินการคำร้องจากลูกบ้าน</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">จัดการแจ้งปัญหา</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">ตรวจสอบและดำเนินการคำร้องจากลูกบ้าน</p>
                     </div>
                 </div>
                 <div className="space-y-4">
                     {[1, 2, 3, 4, 5].map((i) => (
-                        <Card key={i} className="animate-pulse">
+                        <Card key={i} className="animate-pulse bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                             <CardHeader className="pb-3">
-                                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/2 mt-2"></div>
+                                <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mt-2"></div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -194,13 +189,13 @@ export default function AdminSupportPage() {
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">จัดการตั๋วงความ</h1>
-                        <p className="text-gray-600 mt-1">ตรวจสอบและดำเนินการคำร้องจากลูกบ้าน</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">จัดการแจ้งปัญหา</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">ตรวจสอบและดำเนินการคำร้องจากลูกบ้าน</p>
                     </div>
                 </div>
-                <Card className="border-red-200 bg-red-50">
+                <Card className="border-red-200 dark:border-red-800/50 bg-red-50/80 dark:bg-red-900/20 backdrop-blur-sm">
                     <CardContent className="pt-6">
-                        <p className="text-red-800">{error}</p>
+                        <p className="text-red-800 dark:text-red-300">{error}</p>
                         <Button onClick={fetchTickets} variant="outline" className="mt-2">
                             ลองใหม่
                         </Button>
@@ -210,7 +205,6 @@ export default function AdminSupportPage() {
         );
     }
 
-    // Get counts for each status
     const statusCounts = tickets.reduce((acc, ticket) => {
         acc[ticket.status] = (acc[ticket.status] || 0) + 1;
         return acc;
@@ -221,54 +215,54 @@ export default function AdminSupportPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">จัดการตั๋วงความ</h1>
-                    <p className="text-gray-600 mt-1">ตรวจสอบและดำเนินการคำร้องจากลูกบ้าน</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">จัดการแจ้งปัญหา</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">ตรวจสอบและดำเนินการคำร้องจากลูกบ้าน</p>
                 </div>
             </div>
 
             {/* Status Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="bg-white border-red-200">
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-red-200 dark:border-red-800/50 backdrop-blur-sm">
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-red-600">เปิดใหม่</p>
-                                <p className="text-2xl font-bold text-red-700">{statusCounts.open || 0}</p>
+                                <p className="text-sm font-medium text-red-600 dark:text-red-400">เปิดใหม่</p>
+                                <p className="text-2xl font-bold text-red-700 dark:text-red-300">{statusCounts.open || 0}</p>
                             </div>
                             <AlertCircle className="h-8 w-8 text-red-500" />
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-blue-200">
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-blue-200 dark:border-blue-800/50 backdrop-blur-sm">
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-blue-600">กำลังดำเนินการ</p>
-                                <p className="text-2xl font-bold text-blue-700">{statusCounts.in_progress || 0}</p>
+                                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">กำลังดำเนินการ</p>
+                                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{statusCounts.in_progress || 0}</p>
                             </div>
                             <Clock className="h-8 w-8 text-blue-500" />
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-green-200">
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-green-200 dark:border-green-800/50 backdrop-blur-sm">
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-green-600">แก้ไขแล้ว</p>
-                                <p className="text-2xl font-bold text-green-700">{statusCounts.resolved || 0}</p>
+                                <p className="text-sm font-medium text-green-600 dark:text-green-400">แก้ไขแล้ว</p>
+                                <p className="text-2xl font-bold text-green-700 dark:text-green-300">{statusCounts.resolved || 0}</p>
                             </div>
                             <CheckCircle className="h-8 w-8 text-green-500" />
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-gray-200">
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-700">{tickets.length}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-700 dark:text-slate-300">{tickets.length}</p>
                             </div>
-                            <MessageSquare className="h-8 w-8 text-gray-500" />
+                            <MessageSquare className="h-8 w-8 text-slate-500 dark:text-slate-400" />
                         </div>
                     </CardContent>
                 </Card>
@@ -294,9 +288,9 @@ export default function AdminSupportPage() {
                     ))}
                 </div>
                 <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4 w-4" />
                     <Input
-                        placeholder="ค้นหาตั๋วงความ..."
+                        placeholder="ค้นหาแจ้งปัญหา..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-10"
@@ -306,33 +300,33 @@ export default function AdminSupportPage() {
 
             {/* Tickets List */}
             {filteredTickets.length === 0 ? (
-                <Card>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardContent className="pt-6 text-center">
-                        <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">
-                            {filter === "all" ? "ยังไม่มีตั๋วงความ" : `ไม่มีตั๋วงความที่${filter === "open" ? "เปิดใหม่" : filter === "in_progress" ? "กำลังดำเนินการ" : "แก้ไขแล้ว"}`}
+                        <MessageSquare className="h-12 w-12 text-slate-400 dark:text-slate-500 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                            {filter === "all" ? "ยังไม่มีแจ้งปัญหา" : `ไม่มีแจ้งปัญหาที่${filter === "open" ? "เปิดใหม่" : filter === "in_progress" ? "กำลังดำเนินการ" : "แก้ไขแล้ว"}`}
                         </h3>
-                        <p className="text-gray-600 mb-4">
-                            {searchQuery ? "ไม่พบตั๋วงความที่ตรงตามเงื่อนไขการค้นหา" : "ไม่พบตั๋วงความที่ตรงตามเงื่อนไข"}
+                        <p className="text-slate-600 dark:text-slate-400 mb-4">
+                            {searchQuery ? "ไม่พบแจ้งปัญหาที่ตรงตามเงื่อนไขการค้นหา" : "ไม่พบแจ้งปัญหาที่ตรงตามเงื่อนไข"}
                         </p>
                     </CardContent>
                 </Card>
             ) : (
                 <div className="space-y-4">
                     {filteredTickets.map((ticket) => (
-                        <Card key={ticket.id} className={`hover:shadow-md transition-shadow ${getStatusColor(ticket.status)}`}>
+                        <Card key={ticket.id} className={`hover:shadow-md transition-shadow backdrop-blur-sm ${getStatusColor(ticket.status)}`}>
                             <CardHeader className="pb-3">
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3">
-                                            <CardTitle className="text-xl">{ticket.subject}</CardTitle>
+                                            <CardTitle className="text-xl text-slate-900 dark:text-white">{ticket.subject}</CardTitle>
                                             {getStatusBadge(ticket.status)}
                                         </div>
-                                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                                        <div className="flex items-center gap-4 mt-2 text-sm text-slate-600 dark:text-slate-400">
                                             {ticket.unit && (
                                                 <div className="flex items-center gap-2">
                                                     <Home className="h-4 w-4" />
-                                                    {ticket.unit.number}
+                                                    {ticket.unit.unitNumber || ticket.unit.number}
                                                 </div>
                                             )}
                                             {ticket.user && (
@@ -354,7 +348,7 @@ export default function AdminSupportPage() {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>จัดการตั๋วงความ</DropdownMenuLabel>
+                                            <DropdownMenuLabel>จัดการแจ้งปัญหา</DropdownMenuLabel>
                                             <DropdownMenuItem asChild>
                                                 <Link href={`/admin/support/${ticket.id}`}>
                                                     <Eye className="h-4 w-4 mr-2" />
@@ -392,20 +386,22 @@ export default function AdminSupportPage() {
                             </CardHeader>
                             {ticket.message && (
                                 <CardContent className="pt-0">
-                                    <div className="text-gray-700 text-sm line-clamp-3">
+                                    <div className="text-slate-700 dark:text-slate-300 text-sm line-clamp-3">
                                         {ticket.message}
                                     </div>
                                 </CardContent>
                             )}
                             <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-500 dark:text-slate-400">
                                     <div>
-                                        <span className="font-medium">รหัสตั๋วง:</span> #{ticket.id.slice(0, 8)}...
+                                        <span className="font-medium">รหัสเรื่อง:</span> #{ticket.id.slice(0, 8)}...
                                     </div>
-                                    <div>
-                                        <span className="font-medium">อัพเดตล่าสุด:</span>{" "}
-                                        {format(new Date(ticket.updatedAt), "PPP HH:mm", { locale: th })}
-                                    </div>
+                                    {ticket.updatedAt && (
+                                        <div>
+                                            <span className="font-medium">อัพเดตล่าสุด:</span>{" "}
+                                            {format(new Date(ticket.updatedAt), "PPP HH:mm", { locale: th })}
+                                        </div>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>

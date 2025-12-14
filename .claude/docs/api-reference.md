@@ -366,3 +366,57 @@ export default function Page({ params }: { params: { id: string } }) {
 }
 ```
 
+---
+
+## 📋 TODO: @ts-ignore ที่ต้องแก้ไข
+
+รายการไฟล์ที่ยังมี `@ts-ignore` ค้างอยู่ (ต้อง refactor ให้ใช้ type assertion ตาม pattern ด้านบน):
+
+### Super Admin (11 ที่)
+| ไฟล์ | Lines | ปัญหา |
+|------|-------|-------|
+| `super-admin/users/page.tsx` | 268, 285, 318, 366, 370 | API types |
+| `super-admin/settings/page.tsx` | 156, 172, 204, 226 | API types |
+| `super-admin/audit/page.tsx` | 266, 405 | API types |
+
+### Resident (14 ที่)
+| ไฟล์ | Lines | ปัญหา |
+|------|-------|-------|
+| `resident/parcels/page.tsx` | 56, 58, 60, 78, 80, 82 | API response structure |
+| `resident/maintenance/page.tsx` | 150, 152, 154, 172, 174, 176 | API response structure |
+| `resident/support/new/page.tsx` | 97, 105 | FormData type |
+| `resident/facilities/[id]/book/page.tsx` | 70, 72, 74 | Eden Treaty type |
+| `resident/facilities/page.tsx` | 84 | API types |
+| `resident/bookings/page.tsx` | 92 | Eden Treaty type |
+| `resident/bills/[id]/page.tsx` | 101 | Dynamic endpoint |
+
+### Bills (6 ที่)
+| ไฟล์ | Lines | ปัญหา |
+|------|-------|-------|
+| `bills/page.tsx` | 164, 230, 245 | API types |
+| `bills/[id]/page.tsx` | 128, 155, 180 | API types |
+
+### Maintenance (3 ที่)
+| ไฟล์ | Lines | ปัญหา |
+|------|-------|-------|
+| `maintenance/parts/page.tsx` | 212, 264, 309 | API types |
+
+### Admin (2 ที่)
+| ไฟล์ | Lines | ปัญหา |
+|------|-------|-------|
+| `admin/residents/page.tsx` | 110 | API type update needed |
+| `admin/parcels/parcel-actions.tsx` | 50 | Eden Treaty type |
+
+### API Route (1 ที่)
+| ไฟล์ | Lines | ปัญหา |
+|------|-------|-------|
+| `api/[[...slugs]]/route.ts` | 984 | Elysia Union types |
+
+---
+
+**รวมทั้งหมด: ~37 ที่**
+
+### วิธีแก้ไข:
+1. Import types จาก `@/lib/api/types`
+2. ใช้ `as { data: Type; error: ... }` แทน `@ts-ignore`
+3. ดู pattern ใน section "Type Safety Patterns" ด้านบน
