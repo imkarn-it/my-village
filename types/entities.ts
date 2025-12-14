@@ -16,6 +16,7 @@ import type {
     facilities,
     bookings,
     sosAlerts,
+    supportTickets,
 } from "@/lib/db/schema"
 
 // ==========================================
@@ -33,6 +34,7 @@ export type MaintenanceRequest = InferSelectModel<typeof maintenanceRequests>
 export type Facility = InferSelectModel<typeof facilities>
 export type Booking = InferSelectModel<typeof bookings>
 export type SosAlert = InferSelectModel<typeof sosAlerts>
+export type SupportTicket = InferSelectModel<typeof supportTickets>
 
 // ==========================================
 // Insert Types (for creating new records)
@@ -49,6 +51,7 @@ export type NewMaintenanceRequest = InferInsertModel<typeof maintenanceRequests>
 export type NewFacility = InferInsertModel<typeof facilities>
 export type NewBooking = InferInsertModel<typeof bookings>
 export type NewSosAlert = InferInsertModel<typeof sosAlerts>
+export type NewSupportTicket = InferInsertModel<typeof supportTickets>
 
 // ==========================================
 // Partial/Pick Types for common use cases

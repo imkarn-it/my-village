@@ -18,15 +18,15 @@ import { format } from "date-fns";
 import { th } from "date-fns/locale";
 
 interface VisitorsPageProps {
-    searchParams: {
+    searchParams: Promise<{
         q?: string;
         type?: string; // vehicle, walk_in
-    };
+    }>;
 }
 
 export default async function VisitorsPage({ searchParams }: VisitorsPageProps): Promise<React.JSX.Element> {
-    const query = searchParams.q || "";
-    const type = searchParams.type;
+    const { q, type } = await searchParams;
+    const query = q || "";
 
     const visitorsData = await db.select({
         visitor: visitors,

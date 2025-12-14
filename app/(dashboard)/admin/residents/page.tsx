@@ -70,13 +70,12 @@ export default function ResidentsPage() {
             }
 
             if (data && data.success && Array.isArray(data.data)) {
-                // Transform data
-                const mappedData = data.data.map((item: any) => ({
+                // Transform data - createdAt is already Date | null from API
+                const mappedData = data.data.map((item) => ({
                     ...item,
-                    createdAt: item.createdAt ? new Date(item.createdAt) : null,
                     // Ensure unit is handled if present, otherwise null
-                    unit: item.unit || null
-                }));
+                    unit: (item as User).unit || null
+                })) as User[];
                 setResidents(mappedData);
             }
         } catch (err) {

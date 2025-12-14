@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Bell, Shield, Database } from "lucide-react"
+import { Bell, Database } from "lucide-react"
 
 export default function AdminSettingsPage() {
     return (
@@ -15,7 +15,7 @@ export default function AdminSettingsPage() {
 
             <div className="grid gap-6">
                 {/* System Notifications */}
-                <Card>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Bell className="w-5 h-5 text-purple-500" />
@@ -42,7 +42,7 @@ export default function AdminSettingsPage() {
                 </Card>
 
                 {/* System Maintenance */}
-                <Card>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Database className="w-5 h-5 text-blue-500" />

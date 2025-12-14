@@ -54,10 +54,39 @@ const getBillTypeLabel = (type: string) => {
     return map[type] || type
 }
 
+type Bill = {
+    id: string
+    billType: string
+    amount: string
+    dueDate: string | null
+    status: string | null
+    unitId: string
+    createdAt: Date | null
+    paidAt: Date | null
+    paymentRef: string | null
+    paymentSlipUrl: string | null
+    lateFee: string | null
+    projectId: string
+    unit: {
+        id: string
+        unitNumber: string
+        building: string | null
+        floor: number | null
+    }
+}
+
+type Unit = {
+    id: string
+    unitNumber: string
+    building: string | null
+    floor: number | null
+    size: string | null
+}
+
 export default function BillsPage(): React.JSX.Element {
-    const [bills, setBills] = useState<any[]>([])
+    const [bills, setBills] = useState<Bill[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [units, setUnits] = useState<any[]>([])
+    const [units, setUnits] = useState<Unit[]>([])
     const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null)
 
     useEffect(() => {
@@ -65,7 +94,7 @@ export default function BillsPage(): React.JSX.Element {
             try {
                 const { data } = await api.units.get()
                 if (data && data.success && Array.isArray(data.data) && data.data.length > 0) {
-                    setUnits(data.data)
+                    setUnits(data.data as unknown as Unit[])
                     setSelectedUnitId(data.data[0].id)
                 } else {
                     setIsLoading(false) // Stop loading if no units found
@@ -85,7 +114,7 @@ export default function BillsPage(): React.JSX.Element {
             try {
                 const { data } = await api.bills.get({ query: { unitId: selectedUnitId } })
                 if (data && data.success && data.data) {
-                    setBills(data.data)
+                    setBills(data.data as unknown as Bill[])
                 }
             } catch (error) {
                 console.error("Failed to fetch bills:", error)
@@ -223,7 +252,7 @@ export default function BillsPage(): React.JSX.Element {
                                                     </div>
 
                                                     <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors duration-300">
-                                                        {getBillTypeLabel(bill.billType)} - {format(new Date(bill.createdAt), "MMMM yyyy", { locale: th })}
+                                                        {getBillTypeLabel(bill.billType)} - {format(bill.createdAt || new Date(), "MMMM yyyy", { locale: th })}
                                                     </h3>
 
                                                     <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -302,7 +331,7 @@ export default function BillsPage(): React.JSX.Element {
                                                     </div>
 
                                                     <h3 className="font-semibold text-slate-900 dark:text-white">
-                                                        {getBillTypeLabel(bill.billType)} - {format(new Date(bill.createdAt), "MMMM yyyy", { locale: th })}
+                                                        {getBillTypeLabel(bill.billType)} - {format(bill.createdAt || new Date(), "MMMM yyyy", { locale: th })}
                                                     </h3>
 
                                                     <div className="flex items-center gap-2 text-xs text-slate-500">

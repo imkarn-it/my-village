@@ -20,7 +20,20 @@ import { th } from "date-fns/locale"
 import { toast } from "sonner"
 
 export default function SecurityParcelsPage(): React.JSX.Element {
-    const [parcels, setParcels] = useState<any[]>([])
+    type Parcel = {
+    id: string;
+    unitId: string;
+    image: string | null;
+    trackingNumber: string | null;
+    courier: string | null;
+    receivedBy: string | null;
+    receivedAt: Date | null;
+    pickedUpAt: Date | null;
+    pickedUpBy: string | null;
+    unit: any;
+};
+
+const [parcels, setParcels] = useState<Parcel[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
 

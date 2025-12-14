@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+// Tabs components reserved for future use
 import {
     CheckCircle2,
     XCircle,
@@ -14,17 +14,27 @@ import {
     Loader2,
     AlertCircle,
     CalendarDays,
-    Building2,
+    // Building2 reserved for future use
     Sparkles
 } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/lib/api/client"
 import Image from "next/image"
 
+type Bill = {
+    id: string
+    billType: string
+    amount: number | string
+    dueDate: string | null
+    status: string | null
+    unitId: string
+    paymentSlipUrl: string | null
+}
+
 export default function AdminBillVerificationPage() {
     const [loading, setLoading] = useState(true)
-    const [pendingBills, setPendingBills] = useState<any[]>([])
-    const [allBills, setAllBills] = useState<any[]>([])
+    const [pendingBills, setPendingBills] = useState<Bill[]>([])
+    const [allBills, setAllBills] = useState<Bill[]>([])
     const [processing, setProcessing] = useState<string | null>(null)
 
     useEffect(() => {
@@ -44,7 +54,7 @@ export default function AdminBillVerificationPage() {
             if (data?.success && data.data) {
                 const bills = data.data
                 setAllBills(bills)
-                setPendingBills(bills.filter((b: any) => b.status === "pending_verification"))
+                setPendingBills(bills.filter((b: Bill) => b.status === "pending_verification"))
             }
         } catch (err) {
             console.error("Failed to fetch bills:", err)
@@ -57,7 +67,7 @@ export default function AdminBillVerificationPage() {
     const handleVerify = async (billId: string, approved: boolean) => {
         try {
             setProcessing(billId)
-            // @ts-ignore
+            // @ts-expect-error - Eden Treaty dynamic route type
             const { data, error } = await api.bills(billId)["verify-payment"].post({ approved })
 
             if (error) {

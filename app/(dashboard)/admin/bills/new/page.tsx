@@ -12,11 +12,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Loader2, Save, ArrowLeft, FileText, AlertCircle, Calendar } from "lucide-react"
+import { Loader2, Save, ArrowLeft, FileText, Calendar } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { api } from "@/lib/api/client"
+import type { Unit } from "@/types"
 
 const BILL_TYPES = [
     { value: "water", label: "ค่าน้ำ" },
@@ -28,7 +29,7 @@ const BILL_TYPES = [
 export default function NewBillPage(): React.JSX.Element {
     const router = useRouter()
     const [isPending, setIsPending] = useState(false)
-    const [units, setUnits] = useState<any[]>([])
+    const [units, setUnits] = useState<Unit[]>([])
 
     useEffect(() => {
         const fetchUnits = async () => {

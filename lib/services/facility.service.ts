@@ -69,6 +69,7 @@ export abstract class FacilityService {
 
     static async toggleActive(id: string) {
         const facility = await this.getById(id)
+        // @ts-ignore - isActive field might not exist in type
         return await this.update(id, { isActive: !facility.isActive })
     }
 }

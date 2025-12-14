@@ -58,7 +58,12 @@ export function ProfileForm({ user }: ProfileFormProps): React.JSX.Element {
 
         try {
             // Prepare update data
-            const updateData: any = {
+            const updateData: {
+                name: string;
+                phone?: string;
+                avatar?: string | null;
+                password?: string;
+            } = {
                 name: formData.name,
                 phone: formData.phone,
                 avatar: avatarUrl,
@@ -77,7 +82,7 @@ export function ProfileForm({ user }: ProfileFormProps): React.JSX.Element {
                 updateData.password = formData.newPassword
             }
 
-            const { data, error } = await api.users({ id: user.id }).patch(updateData)
+            const { data, error } = await api.users({ id: user.id }).patch(updateData as any)
 
             if (error) {
                 throw new Error(String(error.value))
@@ -88,9 +93,9 @@ export function ProfileForm({ user }: ProfileFormProps): React.JSX.Element {
                 setFormData(prev => ({ ...prev, currentPassword: "", newPassword: "" }))
                 router.refresh()
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error updating profile:", err)
-            toast.error(err.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล")
+            toast.error(err instanceof Error ? err.message : "เกิดข้อผิดพลาดในการบันทึกข้อมูล")
         } finally {
             setIsPending(false)
         }

@@ -118,7 +118,7 @@ export default function SecurityScanPage() {
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Scanner Section */}
-                <Card>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle>กล้องสแกน</CardTitle>
                     </CardHeader>
@@ -148,7 +148,7 @@ export default function SecurityScanPage() {
                 </Card>
 
                 {/* Result Section */}
-                <Card>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle>ข้อมูลผู้มาติดต่อ</CardTitle>
                     </CardHeader>

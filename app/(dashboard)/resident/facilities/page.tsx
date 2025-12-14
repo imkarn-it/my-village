@@ -1,3 +1,8 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,205 +18,239 @@ import {
     Waves,
     PartyPopper,
     Car,
+    MapPin,
 } from "lucide-react";
+import { api } from "@/lib/api/client";
 
-// Mock data
-const facilities = [
-    {
-        id: 1,
-        name: "ฟิตเนส",
-        description: "ห้องออกกำลังกายพร้อมอุปกรณ์ครบครัน",
-        icon: Dumbbell,
-        openTime: "06:00",
-        closeTime: "22:00",
-        maxCapacity: 20,
-        image: null,
-        color: "from-orange-400 to-red-500",
-        available: true,
-    },
-    {
-        id: 2,
-        name: "สระว่ายน้ำ",
-        description: "สระว่ายน้ำขนาด 25 เมตร พร้อมสระเด็ก",
-        icon: Waves,
-        openTime: "06:00",
-        closeTime: "20:00",
-        maxCapacity: 50,
-        image: null,
-        color: "from-cyan-400 to-blue-500",
-        available: true,
-    },
-    {
-        id: 3,
-        name: "ห้องประชุม/จัดเลี้ยง",
-        description: "ห้องประชุมพร้อมอุปกรณ์โสตทัศน์",
-        icon: PartyPopper,
-        openTime: "08:00",
-        closeTime: "22:00",
-        maxCapacity: 100,
-        image: null,
-        color: "from-purple-400 to-pink-500",
-        available: false,
-    },
-    {
-        id: 4,
-        name: "ที่จอดรถ VIP",
-        description: "ที่จอดรถสำหรับแขกพิเศษ",
-        icon: Car,
-        openTime: "00:00",
-        closeTime: "23:59",
-        maxCapacity: 10,
-        image: null,
-        color: "from-emerald-400 to-teal-500",
-        available: true,
-    },
-];
+type Facility = {
+    id: string;
+    name: string;
+    description?: string;
+    image?: string;
+    openTime?: string;
+    closeTime?: string;
+    maxCapacity?: number;
+    requiresApproval?: boolean;
+    isActive?: boolean;
+};
 
-const myBookings = [
-    {
-        id: 1,
-        facility: "ฟิตเนส",
-        date: "12 ธ.ค. 2567",
-        time: "18:00 - 19:00",
-        status: "approved",
-    },
-    {
-        id: 2,
-        facility: "สระว่ายน้ำ",
-        date: "14 ธ.ค. 2567",
-        time: "10:00 - 12:00",
-        status: "pending",
-    },
-];
+const getIcon = (name: string) => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes("ฟิตเนส") || lowerName.includes("fitness") || lowerName.includes("gym")) {
+        return Dumbbell;
+    }
+    if (lowerName.includes("สระ") || lowerName.includes("pool") || lowerName.includes("ว่ายน้ำ")) {
+        return Waves;
+    }
+    if (lowerName.includes("ประชุม") || lowerName.includes("จัดเลี้ยง") || lowerName.includes("party") || lowerName.includes("meeting")) {
+        return PartyPopper;
+    }
+    if (lowerName.includes("จอดรถ") || lowerName.includes("parking") || lowerName.includes("รถ")) {
+        return Car;
+    }
+    return MapPin;
+};
 
-export default function FacilitiesPage(): React.JSX.Element {
+const getColor = (name: string) => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes("ฟิตเนส") || lowerName.includes("fitness") || lowerName.includes("gym")) {
+        return "from-orange-400 to-red-500";
+    }
+    if (lowerName.includes("สระ") || lowerName.includes("pool") || lowerName.includes("ว่ายน้ำ")) {
+        return "from-cyan-400 to-blue-500";
+    }
+    if (lowerName.includes("ประชุม") || lowerName.includes("จัดเลี้ยง") || lowerName.includes("party") || lowerName.includes("meeting")) {
+        return "from-purple-400 to-pink-500";
+    }
+    if (lowerName.includes("จอดรถ") || lowerName.includes("parking") || lowerName.includes("รถ")) {
+        return "from-gray-600 to-gray-800";
+    }
+    return "from-green-400 to-emerald-500";
+};
+
+export default function FacilitiesPage() {
+    const [facilities, setFacilities] = useState<Facility[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+        fetchFacilities();
+    }, []);
+
+    const fetchFacilities = async () => {
+        try {
+            setLoading(true);
+            // @ts-ignore - API types
+            const { data } = await api.facilities.get();
+            if (data && Array.isArray(data)) {
+                // Filter only active facilities
+                const activeFacilities = data.filter((f: Facility) => f.isActive !== false);
+                setFacilities(activeFacilities);
+            }
+        } catch {
+            setError("ไม่สามารถโหลดข้อมูลสิ่งอำนวยความสะดวกได้");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const filteredFacilities = facilities.filter(facility =>
+        facility.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (facility.description?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+    );
+
+    if (loading) {
+        return (
+            <div className="space-y-8">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">สิ่งอำนวยความสะดวก</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">จองใช้สิ่งอำนวยความสะดวกในโครงการ</p>
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <Card key={i} className="animate-pulse bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
+                            <CardHeader className="pb-3">
+                                <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full mt-2"></div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-3">
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+                                    <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded mt-4"></div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="space-y-8">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">สิ่งอำนวยความสะดวก</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">จองใช้สิ่งอำนวยความสะดวกในโครงการ</p>
+                    </div>
+                </div>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-red-200 dark:border-red-500/50 backdrop-blur-sm">
+                    <CardContent className="pt-6">
+                        <p className="text-red-800 dark:text-red-400">{error}</p>
+                        <Button onClick={fetchFacilities} variant="outline" className="mt-2 border-red-200 dark:border-red-500/50 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10">
+                            ลองใหม่
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/25">
-                            <CalendarDays className="w-5 h-5 text-white" />
-                        </div>
-                        จองพื้นที่ส่วนกลาง
-                    </h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">
-                        จองพื้นที่และสิ่งอำนวยความสะดวก
-                    </p>
+                    <h1 className="text-3xl font-bold text-gray-900">สิ่งอำนวยความสะดวก</h1>
+                    <p className="text-gray-600 mt-1">จองใช้สิ่งอำนวยความสะดวกในโครงการ</p>
                 </div>
-            </div>
-
-            {/* My Bookings */}
-            {myBookings.length > 0 && (
-                <div className="space-y-4">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
+                <Link href="/resident/bookings">
+                    <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-[1.02]">
+                        <CalendarDays className="h-4 w-4 mr-2" />
                         การจองของฉัน
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {myBookings.map((booking) => (
-                            <Card
-                                key={booking.id}
-                                className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300 group"
-                            >
-                                <CardContent className="p-5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-1">
-                                            <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                                                {booking.facility}
-                                            </h3>
-                                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                                {booking.date} • {booking.time}
-                                            </p>
-                                        </div>
-                                        <Badge
-                                            className={
-                                                booking.status === "approved"
-                                                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                                                    : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                                            }
-                                        >
-                                            {booking.status === "approved" ? "อนุมัติแล้ว" : "รออนุมัติ"}
-                                        </Badge>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            )}
+                    </Button>
+                </Link>
+            </div>
 
             {/* Search */}
             <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                 <Input
-                    placeholder="ค้นหาพื้นที่..."
-                    className="pl-10 bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20"
+                    placeholder="ค้นหาสิ่งอำนวยความสะดวก..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus:ring-cyan-500/20"
                 />
             </div>
 
             {/* Facilities Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {facilities.map((facility) => (
-                    <Card
-                        key={facility.id}
-                        className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm overflow-hidden group hover:border-slate-300 dark:hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50"
-                    >
-                        {/* Image/Icon Header */}
-                        <div className={`h-32 bg-gradient-to-br ${facility.color} flex items-center justify-center relative overflow-hidden`}>
-                            <div className="absolute inset-0 bg-black/10 dark:bg-black/20" />
-                            <facility.icon className="w-16 h-16 text-white/90 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                            {!facility.available && (
-                                <div className="absolute inset-0 bg-slate-100/80 dark:bg-slate-900/80 flex items-center justify-center">
-                                    <Badge className="bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30">
-                                        ไม่ว่าง
-                                    </Badge>
-                                </div>
-                            )}
+            {filteredFacilities.length === 0 ? (
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
+                    <CardContent className="pt-6 text-center">
+                        <div className="text-slate-500">
+                            {searchQuery ? "ไม่พบสิ่งอำนวยความสะดวกที่ค้นหา" : "ไม่มีสิ่งอำนวยความสะดวกในขณะนี้"}
                         </div>
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredFacilities.map((facility) => {
+                        const Icon = getIcon(facility.name);
+                        const color = getColor(facility.name);
 
-                        <CardContent className="p-5 space-y-4">
-                            <div>
-                                <h3 className="font-semibold text-lg text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                                    {facility.name}
-                                </h3>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                                    {facility.description}
-                                </p>
-                            </div>
-
-                            <div className="flex items-center gap-4 text-sm text-slate-500">
-                                <span className="flex items-center gap-1">
-                                    <Clock className="w-4 h-4" />
-                                    {facility.openTime} - {facility.closeTime}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                    <Users className="w-4 h-4" />
-                                    {facility.maxCapacity} คน
-                                </span>
-                            </div>
-
-                            <Button
-                                className={`w-full transition-all duration-300 ${facility.available
-                                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02]"
-                                    : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed"
-                                    }`}
-                                disabled={!facility.available}
-                            >
-                                {facility.available ? (
-                                    <>
-                                        <Plus className="w-4 h-4 mr-2" />
-                                        จองเลย
-                                    </>
-                                ) : (
-                                    "ไม่สามารถจองได้"
-                                )}
-                            </Button>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+                        return (
+                            <Card key={facility.id} className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-cyan-500/50 transition-all duration-300 cursor-pointer group hover:shadow-xl hover:shadow-cyan-500/10 dark:hover:shadow-cyan-500/5">
+                                <CardHeader className="pb-3">
+                                    <div className="flex items-start justify-between">
+                                        <div className={`p-3 rounded-lg bg-gradient-to-br ${color} shadow-lg shadow-cyan-500/25 group-hover:scale-110 transition-transform duration-300`}>
+                                            <Icon className="h-6 w-6 text-white" />
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            {facility.requiresApproval && (
+                                                <Badge variant="outline" className="text-xs">
+                                                    ต้องอนุมัติ
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <CardTitle className="text-xl text-slate-900 dark:text-white">{facility.name}</CardTitle>
+                                    {facility.description && (
+                                        <p className="text-slate-600 dark:text-slate-400 text-sm">{facility.description}</p>
+                                    )}
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-3">
+                                        {facility.openTime && facility.closeTime && (
+                                            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                                <Clock className="h-4 w-4" />
+                                                <span>{facility.openTime} - {facility.closeTime}</span>
+                                            </div>
+                                        )}
+                                        {facility.maxCapacity && (
+                                            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                                <Users className="h-4 w-4" />
+                                                <span>ความจุ {facility.maxCapacity} คน</span>
+                                            </div>
+                                        )}
+                                        {facility.image && (
+                                            <div className="relative h-32 w-full mt-3">
+                                                <Image
+                                                    src={facility.image}
+                                                    alt={facility.name}
+                                                    fill
+                                                    className="object-cover rounded-md"
+                                                />
+                                            </div>
+                                        )}
+                                        <Link href={`/resident/facilities/${facility.id}`}>
+                                            <Button className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-[1.02]">
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                จองเลย
+                                                <ChevronRight className="h-4 w-4 ml-2" />
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

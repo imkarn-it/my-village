@@ -13,17 +13,34 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Search, Plus, MoreHorizontal, FileText, CheckCircle2, Clock, AlertCircle, Home, Loader2 } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { api } from "@/lib/api/client"
 import { format } from "date-fns"
 import { th } from "date-fns/locale"
 import { toast } from "sonner"
+import { PageTransition, FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/page-transition"
+import { PageLoading, TableSkeleton } from "@/components/ui/loading-skeleton"
+
+type Bill = {
+    id: string
+    billType: string
+    amount: number | string
+    dueDate: string | null
+    paidAt: Date | null
+    status: string | null
+    paymentRef: string | null
+    paymentSlipUrl: string | null
+    unit: {
+        unitNumber: string
+    } | null
+}
 
 export default function AdminBillsPage(): React.JSX.Element {
-    const [bills, setBills] = useState<any[]>([])
+    const [bills, setBills] = useState<Bill[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
-    const [verifyingBill, setVerifyingBill] = useState<any>(null)
+    const [verifyingBill, setVerifyingBill] = useState<Bill | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const fetchBills = async () => {
@@ -84,31 +101,41 @@ export default function AdminBillsPage(): React.JSX.Element {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-            </div>
+            <PageTransition className="space-y-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="space-y-1">
+                        <div className="h-9 w-64 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                        <div className="h-5 w-48 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+                    </div>
+                    <div className="h-11 w-36 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                </div>
+                <div className="h-12 w-96 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                <TableSkeleton rows={5} columns={6} />
+            </PageTransition>
         )
     }
 
     return (
-        <div className="space-y-8">
+        <PageTransition className="space-y-8">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                        จัดการบิล/ค่าใช้จ่าย
-                    </h1>
-                    <p className="text-slate-600 dark:text-slate-400 text-lg">
-                        รายการเรียกเก็บเงินทั้งหมด {filteredBills.length} รายการ
-                    </p>
+            <FadeIn>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="space-y-1">
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                            จัดการบิล/ค่าใช้จ่าย
+                        </h1>
+                        <p className="text-slate-600 dark:text-slate-400 text-lg">
+                            รายการเรียกเก็บเงินทั้งหมด {filteredBills.length} รายการ
+                        </p>
+                    </div>
+                    <Link href="/admin/bills/new">
+                        <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300 hover:scale-[1.02]">
+                            <Plus className="w-5 h-5 mr-2" />
+                            สร้างบิลใหม่
+                        </Button>
+                    </Link>
                 </div>
-                <Link href="/admin/bills/new">
-                    <Button className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover:scale-[1.02]">
-                        <Plus className="w-5 h-5 mr-2" />
-                        สร้างบิลใหม่
-                    </Button>
-                </Link>
-            </div>
+            </FadeIn>
 
             {/* Filters */}
             <div className="flex items-center gap-4">
@@ -247,11 +274,12 @@ export default function AdminBillsPage(): React.JSX.Element {
                                 </span>
                                 {verifyingBill.paymentSlipUrl ? (
                                     <div className="relative aspect-[3/4] w-full bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
+                                        <Image
                                             src={verifyingBill.paymentSlipUrl}
                                             alt="Payment Slip"
                                             className="object-contain w-full h-full"
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                         />
                                     </div>
                                 ) : (
@@ -298,6 +326,6 @@ export default function AdminBillsPage(): React.JSX.Element {
                     </div>
                 </div>
             )}
-        </div>
+        </PageTransition>
     );
 }

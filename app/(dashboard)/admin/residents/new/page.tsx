@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent } from "@/components/ui/card"
+import { ArrowLeft, User, Home, Mail, Phone, Lock, Loader2, Save } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { toast } from "sonner"
 import { api } from "@/lib/api/client"
 
@@ -38,7 +41,7 @@ export default function NewResidentPage() {
                     query: { limit: "100" }
                 })
                 if (data && data.success && Array.isArray(data.data)) {
-                    setUnits(data.data)
+                    setUnits(data.data.filter((u: { building: string | null }) => u.building !== null) as Unit[])
                 }
             } catch (error) {
                 console.error("Failed to fetch units:", error)
@@ -70,9 +73,10 @@ export default function NewResidentPage() {
                 router.push("/admin/residents")
                 router.refresh()
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error creating resident:", err)
-            toast.error(err.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล")
+            const message = err instanceof Error ? err.message : "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+            toast.error(message)
         } finally {
             setIsPending(false)
         }

@@ -1,6 +1,30 @@
 "use client"
 
 import { useState, useEffect } from "react"
+
+type Visitor = {
+    id: string;
+    visitorName: string;
+    purpose: string | null;
+    expectedArrival: string;
+    status: string | null;
+    unitId: string;
+    createdAt: Date | null;
+    phone: string | null;
+    licensePlate: string | null;
+    qrCode: string | null;
+    approvedBy: string | null;
+    checkInAt: Date | null;
+    checkOutAt: Date | null;
+    unit: any;
+};
+
+type Unit = {
+    id: string;
+    unitNumber: string;
+    building: string | null;
+    floor: number | null;
+};
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -67,9 +91,9 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function VisitorsPage(): React.JSX.Element {
-    const [visitors, setVisitors] = useState<any[]>([])
+    const [visitors, setVisitors] = useState<Visitor[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [units, setUnits] = useState<any[]>([])
+    const [units, setUnits] = useState<Unit[]>([])
     const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null)
     const [searchTerm, setSearchTerm] = useState("")
 
@@ -98,7 +122,7 @@ export default function VisitorsPage(): React.JSX.Element {
             try {
                 const { data } = await api.visitors.get({ query: { unitId: selectedUnitId } })
                 if (data && data.success && data.data) {
-                    setVisitors(data.data)
+                    setVisitors(data.data as unknown as Visitor[])
                 }
             } catch (error) {
                 console.error("Failed to fetch visitors:", error)
@@ -127,7 +151,7 @@ export default function VisitorsPage(): React.JSX.Element {
                 if (selectedUnitId) {
                     const { data: newData } = await api.visitors.get({ query: { unitId: selectedUnitId } })
                     if (newData && newData.success && newData.data) {
-                        setVisitors(newData.data)
+                        setVisitors(newData.data as unknown as Visitor[])
                     }
                 }
             }
@@ -248,7 +272,7 @@ export default function VisitorsPage(): React.JSX.Element {
                                 >
                                     <CardContent className="p-5">
                                         <div className="space-y-4">
-                                            {getStatusBadge(visitor.status)}
+                                            {getStatusBadge(visitor.status || 'pending')}
 
                                             <div className="space-y-2">
                                                 <h3 className="font-semibold text-slate-900 dark:text-white text-lg group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors duration-300">
@@ -359,7 +383,7 @@ export default function VisitorsPage(): React.JSX.Element {
                                 >
                                     <CardContent className="p-5">
                                         <div className="space-y-4">
-                                            {getStatusBadge(visitor.status)}
+                                            {getStatusBadge(visitor.status || 'pending')}
 
                                             <div className="space-y-2">
                                                 <h3 className="font-semibold text-slate-900 dark:text-white text-lg group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">
@@ -377,7 +401,7 @@ export default function VisitorsPage(): React.JSX.Element {
                                                 </span>
                                                 <span className="flex items-center gap-1">
                                                     <Calendar className="w-4 h-4" />
-                                                    เข้า: {format(new Date(visitor.createdAt), "d MMM HH:mm", { locale: th })}
+                                                    เข้า: {format(new Date(visitor.createdAt || new Date()), "d MMM HH:mm", { locale: th })}
                                                 </span>
                                             </div>
                                         </div>
@@ -419,7 +443,7 @@ export default function VisitorsPage(): React.JSX.Element {
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                             <div className="space-y-2">
                                                 <div className="flex items-center gap-2">
-                                                    {getStatusBadge(visitor.status)}
+                                                    {getStatusBadge(visitor.status || 'pending')}
                                                 </div>
                                                 <h3 className="font-semibold text-slate-900 dark:text-white">
                                                     {visitor.visitorName}
@@ -429,7 +453,7 @@ export default function VisitorsPage(): React.JSX.Element {
                                                 </p>
                                             </div>
                                             <div className="text-sm text-slate-500 space-y-1">
-                                                <p>เข้า: {format(new Date(visitor.createdAt), "d MMM HH:mm", { locale: th })}</p>
+                                                <p>เข้า: {format(new Date(visitor.createdAt || new Date()), "d MMM HH:mm", { locale: th })}</p>
                                                 {visitor.checkOutAt && (
                                                     <p>ออก: {format(new Date(visitor.checkOutAt), "d MMM HH:mm", { locale: th })}</p>
                                                 )}

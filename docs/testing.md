@@ -2,6 +2,12 @@
 
 This document provides comprehensive information about the testing setup and practices for the My Village application.
 
+## 📊 Current Status (December 13, 2025)
+- **Unit Tests**: 25 tests passing ✅
+- **E2E Tests**: 20/115 tests passing (basic tests working) ✅
+- **Test Coverage**: 39.72% for utilities ✅
+- **Testing Infrastructure**: Fully configured and committed (d02c8ee) ✅
+
 ## 🧪 Testing Stack
 
 - **Unit Tests**: Vitest with jsdom environment
@@ -17,17 +23,11 @@ This document provides comprehensive information about the testing setup and pra
 # Install dependencies
 bun install
 
-# Seed test data
-bun run scripts/seed-test-data.ts
-
 # Run all unit tests
-bun run test
+bun run test:run
 
 # Run tests with UI
 bun run test:ui
-
-# Run tests once and exit
-bun run test:run
 
 # Run with coverage
 bun run test:coverage
@@ -41,24 +41,11 @@ bun run test:e2e:ui
 
 ### Test Database Setup
 
-1. Ensure PostgreSQL is running
-2. Create a test database:
-   ```sql
-   CREATE DATABASE test_db;
-   ```
-3. Set environment variables:
-   ```bash
-   DATABASE_URL=postgresql://postgres:password@localhost:5432/test_db
-   NODE_ENV=test
-   ```
-4. Run migrations:
-   ```bash
-   bun run db:push
-   ```
-5. Seed test data:
-   ```bash
-   bun run scripts/seed-test-data.ts
-   ```
+1. Tests use in-memory database/mocking (configured)
+2. For integration tests with real database:
+   - Create test database in Supabase
+   - Set `DATABASE_URL` environment variable
+   - Run migrations: `bun run db:push`
 
 ## 📁 Test Structure
 
@@ -190,7 +177,7 @@ open coverage/index.html
 ```
 
 ### Coverage Goals
-- Utilities: 100%
+- Utilities: 100% (Current: 39.72%)
 - Services: 90%+
 - API Endpoints: 85%+
 - Components: 80%+

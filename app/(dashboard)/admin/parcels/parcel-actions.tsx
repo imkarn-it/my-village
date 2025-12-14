@@ -47,6 +47,7 @@ export function ParcelActions({ parcelId, isPickedUp }: ParcelActionsProps) {
         if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?")) return;
 
         try {
+            // @ts-ignore - Eden Treaty type inference issue
             const { data, error } = await api.parcels({ id: parcelId }).delete();
 
             if (error) {

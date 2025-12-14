@@ -27,10 +27,13 @@ import {
     Wrench,
     CreditCard,
     CalendarDays,
+    Car,
     AlertTriangle,
     MessageSquare,
     Settings,
     User,
+    Dumbbell,
+    Calendar,
     type LucideIcon,
 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -88,9 +91,19 @@ const RESIDENT_MENU_ITEMS = [
         href: "/resident/bills",
     },
     {
-        title: "จองพื้นที่ส่วนกลาง",
-        icon: CalendarDays,
+        title: "รถเรียก",
+        icon: Car,
+        href: "/resident/transport",
+    },
+    {
+        title: "สิ่งอำนวยความสะดวก",
+        icon: Dumbbell,
         href: "/resident/facilities",
+    },
+    {
+        title: "การจองของฉัน",
+        icon: Calendar,
+        href: "/resident/bookings",
     },
     {
         title: "ติดต่อนิติบุคคล",

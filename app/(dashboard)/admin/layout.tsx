@@ -4,8 +4,12 @@ import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// Button now used in sidebar
+// import { Button } from "@/components/ui/button";
+// Avatar components now handled by HeaderUserMenu
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// DropdownMenu components now handled by HeaderUserMenu
+/*
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,6 +18,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+*/
 import {
     Shield,
     LayoutDashboard,
@@ -22,14 +27,16 @@ import {
     Package,
     CreditCard,
     Wrench,
-    Home,
     Settings,
     Menu,
     X,
     BarChart3,
+    MessageSquare,
+    Dumbbell,
+    Calendar,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { getInitials } from "@/lib/utils";
 import { HeaderUserMenu } from "@/components/dashboard/header-user-menu";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
@@ -80,10 +87,21 @@ const menuItems = [
         icon: Wrench,
     },
     {
-        label: "หน่วยที่พัก",
-        href: "/admin/units",
-        icon: Home,
+        label: "สิ่งอำนวยความสะดวก",
+        href: "/admin/facilities",
+        icon: Dumbbell,
     },
+    {
+        label: "การจอง",
+        href: "/admin/bookings",
+        icon: Calendar,
+    },
+    {
+        label: "แจ้งปัญหา",
+        href: "/admin/support",
+        icon: MessageSquare,
+    },
+
     {
         label: "รายงาน",
         href: "/admin/reports",
@@ -101,7 +119,8 @@ export default function AdminLayout({ children }: AdminLayoutProps): React.JSX.E
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { data: session } = useSession();
     const user = session?.user;
-    const initials = getInitials(user?.name || "Admin");
+    // initials computed from user name, used by HeaderUserMenu
+    const _initials = getInitials(user?.name || "Admin");
 
     return (
         // ... (wrapper div and background decoration remain same)

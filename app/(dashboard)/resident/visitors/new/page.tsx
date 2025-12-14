@@ -1,6 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
+
+type Unit = {
+    id: string;
+    unitNumber: string;
+    building: string | null;
+    floor: number | null;
+};
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,7 +28,7 @@ import { api } from "@/lib/api/client"
 export default function NewVisitorPage(): React.JSX.Element {
     const router = useRouter()
     const [isPending, setIsPending] = useState(false)
-    const [units, setUnits] = useState<any[]>([])
+    const [units, setUnits] = useState<Unit[]>([])
 
     useEffect(() => {
         const fetchUnits = async () => {
@@ -81,7 +88,10 @@ export default function NewVisitorPage(): React.JSX.Element {
                     </Button>
                 </Link>
                 <div className="space-y-1">
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                            <QrCode className="w-5 h-5 text-white" />
+                        </div>
                         สร้าง QR Code ผู้มาติดต่อ
                     </h1>
                     <p className="text-slate-600 dark:text-slate-400">

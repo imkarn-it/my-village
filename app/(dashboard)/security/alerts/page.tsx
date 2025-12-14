@@ -67,7 +67,7 @@ export default async function SecurityAlertsPage(): Promise<React.JSX.Element> {
                                         </div>
                                         {alert.message && (
                                             <p className="text-slate-700 dark:text-slate-300 bg-white/50 dark:bg-black/20 p-3 rounded-lg mt-2">
-                                                "{alert.message}"
+                                                &quot;{alert.message}&quot;
                                             </p>
                                         )}
                                     </div>

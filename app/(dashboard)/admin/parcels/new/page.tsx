@@ -74,7 +74,7 @@ export default function NewParcelPage(): React.JSX.Element {
                 router.push("/admin/parcels")
                 router.refresh()
             }
-        } catch (error) {
+        } catch {
             toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ")
         } finally {
             setIsPending(false)

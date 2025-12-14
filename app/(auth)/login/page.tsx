@@ -49,7 +49,7 @@ export default function LoginPage(): React.JSX.Element {
                 router.push("/")
                 router.refresh()
             }
-        } catch (error) {
+        } catch {
             toast.error("เกิดข้อผิดพลาดในการเข้าสู่ระบบ")
         } finally {
             setIsPending(false)

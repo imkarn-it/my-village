@@ -876,9 +876,22 @@ const app = new Elysia({ prefix: '/api' })
         }
 
         const data = await db.query.bookings.findMany({
+            with: {
+                facility: true,
+                unit: true,
+                user: {
+                    columns: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            },
             where: query.facilityId
                 ? eq(bookings.facilityId, query.facilityId)
-                : undefined,
+                : query.unitId
+                    ? eq(bookings.unitId, query.unitId)
+                    : undefined,
             orderBy: desc(bookings.createdAt),
             limit: query.limit ? parseInt(query.limit as string) : 50,
         })
@@ -899,10 +912,26 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Unauthorized' }
         }
 
-        const [result] = await db.insert(bookings).values({
+        const [booking] = await db.insert(bookings).values({
             ...body,
             userId: session.user.id as string,
         }).returning()
+
+        // Fetch full booking data with relations
+        const result = await db.query.bookings.findFirst({
+            where: eq(bookings.id, booking.id),
+            with: {
+                facility: true,
+                unit: true,
+                user: {
+                    columns: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        })
 
         return { success: true, data: result }
     }, {
@@ -914,6 +943,48 @@ const app = new Elysia({ prefix: '/api' })
             endTime: t.String(),
         }),
         detail: { tags: ['bookings'], summary: 'Create booking' },
+    })
+
+    .patch('/bookings/:id', async ({ params, body }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        await db.update(bookings)
+            .set(body)
+            .where(eq(bookings.id, params.id))
+
+        // Fetch full booking data with relations
+        const result = await db.query.bookings.findFirst({
+            where: eq(bookings.id, params.id),
+            with: {
+                facility: true,
+                unit: true,
+                user: {
+                    columns: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        })
+
+        if (!result) {
+            return { success: false, error: 'Booking not found' }
+        }
+
+        return { success: true, data: result }
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        body: t.Object({
+            // @ts-ignore - Elysia type issue with multiple Union types
+            status: t.Union(t.Literal('pending'), t.Literal('approved'), t.Literal('rejected'), t.Literal('cancelled'))
+        }),
+        detail: { tags: ['bookings'], summary: 'Update booking status' }
     })
 
     // SOS Alerts endpoints
@@ -1041,6 +1112,68 @@ const app = new Elysia({ prefix: '/api' })
             message: t.Optional(t.String()),
         }),
         detail: { tags: ['support'], summary: 'Create support ticket' },
+    })
+
+    .get('/support/:id', async ({ params }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const ticket = await db.query.supportTickets.findFirst({
+            where: eq(supportTickets.id, params.id),
+            with: {
+                unit: true,
+                user: {
+                    columns: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        phone: true,
+                    }
+                }
+            }
+        })
+
+        if (!ticket) {
+            return { success: false, error: 'Support ticket not found' }
+        }
+
+        return { success: true, data: ticket }
+    }, {
+        params: t.Object({
+            id: t.String(),
+        }),
+        detail: { tags: ['support'], summary: 'Get support ticket by ID' },
+    })
+
+    .patch('/support/:id', async ({ params, body }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        // Only admin/super_admin can update tickets
+        if (session.user.role !== 'admin' && session.user.role !== 'super_admin') {
+            return { success: false, error: 'Forbidden - Admin access required' }
+        }
+
+        const [result] = await db.update(supportTickets)
+            .set(body)
+            .where(eq(supportTickets.id, params.id))
+            .returning()
+
+        if (!result) {
+            return { success: false, error: 'Support ticket not found' }
+        }
+
+        return { success: true, data: result }
+    }, {
+        params: t.Object({ id: t.String() }),
+        body: t.Object({
+            status: t.Optional(t.String()),
+        }),
+        detail: { tags: ['support'], summary: 'Update support ticket status (Admin only)' },
     })
 
     // Payment Settings endpoints

@@ -13,7 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Loader2, Save, ArrowLeft, Wrench, AlertCircle, Image as ImageIcon } from "lucide-react"
+import { Loader2, Save, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -35,10 +35,18 @@ const PRIORITIES = [
     { value: "urgent", label: "เร่งด่วน" },
 ] as const
 
+type Unit = {
+    id: string;
+    unitNumber: string;
+    building: string | null;
+    floor: number | null;
+    size: string | null;
+}
+
 export default function NewMaintenancePage(): React.JSX.Element {
-    const router = useRouter()
+    const _router = useRouter()
     const [isPending, setIsPending] = useState(false)
-    const [units, setUnits] = useState<any[]>([])
+    const [units, setUnits] = useState<Unit[]>([])
     const [imageUrl, setImageUrl] = useState<string | null>(null)
 
     useEffect(() => {
@@ -46,10 +54,10 @@ export default function NewMaintenancePage(): React.JSX.Element {
             try {
                 const { data } = await api.units.get()
                 if (data && data.success && Array.isArray(data.data)) {
-                    setUnits(data.data)
+                    setUnits(data.data as unknown as Unit[])
                 }
-            } catch (error) {
-                console.error("Failed to fetch units:", error)
+            } catch {
+                console.error("Failed to fetch units")
             }
         }
         fetchUnits()
@@ -80,10 +88,10 @@ export default function NewMaintenancePage(): React.JSX.Element {
                 toast.error(error.value ? String(error.value) : "เกิดข้อผิดพลาดในการบันทึก")
             } else {
                 toast.success("แจ้งซ่อมสำเร็จ")
-                router.push("/resident/maintenance")
-                router.refresh()
+                _router.push("/resident/maintenance")
+                _router.refresh()
             }
-        } catch (error) {
+        } catch {
             toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ")
         } finally {
             setIsPending(false)

@@ -8,8 +8,10 @@ import {
     integer,
     decimal,
     date,
+    json,
     time,
     jsonb,
+    pgEnum,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
@@ -194,6 +196,11 @@ export const facilities = pgTable('facilities', {
 })
 
 // ==========================================
+// Enums
+// ==========================================
+export const bookingStatusEnum = pgEnum('booking_status', ['pending', 'approved', 'rejected', 'cancelled'])
+
+// ==========================================
 // 10. Bookings (การจอง)
 // ==========================================
 export const bookings = pgTable('bookings', {
@@ -204,7 +211,7 @@ export const bookings = pgTable('bookings', {
     bookingDate: date('booking_date').notNull(),
     startTime: time('start_time').notNull(),
     endTime: time('end_time').notNull(),
-    status: varchar('status', { length: 50 }).default('pending'),
+    status: bookingStatusEnum('status').default('pending'),
     createdAt: timestamp('created_at').defaultNow(),
 })
 
@@ -391,3 +398,141 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
 
 export type Notification = typeof notifications.$inferSelect
 export type NewNotification = typeof notifications.$inferInsert
+
+// ==========================================
+// 14. Equipment (อุปกรณ์/เครื่องมือ)
+// ==========================================
+export const equipment = pgTable('equipment', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id').references(() => projects.id).notNull(),
+    name: varchar('name', { length: 255 }).notNull(),
+    type: varchar('type', { length: 100 }).notNull(),
+    serialNumber: varchar('serial_number', { length: 100 }),
+    model: varchar('model', { length: 100 }),
+    location: varchar('location', { length: 255 }),
+    status: varchar('status', { length: 50 }).notNull().default('available'),
+    purchaseDate: date('purchase_date'),
+    purchasePrice: decimal('purchase_price', { precision: 10, scale: 2 }),
+    warrantyExpiry: date('warranty_expiry'),
+    lastMaintenanceDate: date('last_maintenance_date'),
+    nextMaintenanceDate: date('next_maintenance_date'),
+    assignedTo: uuid('assigned_to').references(() => users.id),
+    notes: text('notes'),
+    isActive: boolean('is_active').default(true),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// ==========================================
+// 15. Parts/Inventory (อะไหล่และคงคลัง)
+// ==========================================
+export const parts = pgTable('parts', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id').references(() => projects.id).notNull(),
+    name: varchar('name', { length: 255 }).notNull(),
+    category: varchar('category', { length: 100 }).notNull(),
+    sku: varchar('sku', { length: 100 }).unique(),
+    description: text('description'),
+    unit: varchar('unit', { length: 50 }).notNull(), // หน่วยนับ: ชิ้น, หลอด, ขวด, etc.
+    currentStock: integer('current_stock').notNull().default(0),
+    minStockLevel: integer('min_stock_level').notNull().default(5),
+    maxStockLevel: integer('max_stock_level'),
+    unitPrice: decimal('unit_price', { precision: 10, scale: 2 }),
+    supplier: varchar('supplier', { length: 255 }),
+    location: varchar('location', { length: 255 }), // ตำแหน่งจัดเก็บ
+    isActive: boolean('is_active').default(true),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// ==========================================
+// 16. Parts Usage (การใช้งานอะไหล่)
+// ==========================================
+export const partsUsage = pgTable('parts_usage', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    partId: uuid('part_id').references(() => parts.id).notNull(),
+    maintenanceRequestId: uuid('maintenance_request_id').references(() => maintenanceRequests.id).notNull(),
+    quantityUsed: integer('quantity_used').notNull(),
+    usedBy: uuid('used_by').references(() => users.id).notNull(),
+    notes: text('notes'),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+// ==========================================
+// 17. Maintenance Logs (บันทึกการซ่อมบำรุง)
+// ==========================================
+export const maintenanceLogs = pgTable('maintenance_logs', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    maintenanceRequestId: uuid('maintenance_request_id').references(() => maintenanceRequests.id).notNull(),
+    technicianId: uuid('technician_id').references(() => users.id).notNull(),
+    action: varchar('action', { length: 100 }).notNull(), // รับงาน, เริ่มทำ, ใช้อะไหล่, เสร็จสิ้น
+    description: text('description'),
+    partsUsed: json('parts_used'), // Array of {partId, quantity}
+    timeSpent: integer('time_spent'), // นาทีที่ใช้
+    beforePhoto: text('before_photo'),
+    afterPhoto: text('after_photo'),
+    status: varchar('status', { length: 50 }).notNull(),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Relations for equipment
+export const equipmentRelations = relations(equipment, ({ one }) => ({
+    project: one(projects, {
+        fields: [equipment.projectId],
+        references: [projects.id],
+    }),
+    assignedTo: one(users, {
+        fields: [equipment.assignedTo],
+        references: [users.id],
+    }),
+}));
+
+// Relations for parts
+export const partsRelations = relations(parts, ({ one, many }) => ({
+    project: one(projects, {
+        fields: [parts.projectId],
+        references: [projects.id],
+    }),
+    usage: many(partsUsage),
+}));
+
+// Relations for partsUsage
+export const partsUsageRelations = relations(partsUsage, ({ one }) => ({
+    part: one(parts, {
+        fields: [partsUsage.partId],
+        references: [parts.id],
+    }),
+    maintenanceRequest: one(maintenanceRequests, {
+        fields: [partsUsage.maintenanceRequestId],
+        references: [maintenanceRequests.id],
+    }),
+    usedBy: one(users, {
+        fields: [partsUsage.usedBy],
+        references: [users.id],
+    }),
+}));
+
+// Relations for maintenanceLogs
+export const maintenanceLogsRelations = relations(maintenanceLogs, ({ one }) => ({
+    maintenanceRequest: one(maintenanceRequests, {
+        fields: [maintenanceLogs.maintenanceRequestId],
+        references: [maintenanceRequests.id],
+    }),
+    technician: one(users, {
+        fields: [maintenanceLogs.technicianId],
+        references: [users.id],
+    }),
+}));
+
+// Types
+export type Equipment = typeof equipment.$inferSelect
+export type NewEquipment = typeof equipment.$inferInsert
+
+export type Part = typeof parts.$inferSelect
+export type NewPart = typeof parts.$inferInsert
+
+export type PartUsage = typeof partsUsage.$inferSelect
+export type NewPartUsage = typeof partsUsage.$inferInsert
+
+export type MaintenanceLog = typeof maintenanceLogs.$inferSelect
+export type NewMaintenanceLog = typeof maintenanceLogs.$inferInsert

@@ -76,7 +76,7 @@ export default function SecuritySOSPage() {
 
             <div className="grid gap-4">
                 {alerts.length === 0 && !isLoading ? (
-                    <Card>
+                    <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                         <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                             <CheckCircle className="w-12 h-12 mb-4 text-green-500" />
                             <p>ไม่มีเหตุฉุกเฉินในขณะนี้</p>

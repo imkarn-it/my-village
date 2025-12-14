@@ -10,8 +10,18 @@ import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { th } from 'date-fns/locale'
 
+type SOSAlert = {
+    id: string;
+    unitId: string;
+    message: string | null;
+    latitude: string | null;
+    longitude: string | null;
+    status: string | null;
+    createdAt: Date | null;
+};
+
 export default function AdminSOSPage() {
-    const [alerts, setAlerts] = useState<any[]>([])
+    const [alerts, setAlerts] = useState<SOSAlert[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     const fetchAlerts = async () => {
@@ -76,7 +86,7 @@ export default function AdminSOSPage() {
 
             <div className="grid gap-4">
                 {alerts.length === 0 && !isLoading ? (
-                    <Card>
+                    <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                         <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                             <CheckCircle className="w-12 h-12 mb-4 text-green-500" />
                             <p>ไม่มีเหตุฉุกเฉินในขณะนี้</p>
@@ -101,7 +111,7 @@ export default function AdminSOSPage() {
 
                                         <p className="text-sm font-medium mt-2">เวลาแจ้ง:</p>
                                         <p className="text-sm text-muted-foreground">
-                                            {format(new Date(alert.createdAt), 'd MMM yyyy HH:mm:ss', { locale: th })}
+                                            {alert.createdAt ? format(new Date(alert.createdAt), 'd MMM yyyy HH:mm:ss', { locale: th }) : '-'}
                                         </p>
                                     </div>
 

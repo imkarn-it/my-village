@@ -33,9 +33,8 @@ export default function NewAnnouncementPage(): React.JSX.Element {
             const { data, error: apiError } = await api.announcements.post({
                 title,
                 content,
+                category: "general",
                 isPinned,
-                image: null, // TODO: Add image upload
-                projectId: "default-project", // TODO: Get from auth context
             })
 
             if (apiError) {

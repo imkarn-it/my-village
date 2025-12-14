@@ -47,7 +47,7 @@ export function SOSButton() {
 
             // Send SOS
             const { data, error } = await api.sos.post({
-                unitId: (session?.user as any)?.unitId || '', // Assuming unitId is in session or we fetch it
+                unitId: (session?.user as { unitId?: string })?.unitId || '', // Assuming unitId is in session or we fetch it
                 latitude,
                 longitude,
                 message: 'ต้องการความช่วยเหลือด่วน'

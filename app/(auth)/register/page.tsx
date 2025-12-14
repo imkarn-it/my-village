@@ -46,7 +46,7 @@ export default function RegisterPage(): React.JSX.Element {
         }
 
         try {
-            const { data, error } = await api.auth.register.post({
+            const { error } = await api.auth.register.post({
                 name,
                 email,
                 password,
@@ -70,7 +70,7 @@ export default function RegisterPage(): React.JSX.Element {
                     router.refresh()
                 }
             }
-        } catch (error) {
+        } catch {
             toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ")
         } finally {
             setIsPending(false)

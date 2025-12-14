@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Separator } from "@/components/ui/separator"
+// Separator not used in current layout
 import { Loader2, Save, QrCode, Building2, CreditCard } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/lib/api/client"
@@ -53,13 +53,13 @@ export default function PaymentSettingsPage() {
 
             if (data?.success && data.data) {
                 // Map old values if necessary
-                const loadedSettings = data.data as any
-                if (loadedSettings.paymentMethod === 'self_qr') loadedSettings.paymentMethod = 'promptpay'
+                const loadedSettings = data.data as PaymentSettings
+                if (loadedSettings.paymentMethod === 'self_qr' as PaymentMethod) loadedSettings.paymentMethod = 'promptpay'
 
                 setSettings(loadedSettings)
             }
-        } catch (err) {
-            console.error("Failed to fetch payment settings:", err)
+        } catch {
+            console.error("Failed to fetch payment settings")
             toast.error("ไม่สามารถโหลดการตั้งค่าได้")
         } finally {
             setLoading(false)
@@ -79,8 +79,8 @@ export default function PaymentSettingsPage() {
             // Let's send the data as is, and we'll update the backend to handle it.
 
             const cleanSettings = Object.fromEntries(
-                Object.entries(settings).filter(([_, v]) => v !== null && v !== undefined)
-            ) as any
+                Object.entries(settings).filter(([, v]) => v !== null && v !== undefined)
+            ) as PaymentSettings
 
             console.log("Saving settings:", cleanSettings)
 
@@ -96,8 +96,8 @@ export default function PaymentSettingsPage() {
                 toast.success("บันทึกการตั้งค่าเรียบร้อยแล้ว")
                 fetchSettings()
             }
-        } catch (err) {
-            console.error("Failed to save settings:", err)
+        } catch {
+            console.error("Failed to save settings")
             toast.error("เกิดข้อผิดพลาดในการบันทึก")
         } finally {
             setSaving(false)

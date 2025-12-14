@@ -19,7 +19,17 @@ import { useEffect, useState } from "react"
 
 export function UserMenu(): React.JSX.Element {
     const { data: session } = useSession()
-    const [userProfile, setUserProfile] = useState<any>(null)
+    const [userProfile, setUserProfile] = useState<{
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        avatar?: string;
+        unit?: {
+            unitNumber: string;
+            building: string;
+        };
+    } | null>(null)
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -43,7 +53,7 @@ export function UserMenu(): React.JSX.Element {
 
     const user = userProfile || session?.user
     const initials = getInitials(user?.name || "User")
-    const avatarUrl = userProfile?.avatar || user?.image || ""
+    const avatarUrl = userProfile?.avatar || ""
 
     const handleLogout = (): void => {
         void signOut({ callbackUrl: '/login' })

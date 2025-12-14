@@ -17,12 +17,23 @@ import { getInitials } from "@/lib/utils"
 import { useEffect, useState, useId } from "react"
 
 interface HeaderUserMenuProps {
-    role?: "admin" | "security" | "resident"
+    role?: "admin" | "security" | "resident" | "maintenance" | "super_admin"
 }
 
 export function HeaderUserMenu({ role = "admin" }: HeaderUserMenuProps): React.JSX.Element {
     const { data: session } = useSession()
-    const [userProfile, setUserProfile] = useState<any>(null)
+    const [userProfile, setUserProfile] = useState<{
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        avatar?: string;
+        image?: string;
+        unit?: {
+            unitNumber: string;
+            building: string;
+        };
+    } | null>(null)
 
     useEffect(() => {
         const fetchUserProfile = async () => {

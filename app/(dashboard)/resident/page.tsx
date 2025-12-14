@@ -24,9 +24,9 @@ export default async function ResidentDashboard(): Promise<React.JSX.Element> {
     const session = await auth();
 
     // TODO: Remove this mock when auth is fully working
-    let userId = session?.user?.id;
-    let userEmail = session?.user?.email;
-    let userName = session?.user?.name;
+    const userId = session?.user?.id;
+    const _userEmail = session?.user?.email;
+    const userName = session?.user?.name;
 
     /*
     if (!userId) {

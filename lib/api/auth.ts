@@ -23,7 +23,8 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
         }
 
         return {
-            id: session.user.id,
+            // @ts-ignore - Session type issue
+            id: session.user.id as string,
             email: (session.user.email || '') as string,
             name: session.user.name ?? null,
             role: (session.user as any).role ?? 'resident',

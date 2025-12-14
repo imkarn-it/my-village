@@ -1,10 +1,55 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__next-devtools__init",
+      "Bash(ls:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(bun run dev)",
+      "Bash(bun run db:push)",
+      "Bash(bun run build:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(\"D:\\my-village\\village-app\\app\\(dashboard)\\resident\\support\\page.tsx\")",
+      "Bash(bun add:*)",
+      "Bash(bun run lint)",
+      "Bash(NODE_OPTIONS='--trace-warnings' bun run build:*)",
+      "Bash(bun install)",
+      "Bash(find:*)",
+      "Bash(npx next build:*)",
+      "Bash(node debug-build:*)",
+      "Bash(node scripts/find-negative-repeat:*)",
+      "mcp__next-devtools__nextjs_index",
+      "Bash(tail:*)",
+      "Bash(NODE_OPTIONS='--trace-warnings --stack-trace-limit=100' bun run build:*)",
+      "Bash(bun outdated:*)",
+      "Bash(bun update:*)",
+      "Bash(timeout:*)",
+      "Bash(bun list)",
+      "Bash(bun pm:*)",
+      "WebSearch",
+      "Bash(bun list next)",
+      "Bash(cat:*)",
+      "Bash(bun run test:run:*)",
+      "Bash(bun run test lib/utils/__tests__/)",
+      "Bash(node:*)",
+      "Bash(bunx:*)",
+      "Bash(bun run test:e2e)",
+      "Bash(bun run test:coverage)",
+      "Bash(bun run vitest:*)",
+      "Bash(start coverage/index.html)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npx tsc:*)",
+      "Bash(findstr:*)",
+      "Bash(grep:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "next-devtools",
     "context7",
     "supabase-mcp-server",
     "playwright",
     "shadcn"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

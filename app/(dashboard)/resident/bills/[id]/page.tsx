@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,22 +25,42 @@ import { toast } from "sonner"
 import { api } from "@/lib/api/client"
 import Image from "next/image"
 
+interface Bill {
+    id: string;
+    billType: string;
+    amount: number;
+    dueDate: string;
+    status: string;
+    projectPaymentMethod: string;
+    unit?: {
+        unitNumber: string;
+    };
+}
+
+interface QRData {
+    type: string;
+    amount: number;
+    qrDataUrl?: string;
+    accountInfo: {
+        bankName: string;
+        accountName: string;
+        accountNumber?: string;
+        promptpayId?: string;
+    };
+}
+
 export default function BillDetailPage() {
     const params = useParams()
     const billId = params.id as string
 
     const [loading, setLoading] = useState(true)
-    const [bill, setBill] = useState<any>(null)
-    const [qrData, setQRData] = useState<any>(null)
+    const [bill, setBill] = useState<Bill | null>(null)
+    const [qrData, setQRData] = useState<QRData | null>(null)
     const [generatingQR, setGeneratingQR] = useState(false)
     const [uploadingSlip, setUploadingSlip] = useState(false)
     const [slipFile, setSlipFile] = useState<File | null>(null)
 
-    useEffect(() => {
-        fetchBill()
-    }, [billId])
-
-    const fetchBill = async () => {
+    const fetchBill = useCallback(async () => {
         try {
             setLoading(true)
             console.log("Fetching bill:", billId)
@@ -69,12 +89,16 @@ export default function BillDetailPage() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [billId])
+
+    useEffect(() => {
+        fetchBill()
+    }, [fetchBill])
 
     const handleGenerateQR = async () => {
         try {
             setGeneratingQR(true)
-            // @ts-ignore
+            // @ts-ignore API endpoint has dynamic access that TypeScript can't infer
             const { data, error } = await api.bills[billId]['generate-qr'].post()
 
             if (error) {
@@ -83,7 +107,7 @@ export default function BillDetailPage() {
 
             if (data?.success) {
                 setQRData(data.data)
-                if (bill.projectPaymentMethod === 'bank_transfer') {
+                if (bill?.projectPaymentMethod === 'bank_transfer') {
                     toast.success("ดึงข้อมูลบัญชีเรียบร้อยแล้ว")
                 } else {
                     toast.success("สร้าง QR Code เรียบร้อยแล้ว")
@@ -276,14 +300,14 @@ export default function BillDetailPage() {
                                     <ol className="list-decimal list-inside text-blue-700 dark:text-blue-300 space-y-1">
                                         {bill.projectPaymentMethod === 'bank_transfer' ? (
                                             <>
-                                                <li>คลิกปุ่ม "แสดงข้อมูลบัญชี" ด้านล่าง</li>
+                                                <li>คลิกปุ่ม &quot;แสดงข้อมูลบัญชี&quot; ด้านล่าง</li>
                                                 <li>โอนเงินเข้าบัญชีธนาคารตามที่ระบุ</li>
                                                 <li>ตรวจสอบจำนวนเงินให้ถูกต้อง</li>
                                                 <li>อัพโหลดสลิปเพื่อยืนยันการชำระเงิน</li>
                                             </>
                                         ) : (
                                             <>
-                                                <li>คลิกปุ่ม "แสดง QR Code" ด้านล่าง</li>
+                                                <li>คลิกปุ่ม &quot;แสดง QR Code&quot; ด้านล่าง</li>
                                                 <li>เปิดแอพธนาคารและสแกน QR Code</li>
                                                 <li>ตรวจสอบจำนวนเงินให้ถูกต้อง</li>
                                                 <li>กดยืนยันการชำระเงินในแอพธนาคาร</li>

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Bell, Moon, Shield } from "lucide-react"
+import { Bell, Shield } from "lucide-react"
 
 export default function ResidentSettingsPage() {
     return (
@@ -15,7 +15,7 @@ export default function ResidentSettingsPage() {
 
             <div className="grid gap-6">
                 {/* Notifications */}
-                <Card>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Bell className="w-5 h-5 text-blue-500" />
@@ -49,7 +49,7 @@ export default function ResidentSettingsPage() {
                 </Card>
 
                 {/* Privacy & Security */}
-                <Card>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Shield className="w-5 h-5 text-green-500" />

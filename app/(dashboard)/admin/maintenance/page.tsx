@@ -25,7 +25,7 @@ import {
     Search,
     Clock,
     CheckCircle2,
-    Calendar,
+    // Calendar - reserved for future date filtering
     Filter,
     MoreHorizontal,
     Loader2,
@@ -90,8 +90,25 @@ const getPriorityBadge = (priority: string) => {
     }
 };
 
+type MaintenanceRequest = {
+    id: string
+    title: string
+    description: string | null
+    category: string | null
+    priority: string | null
+    status: string | null
+    unitId: string
+    createdAt: Date | null
+    completedAt: Date | null
+}
+
+type Unit = {
+    id: string
+    unitNumber: string
+}
+
 export default function AdminMaintenancePage(): React.JSX.Element {
-    const [requests, setRequests] = useState<any[]>([])
+    const [requests, setRequests] = useState<MaintenanceRequest[]>([])
     const [units, setUnits] = useState<Record<string, string>>({})
     const [isLoading, setIsLoading] = useState(true)
     const [filterStatus, setFilterStatus] = useState<string>("all")
@@ -107,17 +124,17 @@ export default function AdminMaintenancePage(): React.JSX.Element {
 
                 if (unitRes.data?.success && Array.isArray(unitRes.data.data)) {
                     const unitMap: Record<string, string> = {}
-                    unitRes.data.data.forEach((u: any) => {
+                    unitRes.data.data.forEach((u: Unit) => {
                         unitMap[u.id] = u.unitNumber
                     })
                     setUnits(unitMap)
                 }
 
                 if (reqRes.data?.success && Array.isArray(reqRes.data.data)) {
-                    setRequests(reqRes.data.data)
+                    setRequests(reqRes.data.data as MaintenanceRequest[])
                 }
-            } catch (error) {
-                console.error("Failed to fetch data:", error)
+            } catch {
+                console.error("Failed to fetch data")
                 toast.error("ไม่สามารถดึงข้อมูลได้")
             } finally {
                 setIsLoading(false)
@@ -141,10 +158,10 @@ export default function AdminMaintenancePage(): React.JSX.Element {
             if (data?.success) {
                 toast.success("อัปเดตสถานะเรียบร้อย")
                 setRequests(prev => prev.map(r =>
-                    r.id === id ? { ...r, status: newStatus, completedAt: newStatus === 'completed' ? new Date().toISOString() : r.completedAt } : r
+                    r.id === id ? { ...r, status: newStatus, completedAt: newStatus === 'completed' ? new Date() : r.completedAt } : r
                 ))
             }
-        } catch (error) {
+        } catch {
             toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ")
         }
     }
@@ -227,7 +244,7 @@ export default function AdminMaintenancePage(): React.JSX.Element {
                                     filteredRequests.map((request) => (
                                         <TableRow key={request.id}>
                                             <TableCell className="whitespace-nowrap">
-                                                {format(new Date(request.createdAt), "d MMM yyyy", { locale: th })}
+                                                {request.createdAt ? format(new Date(request.createdAt), "d MMM yyyy", { locale: th }) : "-"}
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline" className="bg-slate-50/50">
@@ -241,8 +258,8 @@ export default function AdminMaintenancePage(): React.JSX.Element {
                                                 </div>
                                             </TableCell>
                                             <TableCell>{request.category}</TableCell>
-                                            <TableCell>{getPriorityBadge(request.priority)}</TableCell>
-                                            <TableCell>{getStatusBadge(request.status)}</TableCell>
+                                            <TableCell>{request.priority ? getPriorityBadge(request.priority) : "-"}</TableCell>
+                                            <TableCell>{request.status ? getStatusBadge(request.status) : "-"}</TableCell>
                                             <TableCell className="text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>

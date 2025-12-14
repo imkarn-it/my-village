@@ -1,193 +1,300 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import {
-    MessageSquare,
-    Send,
-    Clock,
-    CheckCircle2,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
     Plus,
-    ChevronRight,
-    User,
-    Calendar,
-    MessageCircle,
+    MessageSquare,
+    Clock,
+    MoreHorizontal,
+    Eye,
+    Reply,
 } from "lucide-react";
+import { format } from "date-fns";
+import { th } from "date-fns/locale";
+import { api } from "@/lib/api/client";
 
-// Mock data
-const tickets = [
-    {
-        id: 1,
-        subject: "สอบถามเรื่องค่าส่วนกลาง",
-        message: "อยากทราบรายละเอียดค่าส่วนกลางที่เพิ่มขึ้นจากเดือนที่แล้ว",
-        status: "replied",
-        createdAt: "8 ธ.ค. 2567",
-        repliedAt: "9 ธ.ค. 2567",
-        reply: "ค่าส่วนกลางที่เพิ่มขึ้นเนื่องจากมีการปรับปรุงระบบ CCTV และเพิ่มไฟส่องสว่างในพื้นที่จอดรถ ครับ",
-    },
-    {
-        id: 2,
-        subject: "แจ้งเสียงดังจากห้องข้างเคียง",
-        message: "มีเสียงดังรบกวนจากห้อง A103 ในช่วงกลางคืนบ่อยครั้ง",
-        status: "open",
-        createdAt: "10 ธ.ค. 2567",
-        repliedAt: null,
-        reply: null,
-    },
-];
+type SupportTicket = {
+    id: string;
+    unitId: string;
+    unit?: {
+        id: string;
+        number: string;
+    };
+    subject: string;
+    message?: string;
+    status: "open" | "in_progress" | "resolved" | "closed";
+    createdAt: string;
+    updatedAt: string;
+};
 
-export default function SupportPage(): React.JSX.Element {
+const getStatusBadge = (status: string) => {
+    switch (status) {
+        case "open":
+            return <Badge variant="default">เปิดใหม่</Badge>;
+        case "in_progress":
+            return <Badge className="bg-blue-100 text-blue-800">กำลังดำเนินการ</Badge>;
+        case "resolved":
+            return <Badge className="bg-green-100 text-green-800">แก้ไขแล้ว</Badge>;
+        case "closed":
+            return <Badge variant="outline">ปิดแล้ว</Badge>;
+        default:
+            return <Badge variant="secondary">{status}</Badge>;
+    }
+};
+
+export default function SupportPage() {
+    const [tickets, setTickets] = useState<SupportTicket[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [filter, setFilter] = useState<string>("all");
+
+    useEffect(() => {
+        fetchTickets();
+    }, []);
+
+    const fetchTickets = async () => {
+        try {
+            setLoading(true);
+            const { data } = await api.support.get();
+            if (data && Array.isArray(data)) {
+                // Sort by date
+                const sortedTickets = data.sort((a: SupportTicket, b: SupportTicket) => {
+                    const dateA = new Date(a.createdAt);
+                    const dateB = new Date(b.createdAt);
+                    return dateB.getTime() - dateA.getTime();
+                });
+                setTickets(sortedTickets);
+            }
+        } catch (err) {
+            setError("ไม่สามารถโหลดข้อมูลตั๋วงความได้");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const filteredTickets = tickets.filter((ticket) => {
+        if (filter === "all") return true;
+        if (filter === "open") return ticket.status === "open";
+        if (filter === "in_progress") return ticket.status === "in_progress";
+        if (filter === "resolved") return ticket.status === "resolved" || ticket.status === "closed";
+        return ticket.status === filter;
+    });
+
+    const handleViewTicket = (id: string) => {
+        // TODO: Navigate to ticket detail page
+        console.log("View ticket:", id);
+    };
+
+    const handleReply = (id: string) => {
+        // TODO: Open reply modal or navigate to detail page
+        console.log("Reply to ticket:", id);
+    };
+
+    if (loading) {
+        return (
+            <div className="space-y-8">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">ตั๋วงความ</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">ติดต่อนิติบุคคลเพื่อขอความช่วยเหลือ</p>
+                    </div>
+                    <Link href="/resident/support/new">
+                        <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            สร้างตั๋วงความ
+                        </Button>
+                    </Link>
+                </div>
+                <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                        <Card key={i} className="animate-pulse bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
+                            <CardHeader className="pb-3">
+                                <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mt-2"></div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-2">
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="space-y-8">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">ตั๋วงความ</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">ติดต่อนิติบุคคลเพื่อขอความช่วยเหลือ</p>
+                    </div>
+                    <Link href="/resident/support/new">
+                        <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            สร้างตั๋วงความ
+                        </Button>
+                    </Link>
+                </div>
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-red-200 dark:border-red-500/50 backdrop-blur-sm">
+                    <CardContent className="pt-6">
+                        <p className="text-red-800 dark:text-red-400">{error}</p>
+                        <Button onClick={fetchTickets} variant="outline" className="mt-2 border-red-200 dark:border-red-500/50 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10">
+                            ลองใหม่
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                             <MessageSquare className="w-5 h-5 text-white" />
                         </div>
-                        ติดต่อนิติบุคคล
+                        ตั๋วงความ
                     </h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">
-                        สอบถามหรือแจ้งปัญหาต่างๆ กับทางนิติบุคคล
-                    </p>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">ติดต่อนิติบุคคลเพื่อขอความช่วยเหลือ</p>
                 </div>
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300 hover:scale-[1.02]">
-                    <Plus className="w-4 h-4 mr-2" />
-                    สร้างข้อความใหม่
-                </Button>
+                <Link href="/resident/support/new">
+                    <Button className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover:scale-[1.02]">
+                        <Plus className="h-4 w-4 mr-2" />
+                        สร้างตั๋วงความ
+                    </Button>
+                </Link>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* New Message Form */}
-                <Card className="lg:col-span-1 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700/50">
-                        <CardTitle className="text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                            <Send className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                            ส่งข้อความใหม่
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="subject" className="text-slate-700 dark:text-slate-300">หัวข้อ</Label>
-                            <Input
-                                id="subject"
-                                placeholder="ระบุหัวข้อ..."
-                                className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-purple-500 focus:ring-purple-500/20"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="message" className="text-slate-700 dark:text-slate-300">รายละเอียด</Label>
-                            <Textarea
-                                id="message"
-                                placeholder="อธิบายรายละเอียด..."
-                                rows={5}
-                                className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-purple-500 focus:ring-purple-500/20 resize-none"
-                            />
-                        </div>
-                        <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300">
-                            <Send className="w-4 h-4 mr-2" />
-                            ส่งข้อความ
+            {/* Filter */}
+            <div className="flex items-center gap-4">
+                <div className="flex gap-2">
+                    {[
+                        { value: "all", label: "ทั้งหมด" },
+                        { value: "open", label: "เปิดใหม่" },
+                        { value: "in_progress", label: "กำลังดำเนินการ" },
+                        { value: "resolved", label: "แก้ไขแล้ว" },
+                    ].map((item) => (
+                        <Button
+                            key={item.value}
+                            variant={filter === item.value ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setFilter(item.value)}
+                        >
+                            {item.label}
                         </Button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Tickets List */}
+            {filteredTickets.length === 0 ? (
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
+                    <CardContent className="pt-6 text-center">
+                        <MessageSquare className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                            {filter === "all" ? "ยังไม่มีตั๋วงความ" : `ไม่มีตั๋วงความ${filter === "open" ? "ที่เปิดใหม่" : filter === "in_progress" ? "ที่กำลังดำเนินการ" : "ที่แก้ไขแล้ว"}`}
+                        </h3>
+                        <p className="text-slate-600 dark:text-slate-400 mb-4">
+                            {filter === "all" ? "สร้างตั๋วงความแรกเพื่อติดต่อนิติบุคคล" : `ไม่พบตั๋วงความที่ตรงตามเงื่อนไข`}
+                        </p>
+                        {filter === "all" && (
+                            <Link href="/resident/support/new">
+                                <Button className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover:scale-[1.02]">สร้างตั๋วงความแรก</Button>
+                            </Link>
+                        )}
                     </CardContent>
                 </Card>
-
-                {/* Tickets List */}
-                <div className="lg:col-span-2 space-y-4">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                        <MessageCircle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                        ประวัติการติดต่อ
-                    </h2>
-
-                    {tickets.length > 0 ? (
-                        <div className="space-y-4">
-                            {tickets.map((ticket) => (
-                                <Card
-                                    key={ticket.id}
-                                    className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300 cursor-pointer group"
-                                >
-                                    <CardContent className="p-5 space-y-4">
-                                        {/* Header */}
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    {ticket.status === "replied" ? (
-                                                        <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
-                                                            <CheckCircle2 className="w-3 h-3 mr-1" />
-                                                            ตอบกลับแล้ว
-                                                        </Badge>
-                                                    ) : (
-                                                        <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">
-                                                            <Clock className="w-3 h-3 mr-1" />
-                                                            รอตอบกลับ
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                                <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                                    {ticket.subject}
-                                                </h3>
-                                            </div>
-                                            <ChevronRight className="w-5 h-5 text-slate-400 dark:text-slate-600 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" />
+            ) : (
+                <div className="space-y-4">
+                    {filteredTickets.map((ticket) => (
+                        <Card key={ticket.id} className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-blue-500/50 transition-all duration-300 cursor-pointer group hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-blue-500/5">
+                            <CardHeader className="pb-3">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3">
+                                            <CardTitle className="text-xl text-slate-900 dark:text-white">{ticket.subject}</CardTitle>
+                                            {getStatusBadge(ticket.status)}
                                         </div>
-
-                                        {/* My Message */}
-                                        <div className="flex gap-3">
-                                            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                                <User className="w-4 h-4 text-white" />
+                                        <div className="flex items-center gap-4 mt-2 text-sm text-slate-600 dark:text-slate-400">
+                                            <div className="flex items-center gap-2">
+                                                <MessageSquare className="h-4 w-4" />
+                                                {ticket.unit?.number || "ไม่ระบุห้อง"}
                                             </div>
-                                            <div className="flex-1">
-                                                <p className="text-sm text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/50 rounded-xl rounded-tl-none p-3">
-                                                    {ticket.message}
-                                                </p>
-                                                <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                                                    <Calendar className="w-3 h-3" />
-                                                    {ticket.createdAt}
-                                                </p>
+                                            <div className="flex items-center gap-2">
+                                                <Clock className="h-4 w-4" />
+                                                {format(new Date(ticket.createdAt), "PPP", { locale: th })}
                                             </div>
                                         </div>
-
-                                        {/* Reply */}
-                                        {ticket.reply && (
-                                            <div className="flex gap-3 flex-row-reverse">
-                                                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                                    <MessageSquare className="w-4 h-4 text-white" />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="text-sm text-slate-700 dark:text-slate-300 bg-purple-50 dark:bg-purple-500/10 rounded-xl rounded-tr-none p-3 text-right">
-                                                        {ticket.reply}
-                                                    </p>
-                                                    <p className="text-xs text-slate-500 mt-1 text-right flex items-center gap-1 justify-end">
-                                                        <Calendar className="w-3 h-3" />
-                                                        {ticket.repliedAt}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    ) : (
-                        <Card className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50">
-                            <CardContent className="flex flex-col items-center justify-center py-16">
-                                <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mb-4">
-                                    <MessageSquare className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                                    </div>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="sm">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem
+                                                onClick={() => handleViewTicket(ticket.id)}
+                                            >
+                                                <Eye className="h-4 w-4 mr-2" />
+                                                ดูรายละเอียด
+                                            </DropdownMenuItem>
+                                            {ticket.status !== "closed" && (
+                                                <>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem
+                                                        onClick={() => handleReply(ticket.id)}
+                                                    >
+                                                        <Reply className="h-4 w-4 mr-2" />
+                                                        ตอบกลับ
+                                                    </DropdownMenuItem>
+                                                </>
+                                            )}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
-                                <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
-                                    ยังไม่มีข้อความ
-                                </h3>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm text-center max-w-sm">
-                                    คุณยังไม่เคยติดต่อนิติบุคคล สามารถส่งข้อความใหม่ได้ทางด้านซ้าย
-                                </p>
+                            </CardHeader>
+                            {ticket.message && (
+                                <CardContent className="pt-0">
+                                    <div className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">
+                                        {ticket.message}
+                                    </div>
+                                </CardContent>
+                            )}
+                            <CardContent>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-500 dark:text-slate-400">
+                                    <div>
+                                        <span className="font-medium">รหัสตั๋วง:</span> #{ticket.id.slice(0, 8)}...
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">อัพเดตล่าสุดท้าย:</span>{" "}
+                                        {format(new Date(ticket.updatedAt), "PPP", { locale: th })}
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
-                    )}
+                    ))}
                 </div>
-            </div>
+            )}
         </div>
     );
 }
