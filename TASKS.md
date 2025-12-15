@@ -522,10 +522,11 @@ Deployment:         ░░░░░░░░░░░░░░░░░░░░
   - [x] Basic page loads ✅
   - [x] Authentication flow tests ✅
   - [x] Facilities booking flow tests (partially working) ✅
-  - [ ] Register visitor with QR
-  - [ ] Create announcement
-  - [ ] Create maintenance request
-  - [ ] Pay bill
+  - [x] Register visitor with QR ✅
+  - [x] Create announcement ✅
+  - [x] Create maintenance request ✅
+  - [x] Pay bill ✅
+  - [x] Create support ticket ✅
 
 - [ ] **Performance Testing**
   - [ ] Load testing (k6 or Artillery)
