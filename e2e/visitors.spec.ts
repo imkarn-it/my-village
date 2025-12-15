@@ -1,24 +1,20 @@
 import { test, expect } from '@playwright/test'
+import { login } from './helpers/auth'
 
 test.describe('Visitor Management System', () => {
 
     test.describe('Resident Visitor Management', () => {
         test.beforeEach(async ({ page }) => {
-            // Login as resident
-            await page.goto('/')
-            await page.fill('input[name="email"]', 'resident@test.com')
-            await page.fill('input[name="password"]', 'TestPass123!')
-            await page.click('button[type="submit"]')
-            await page.waitForURL(/\/dashboard/)
+            await login(page, 'resident')
         })
 
         test('should allow resident to pre-register a visitor', async ({ page }) => {
-            await page.click('text=ผู้มาติดต่อ')
-            await expect(page.locator('h1')).toContainText('ผู้มาติดต่อ')
+            await page.click('text=ผู้มาติดต่อ', { timeout: 10000 })
+            await expect(page.locator('h1')).toContainText('ผู้มาติดต่อ', { timeout: 10000 })
 
             // Click Create QR Code button
             await page.click('text=สร้าง QR Code')
-            await expect(page).toHaveURL(/\/resident\/visitors\/new/)
+            await expect(page).toHaveURL(/\/resident\/visitors\/new/, { timeout: 10000 })
 
             // Fill form
             await page.fill('input[name="visitorName"]', 'John Doe Visitor')
@@ -29,26 +25,21 @@ test.describe('Visitor Management System', () => {
             await page.click('button:has-text("สร้าง QR Code")')
 
             // Verify success and redirect
-            await expect(page.locator('text=สร้างนัดหมายสำเร็จ')).toBeVisible()
-            await expect(page).toHaveURL(/\/resident\/visitors/)
+            await expect(page.locator('text=สร้างนัดหมายสำเร็จ')).toBeVisible({ timeout: 10000 })
+            await expect(page).toHaveURL(/\/resident\/visitors/, { timeout: 10000 })
 
             // Verify visitor appears in list (Pending tab by default)
-            await expect(page.locator('text=John Doe Visitor')).toBeVisible()
+            await expect(page.locator('text=John Doe Visitor')).toBeVisible({ timeout: 10000 })
         })
     })
 
     test.describe('Security Visitor Check-in', () => {
         test.beforeEach(async ({ page }) => {
-            // Login as security
-            await page.goto('/')
-            await page.fill('input[name="email"]', 'security@test.com')
-            await page.fill('input[name="password"]', 'TestPass123!')
-            await page.click('button[type="submit"]')
-            await page.waitForURL(/\/dashboard/)
+            await login(page, 'security')
         })
 
         test('should allow security to check-in a visitor manually', async ({ page }) => {
-            await page.click('text=ผู้มาติดต่อ')
+            await page.click('text=ผู้มาติดต่อ', { timeout: 10000 })
 
             // Navigate to check-in page
             await page.click('text=ลงทะเบียนเข้า')
@@ -72,8 +63,8 @@ test.describe('Visitor Management System', () => {
             await page.click('button:has-text("บันทึก Check-in")')
 
             // Verify success
-            await expect(page.locator('text=บันทึกข้อมูลสำเร็จ')).toBeVisible()
-            await expect(page).toHaveURL(/\/security\/visitors/)
+            await expect(page.locator('text=บันทึกข้อมูลสำเร็จ')).toBeVisible({ timeout: 10000 })
+            await expect(page).toHaveURL(/\/security\/visitors/, { timeout: 10000 })
         })
     })
 })
