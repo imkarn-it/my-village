@@ -36,8 +36,12 @@
       - text: ยังไม่มีบัญชี?
       - link "สมัครสมาชิก" [ref=e48] [cursor=pointer]:
         - /url: /register
-  - region "Notifications alt+T"
-  - button "Open Next.js Dev Tools" [ref=e54] [cursor=pointer]:
-    - img [ref=e55]
-  - alert [ref=e58]
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=e49]:
+        - img [ref=e51]
+        - generic [ref=e56]: อีเมลหรือรหัสผ่านไม่ถูกต้อง
+  - button "Open Next.js Dev Tools" [ref=e62] [cursor=pointer]:
+    - img [ref=e63]
+  - alert [ref=e66]
 ```

@@ -6,26 +6,17 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts'],
+    environment: 'node',
+    // setupFiles: ['./vitest.setup.ts'], // Temporarily disabled
+    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [
       'node_modules/**',
-      'e2e/**', // Exclude E2E tests from Vitest
+      'e2e/**',
+      'coverage/**',
+      'dist/**',
+      'playwright-report/**',
+      'test-results/**',
     ],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html'],
-      exclude: [
-        'node_modules/**',
-        'e2e/**',
-        '**/*.spec.ts',
-        '**/*.test.ts',
-        'coverage/**',
-        'dist/**',
-        'playwright-report/**',
-        'test-results/**',
-      ],
-    },
   },
   resolve: {
     alias: {
