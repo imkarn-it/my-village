@@ -183,8 +183,8 @@ export default function SecurityScanPage() {
                                                 ${scannedData.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                                     scannedData.status === 'approved' ? 'bg-green-100 text-green-800' :
                                                         scannedData.status === 'checked_in' ? 'bg-blue-100 text-blue-800' :
-                                                            scannedData.status === 'checked_out' ? 'bg-gray-100 text-gray-800' :
-                                                                'bg-gray-100 text-gray-800'
+                                                            scannedData.status === 'checked_out' ? 'bg-slate-100 dark:bg-slate-800 text-gray-800' :
+                                                                'bg-slate-100 dark:bg-slate-800 text-gray-800'
                                                 }`}>
                                                 {scannedData.status === 'pending' ? 'รออนุมัติ' :
                                                     scannedData.status === 'approved' ? 'อนุมัติแล้ว' :

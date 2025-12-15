@@ -194,8 +194,8 @@ export default function FinancialReportsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">รายงานการเงิน</h1>
-                    <p className="text-gray-600">ข้อมูลรายได้ ค่าใช้จ่าย และธุรกรรมการเงิน</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">รายงานการเงิน</h1>
+                    <p className="text-slate-600 dark:text-slate-400">ข้อมูลรายได้ ค่าใช้จ่าย และธุรกรรมการเงิน</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={exportDetailedReport}>
@@ -210,7 +210,7 @@ export default function FinancialReportsPage() {
             </div>
 
             {/* View Mode Selector */}
-            <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-lg w-fit">
+            <div className="flex items-center gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg w-fit">
                 <Button
                     variant={viewMode === "overview" ? "default" : "ghost"}
                     size="sm"
@@ -246,7 +246,7 @@ export default function FinancialReportsPage() {
                     <div className="flex flex-col lg:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
-                                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                                 <Input
                                     placeholder="ค้นหาจากห้องพักหรือชื่อผู้อยู่อาศัย..."
                                     value={searchTerm}
@@ -332,7 +332,7 @@ export default function FinancialReportsPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {filteredTransactions.map((transaction) => (
-                                        <TableRow key={transaction.id} className="hover:bg-gray-50">
+                                        <TableRow key={transaction.id} className="hover:bg-slate-50 dark:bg-slate-800/50">
                                             <TableCell>
                                                 {format(new Date(transaction.date), "d MMM yyyy", { locale: th })}
                                             </TableCell>
@@ -384,9 +384,9 @@ export default function FinancialReportsPage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">อัตรากำไรขั้นต้น</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">อัตรากำไรขั้นต้น</p>
                                         <p className="text-2xl font-bold text-green-600">{data.profitMargin.toFixed(1)}%</p>
-                                        <p className="text-xs text-gray-500">Profit Margin</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Profit Margin</p>
                                     </div>
                                     <TrendingUp className="h-8 w-8 text-green-600" />
                                 </div>
@@ -397,9 +397,9 @@ export default function FinancialReportsPage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">อัตราการเก็บเกี่ยว</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">อัตราการเก็บเกี่ยว</p>
                                         <p className="text-2xl font-bold text-blue-600">{data.collectionRate.toFixed(1)}%</p>
-                                        <p className="text-xs text-gray-500">Collection Rate</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Collection Rate</p>
                                     </div>
                                     <DollarSign className="h-8 w-8 text-blue-600" />
                                 </div>
@@ -410,9 +410,9 @@ export default function FinancialReportsPage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">การเติบโตต่อเดือน</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">การเติบโตต่อเดือน</p>
                                         <p className="text-2xl font-bold text-purple-600">+{data.revenueGrowth}%</p>
-                                        <p className="text-xs text-gray-500">Month-over-Month</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Month-over-Month</p>
                                     </div>
                                     <TrendingUp className="h-8 w-8 text-purple-600" />
                                 </div>
@@ -423,9 +423,9 @@ export default function FinancialReportsPage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">ธุรกรรมทั้งหมด</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ธุรกรรมทั้งหมด</p>
                                         <p className="text-2xl font-bold text-orange-600">{data.transactionCount}</p>
-                                        <p className="text-xs text-gray-500">Transactions</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Transactions</p>
                                     </div>
                                     <Activity className="h-8 w-8 text-orange-600" />
                                 </div>
@@ -452,7 +452,7 @@ export default function FinancialReportsPage() {
                                             </div>
                                             <div className="text-right">
                                                 <p className="font-medium">฿{item.value.toLocaleString('th-TH')}</p>
-                                                <p className="text-xs text-gray-500">{item.percentage}%</p>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400">{item.percentage}%</p>
                                             </div>
                                         </div>
                                     ))}
@@ -469,7 +469,7 @@ export default function FinancialReportsPage() {
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm">ชำระแล้ว</span>
                                         <div className="flex items-center gap-2">
-                                            <div className="w-32 bg-gray-200 rounded-full h-2">
+                                            <div className="w-32 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                                 <div className="bg-green-500 h-2 rounded-full" style={{ width: "94.5%" }} />
                                             </div>
                                             <span className="text-sm font-medium">94.5%</span>
@@ -478,7 +478,7 @@ export default function FinancialReportsPage() {
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm">รอชำระ</span>
                                         <div className="flex items-center gap-2">
-                                            <div className="w-32 bg-gray-200 rounded-full h-2">
+                                            <div className="w-32 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                                 <div className="bg-yellow-500 h-2 rounded-full" style={{ width: "3.5%" }} />
                                             </div>
                                             <span className="text-sm font-medium">3.5%</span>
@@ -487,7 +487,7 @@ export default function FinancialReportsPage() {
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm">ค้างชำระ</span>
                                         <div className="flex items-center gap-2">
-                                            <div className="w-32 bg-gray-200 rounded-full h-2">
+                                            <div className="w-32 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                                 <div className="bg-red-500 h-2 rounded-full" style={{ width: "2.0%" }} />
                                             </div>
                                             <span className="text-sm font-medium">2.0%</span>

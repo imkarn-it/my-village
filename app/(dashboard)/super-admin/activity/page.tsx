@@ -287,7 +287,7 @@ export default function SuperAdminActivityPage() {
             case "warning": return "bg-yellow-100 text-yellow-800";
             case "error": return "bg-red-100 text-red-800";
             case "info": return "bg-blue-100 text-blue-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -313,14 +313,14 @@ export default function SuperAdminActivityPage() {
                     {Array.from({ length: 4 }, (_, i) => (
                         <Card key={i} className="animate-pulse">
                             <CardContent className="p-6">
-                                <div className="h-20 bg-gray-200 rounded"></div>
+                                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
                 <Card className="animate-pulse">
                     <CardContent className="p-6">
-                        <div className="h-96 bg-gray-200 rounded"></div>
+                        <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded"></div>
                     </CardContent>
                 </Card>
             </div>
@@ -335,8 +335,8 @@ export default function SuperAdminActivityPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">บันทึกทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.totalLogs.toLocaleString()}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">บันทึกทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalLogs.toLocaleString()}</p>
                             </div>
                             <Activity className="h-8 w-8 text-blue-600" />
                         </div>
@@ -347,7 +347,7 @@ export default function SuperAdminActivityPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">วันนี้</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">วันนี้</p>
                                 <p className="text-2xl font-bold text-green-600">{stats.todayLogs}</p>
                             </div>
                             <TrendingUp className="h-8 w-8 text-green-600" />
@@ -359,7 +359,7 @@ export default function SuperAdminActivityPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">คำเตือน</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">คำเตือน</p>
                                 <p className="text-2xl font-bold text-yellow-600">{stats.warningCount}</p>
                             </div>
                             <AlertTriangle className="h-8 w-8 text-yellow-600" />
@@ -371,7 +371,7 @@ export default function SuperAdminActivityPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ข้อผิดพลาด</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ข้อผิดพลาด</p>
                                 <p className="text-2xl font-bold text-red-600">{stats.errorCount}</p>
                             </div>
                             <XCircle className="h-8 w-8 text-red-600" />
@@ -383,8 +383,8 @@ export default function SuperAdminActivityPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">ประวัติกิจกรรม</h1>
-                    <p className="text-gray-600">ติดตามและตรวจสอบกิจกรรมทั้งหมดในระบบ</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">ประวัติกิจกรรม</h1>
+                    <p className="text-slate-600 dark:text-slate-400">ติดตามและตรวจสอบกิจกรรมทั้งหมดในระบบ</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={exportLogs}>
@@ -404,7 +404,7 @@ export default function SuperAdminActivityPage() {
                     <div className="flex flex-col lg:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                                 <Input
                                     placeholder="ค้นหาจากชื่อผู้ใช้, อีเมล, หรือรายละเอียด..."
                                     value={searchTerm}
@@ -466,13 +466,13 @@ export default function SuperAdminActivityPage() {
                 <CardContent>
                     {filteredLogs.length === 0 ? (
                         <div className="text-center py-12">
-                            <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            <Activity className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                                 {searchTerm || typeFilter !== "all" || statusFilter !== "all"
                                     ? "ไม่พบบันทึกที่ตรงตามเงื่อนไข"
                                     : "ยังไม่มีบันทึกกิจกรรม"}
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-slate-600 dark:text-slate-400">
                                 {searchTerm || typeFilter !== "all" || statusFilter !== "all"
                                     ? "ลองปรับเปลี่ยนเงื่อนไขการค้นหา"
                                     : "กิจกรรมในระบบจะแสดงที่นี่"}
@@ -495,7 +495,7 @@ export default function SuperAdminActivityPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {filteredLogs.map((log) => (
-                                        <TableRow key={log.id} className="hover:bg-gray-50">
+                                        <TableRow key={log.id} className="hover:bg-slate-50 dark:bg-slate-800/50">
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
                                                     {getTypeIcon(log.type)}
@@ -513,18 +513,18 @@ export default function SuperAdminActivityPage() {
                                                     <div>
                                                         <p className="font-medium text-sm">{log.userName}</p>
                                                         {log.userEmail && (
-                                                            <p className="text-xs text-gray-500">{log.userEmail}</p>
+                                                            <p className="text-xs text-slate-500 dark:text-slate-400">{log.userEmail}</p>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <span className="text-gray-400">-</span>
+                                                    <span className="text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
                                                 {log.projectName ? (
                                                     <span className="text-sm">{log.projectName}</span>
                                                 ) : (
-                                                    <span className="text-gray-400">-</span>
+                                                    <span className="text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
@@ -567,7 +567,7 @@ export default function SuperAdminActivityPage() {
                             <div className="flex items-start justify-between">
                                 <div>
                                     <h3 className="text-lg font-semibold">รายละเอียดกิจกรรม</h3>
-                                    <p className="text-gray-600">ID: {selectedLog.id}</p>
+                                    <p className="text-slate-600 dark:text-slate-400">ID: {selectedLog.id}</p>
                                 </div>
                                 <Button
                                     variant="ghost"
@@ -582,30 +582,30 @@ export default function SuperAdminActivityPage() {
                         <div className="p-6 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">ประเภท</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">ประเภท</label>
                                     <div className="flex items-center gap-2 mt-1">
                                         {getTypeIcon(selectedLog.type)}
                                         <span>{getTypeLabel(selectedLog.type)}</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">การกระทำ</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">การกระทำ</label>
                                     <p className="font-medium">{selectedLog.action}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">ผู้ใช้</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">ผู้ใช้</label>
                                     <p>{selectedLog.userName || selectedLog.userEmail || "-"}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">โครงการ</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">โครงการ</label>
                                     <p>{selectedLog.projectName || "-"}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">IP Address</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">IP Address</label>
                                     <p className="font-mono text-sm">{selectedLog.ipAddress || "-"}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">สถานะ</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">สถานะ</label>
                                     <Badge className={getStatusColor(selectedLog.status)}>
                                         {selectedLog.status}
                                     </Badge>
@@ -613,12 +613,12 @@ export default function SuperAdminActivityPage() {
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium text-gray-500">รายละเอียด</label>
-                                <p className="mt-1 text-gray-700">{selectedLog.details}</p>
+                                <label className="text-sm font-medium text-slate-500 dark:text-slate-400">รายละเอียด</label>
+                                <p className="mt-1 text-slate-700 dark:text-slate-300">{selectedLog.details}</p>
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium text-gray-500">วันที่และเวลา</label>
+                                <label className="text-sm font-medium text-slate-500 dark:text-slate-400">วันที่และเวลา</label>
                                 <p className="mt-1">
                                     {format(new Date(selectedLog.timestamp), "d MMMM yyyy, HH:mm:ss", { locale: th })}
                                 </p>
@@ -626,9 +626,9 @@ export default function SuperAdminActivityPage() {
 
                             {selectedLog.metadata && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">ข้อมูลเพิ่มเติม</label>
-                                    <div className="mt-1 bg-gray-50 rounded-lg p-3">
-                                        <pre className="text-sm text-gray-700 whitespace-pre-wrap">
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">ข้อมูลเพิ่มเติม</label>
+                                    <div className="mt-1 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                                        <pre className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
                                             {JSON.stringify(selectedLog.metadata, null, 2)}
                                         </pre>
                                     </div>
@@ -637,8 +637,8 @@ export default function SuperAdminActivityPage() {
 
                             {selectedLog.userAgent && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">User Agent</label>
-                                    <p className="mt-1 text-sm text-gray-700 break-all">{selectedLog.userAgent}</p>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">User Agent</label>
+                                    <p className="mt-1 text-sm text-slate-700 dark:text-slate-300 break-all">{selectedLog.userAgent}</p>
                                 </div>
                             )}
                         </div>

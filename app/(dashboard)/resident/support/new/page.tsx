@@ -94,16 +94,17 @@ export default function NewSupportTicketPage() {
                 formDataToSubmit.append(`attachments[${index}]`, file);
             });
 
-            // @ts-ignore - FormData type issue
-            const { data, error } = await api.support.post(formDataToSubmit);
+            const response = await (api.support.post as unknown as (data: FormData) => Promise<{
+                data: { success: boolean; data: SupportTicket } | null;
+                error: { value: unknown } | null;
+            }>)(formDataToSubmit);
 
-            if (error) {
-                throw new Error(String(error.value));
+            if (response.error) {
+                throw new Error(String(response.error.value));
             }
 
-            if (data && data.success) {
-                // @ts-ignore - Type conversion issue
-                setCreatedTicket(data.data as SupportTicket);
+            if (response.data?.success) {
+                setCreatedTicket(response.data.data);
                 toast.success("สร้างตั๋วงความเรียบร้อยแล้ว");
             }
         } catch (err: unknown) {
@@ -134,8 +135,8 @@ export default function NewSupportTicketPage() {
                         <CheckCircle className="w-8 h-8 text-green-600" />
                     </div>
                     <div className="space-y-2">
-                        <h1 className="text-2xl font-bold text-gray-900">สร้างตั๋วงความสำเร็จ</h1>
-                        <p className="text-gray-600">ตั๋วงความของคุณถูกส่งให้นิติบุคคลเรียบร้อยแล้ว</p>
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">สร้างตั๋วงความสำเร็จ</h1>
+                        <p className="text-slate-600 dark:text-slate-400">ตั๋วงความของคุณถูกส่งให้นิติบุคคลเรียบร้อยแล้ว</p>
                     </div>
                 </div>
 
@@ -143,19 +144,19 @@ export default function NewSupportTicketPage() {
                     <CardContent className="pt-6">
                         <div className="space-y-4">
                             <div>
-                                <Label className="text-sm font-medium text-gray-500">รหัสตั๋วง</Label>
+                                <Label className="text-sm font-medium text-slate-500 dark:text-slate-400">รหัสตั๋วง</Label>
                                 <p className="font-mono text-lg">#{createdTicket.id.slice(0, 8)}...</p>
                             </div>
                             <div>
-                                <Label className="text-sm font-medium text-gray-500">เรื่อง</Label>
+                                <Label className="text-sm font-medium text-slate-500 dark:text-slate-400">เรื่อง</Label>
                                 <p className="font-medium">{createdTicket.subject}</p>
                             </div>
                             <div>
-                                <Label className="text-sm font-medium text-gray-500">รายละเอียด</Label>
-                                <p className="text-gray-700 whitespace-pre-wrap">{createdTicket.message}</p>
+                                <Label className="text-sm font-medium text-slate-500 dark:text-slate-400">รายละเอียด</Label>
+                                <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{createdTicket.message}</p>
                             </div>
                             <div>
-                                <Label className="text-sm font-medium text-gray-500">สถานะ</Label>
+                                <Label className="text-sm font-medium text-slate-500 dark:text-slate-400">สถานะ</Label>
                                 <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                     เปิดใหม่
                                 </div>
@@ -190,8 +191,8 @@ export default function NewSupportTicketPage() {
                     </Button>
                 </Link>
                 <div className="space-y-1">
-                    <h1 className="text-2xl font-bold text-gray-900">สร้างตั๋วงความใหม่</h1>
-                    <p className="text-gray-600">ติดต่อนิติบุคคลเพื่อขอความช่วยเหลือ</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">สร้างตั๋วงความใหม่</h1>
+                    <p className="text-slate-600 dark:text-slate-400">ติดต่อนิติบุคคลเพื่อขอความช่วยเหลือ</p>
                 </div>
             </div>
 
@@ -210,7 +211,7 @@ export default function NewSupportTicketPage() {
                                 ห้องพัก <span className="text-red-500">*</span>
                             </Label>
                             <div className="relative">
-                                <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+                                <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
                                 <Select
                                     value={formData.unitId}
                                     onValueChange={(value) => setFormData(prev => ({ ...prev, unitId: value }))}
@@ -283,7 +284,7 @@ export default function NewSupportTicketPage() {
                         {/* File Upload */}
                         <div className="space-y-2">
                             <Label>แนบเอกสาร (ถ้ามี)</Label>
-                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-2">
                                 <Paperclip className="w-4 h-4" />
                                 <span>แนบรูปภาพหรือเอกสารที่เกี่ยวข้อง</span>
                             </div>
@@ -294,7 +295,7 @@ export default function NewSupportTicketPage() {
                                 onChange={(files) => setUploadedFiles(files)}
                                 value={uploadedFiles}
                             />
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                                 รองรับไฟล์รูปภาพและเอกสาร PDF, Word (สูงสุด 5MB ต่อไฟล์)
                             </p>
                         </div>

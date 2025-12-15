@@ -202,7 +202,7 @@ export default function SuperAdminDatabasePage() {
             case "maintenance":
                 return "bg-blue-100 text-blue-800";
             default:
-                return "bg-gray-100 text-gray-800";
+                return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -249,8 +249,8 @@ export default function SuperAdminDatabasePage() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">ฐานข้อมูล</h1>
-                <p className="text-gray-600">จัดการและตรวจสอบสถานะฐานข้อมูลระบบ</p>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">ฐานข้อมูล</h1>
+                <p className="text-slate-600 dark:text-slate-400">จัดการและตรวจสอบสถานะฐานข้อมูลระบบ</p>
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -269,14 +269,14 @@ export default function SuperAdminDatabasePage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">ขนาดฐานข้อมูล</p>
-                                        <p className="text-2xl font-bold text-gray-900">{stats.totalSize}</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ขนาดฐานข้อมูล</p>
+                                        <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalSize}</p>
                                     </div>
                                     <HardDrive className="h-8 w-8 text-blue-600" />
                                 </div>
                                 <div className="mt-2">
                                     <Progress value={(stats.usedSpace / stats.totalSpace) * 100} className="h-2" />
-                                    <p className="text-xs text-gray-500 mt-1">
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                         {stats.usedSpace} GB / {stats.totalSpace} GB
                                     </p>
                                 </div>
@@ -287,8 +287,8 @@ export default function SuperAdminDatabasePage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">จำนวนระเบียน</p>
-                                        <p className="text-2xl font-bold text-gray-900">{stats.totalRecords.toLocaleString()}</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">จำนวนระเบียน</p>
+                                        <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalRecords.toLocaleString()}</p>
                                     </div>
                                     <FileText className="h-8 w-8 text-green-600" />
                                 </div>
@@ -299,8 +299,8 @@ export default function SuperAdminDatabasePage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">จำนวนตาราง</p>
-                                        <p className="text-2xl font-bold text-gray-900">{stats.totalTables}</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">จำนวนตาราง</p>
+                                        <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalTables}</p>
                                     </div>
                                     <Database className="h-8 w-8 text-purple-600" />
                                 </div>
@@ -311,7 +311,7 @@ export default function SuperAdminDatabasePage() {
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">สถานะเชื่อมต่อ</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">สถานะเชื่อมต่อ</p>
                                         <Badge className={getStatusColor(stats.connectionStatus)}>
                                             {stats.connectionStatus === "connected" && "เชื่อมต่อแล้ว"}
                                             {stats.connectionStatus === "disconnected" && "ไม่ได้เชื่อมต่อ"}
@@ -335,21 +335,21 @@ export default function SuperAdminDatabasePage() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">เวลาทำงานติดต่อกัน</span>
+                                    <span className="text-slate-600 dark:text-slate-400">เวลาทำงานติดต่อกัน</span>
                                     <span className="font-medium">{stats.uptime}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">การสำรองข้อมูลล่าสุด</span>
+                                    <span className="text-slate-600 dark:text-slate-400">การสำรองข้อมูลล่าสุด</span>
                                     <span className="font-medium">
                                         {format(new Date(stats.lastBackup), "d MMM yyyy, HH:mm", { locale: th })}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">เวอร์ชั่นฐานข้อมูล</span>
+                                    <span className="text-slate-600 dark:text-slate-400">เวอร์ชั่นฐานข้อมูล</span>
                                     <span className="font-medium">PostgreSQL 15.4</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">ตำแหน่งที่จัดเก็บ</span>
+                                    <span className="text-slate-600 dark:text-slate-400">ตำแหน่งที่จัดเก็บ</span>
                                     <span className="font-medium">Supabase (AWS)</span>
                                 </div>
                             </CardContent>
@@ -364,19 +364,19 @@ export default function SuperAdminDatabasePage() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-gray-600">การเข้ารหัส</span>
+                                    <span className="text-slate-600 dark:text-slate-400">การเข้ารหัส</span>
                                     <Badge className="bg-green-100 text-green-800">เปิดใช้งาน</Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-gray-600">SSL Certificate</span>
+                                    <span className="text-slate-600 dark:text-slate-400">SSL Certificate</span>
                                     <Badge className="bg-green-100 text-green-800">ถูกต้อง</Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-gray-600">การควบคุมการเข้าถึง</span>
+                                    <span className="text-slate-600 dark:text-slate-400">การควบคุมการเข้าถึง</span>
                                     <Badge className="bg-green-100 text-green-800">เปิดใช้งาน</Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-gray-600">การตรวจสอบสิทธิ์ 2 ชั้น</span>
+                                    <span className="text-slate-600 dark:text-slate-400">การตรวจสอบสิทธิ์ 2 ชั้น</span>
                                     <Badge className="bg-green-100 text-green-800">บังคับใช้</Badge>
                                 </div>
                             </CardContent>
@@ -412,7 +412,7 @@ export default function SuperAdminDatabasePage() {
                                     </TableHeader>
                                     <TableBody>
                                         {tables.map((table) => (
-                                            <TableRow key={table.name} className="hover:bg-gray-50">
+                                            <TableRow key={table.name} className="hover:bg-slate-50 dark:bg-slate-800/50">
                                                 <TableCell className="font-medium">{table.name}</TableCell>
                                                 <TableCell>{table.records.toLocaleString()}</TableCell>
                                                 <TableCell>{table.size}</TableCell>
@@ -484,7 +484,7 @@ export default function SuperAdminDatabasePage() {
                                     </TableHeader>
                                     <TableBody>
                                         {backups.map((backup) => (
-                                            <TableRow key={backup.id} className="hover:bg-gray-50">
+                                            <TableRow key={backup.id} className="hover:bg-slate-50 dark:bg-slate-800/50">
                                                 <TableCell className="font-medium">{backup.filename}</TableCell>
                                                 <TableCell>{backup.size}</TableCell>
                                                 <TableCell>
@@ -551,7 +551,7 @@ export default function SuperAdminDatabasePage() {
                                     </TableHeader>
                                     <TableBody>
                                         {queryHistory.map((query) => (
-                                            <TableRow key={query.id} className="hover:bg-gray-50">
+                                            <TableRow key={query.id} className="hover:bg-slate-50 dark:bg-slate-800/50">
                                                 <TableCell className="max-w-md truncate font-mono text-sm">
                                                     {query.query}
                                                 </TableCell>

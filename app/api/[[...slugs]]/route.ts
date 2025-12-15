@@ -3,10 +3,10 @@ import { cors } from '@elysiajs/cors'
 import { swagger } from '@elysiajs/swagger'
 import { db } from '@/lib/db'
 import {
-    users, announcements, units, parcels, visitors,
-    bills, maintenanceRequests, facilities, bookings, sosAlerts, supportTickets, paymentSettings, notifications
+    users, announcements, units, parcels, visitors, projects, equipment,
+    bills, maintenanceRequests, facilities, bookings, sosAlerts, supportTickets, supportTicketResponses, paymentSettings, notifications
 } from '@/lib/db/schema'
-import { eq, desc, and, sql } from 'drizzle-orm'
+import { eq, desc, and, sql, asc } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 import { randomUUID } from 'crypto'
@@ -47,6 +47,140 @@ const app = new Elysia({ prefix: '/api' })
             name: t.String(),
         }),
         detail: { tags: ['auth'], summary: 'Register new user' }
+    })
+
+    // Projects endpoints
+    .get('/projects', async ({ query }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const data = await db.query.projects.findMany({
+            limit: query.limit ? parseInt(query.limit) : 50,
+            orderBy: desc(projects.createdAt),
+            with: {
+                users: {
+                    columns: {
+                        id: true,
+                        role: true,
+                        name: true,
+                        email: true,
+                    }
+                }
+            }
+        })
+
+        return { success: true, data }
+    }, {
+        query: t.Object({
+            limit: t.Optional(t.String())
+        }),
+        detail: { tags: ['projects'], summary: 'Get all projects' }
+    })
+
+    .post('/projects', async ({ body }) => {
+        const session = await auth()
+        if (!session?.user || session.user.role !== 'super_admin') {
+            return { success: false, error: 'Forbidden - Super Admin access required' }
+        }
+
+        const [project] = await db.insert(projects).values({
+            name: body.name,
+            type: body.type,
+            address: body.address,
+            settings: {}, // Default settings
+        }).returning()
+
+        return { success: true, data: project }
+    }, {
+        body: t.Object({
+            name: t.String(),
+            type: t.Optional(t.String()),
+            address: t.Optional(t.String()),
+        }),
+        detail: { tags: ['projects'], summary: 'Create new project' }
+    })
+
+    .get('/projects/:id', async ({ params }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const project = await db.query.projects.findFirst({
+            where: eq(projects.id, params.id),
+            with: {
+                users: {
+                    columns: {
+                        id: true,
+                        role: true,
+                        name: true,
+                        email: true,
+                    }
+                }
+            }
+        })
+
+        if (!project) {
+            return { success: false, error: 'Project not found' }
+        }
+
+        return { success: true, data: project }
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        detail: { tags: ['projects'], summary: 'Get project by ID' }
+    })
+
+    .patch('/projects/:id', async ({ params, body }) => {
+        const session = await auth()
+        if (!session?.user || session.user.role !== 'super_admin') {
+            return { success: false, error: 'Forbidden - Super Admin access required' }
+        }
+
+        const [project] = await db.update(projects)
+            .set({
+                ...body,
+                updatedAt: new Date(),
+            })
+            .where(eq(projects.id, params.id))
+            .returning()
+
+        return { success: true, data: project }
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        body: t.Object({
+            name: t.Optional(t.String()),
+            type: t.Optional(t.String()),
+            address: t.Optional(t.String()),
+            status: t.Optional(t.String()),
+            settings: t.Optional(t.Any()),
+            totalUnits: t.Optional(t.Number()),
+            description: t.Optional(t.String()),
+        }),
+        detail: { tags: ['projects'], summary: 'Update project' }
+    })
+
+    .delete('/projects/:id', async ({ params }) => {
+        const session = await auth()
+        if (!session?.user || session.user.role !== 'super_admin') {
+            return { success: false, error: 'Forbidden - Super Admin access required' }
+        }
+
+        const [project] = await db.delete(projects)
+            .where(eq(projects.id, params.id))
+            .returning()
+
+        return { success: true, data: project }
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        detail: { tags: ['projects'], summary: 'Delete project' }
     })
 
     // Units endpoints
@@ -725,6 +859,12 @@ const app = new Elysia({ prefix: '/api' })
             limit: query.limit ? parseInt(query.limit as string) : 50,
             with: {
                 unit: true,
+                createdBy: {
+                    columns: {
+                        name: true,
+                        phone: true,
+                    }
+                }
             },
         })
 
@@ -826,6 +966,55 @@ const app = new Elysia({ prefix: '/api' })
             completedAt: t.Optional(t.String()),
         }),
         detail: { tags: ['maintenance'], summary: 'Update maintenance request' },
+    })
+
+    // Equipment endpoints
+    .get('/equipment', async ({ query }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const data = await db.query.equipment.findMany({
+            limit: query.limit ? parseInt(query.limit as string) : 50,
+            orderBy: desc(equipment.createdAt),
+        })
+
+        return { success: true, data }
+    }, {
+        query: t.Object({
+            limit: t.Optional(t.String()),
+        }),
+        detail: { tags: ['equipment'], summary: 'Get equipment' }
+    })
+    .post('/equipment', async ({ body }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const [newItem] = await db.insert(equipment).values({
+            name: body.name,
+            type: body.type,
+            projectId: body.projectId,
+            status: body.status || 'available',
+            location: body.location,
+            serialNumber: body.serialNumber,
+            notes: body.notes,
+        }).returning()
+
+        return { success: true, data: newItem }
+    }, {
+        body: t.Object({
+            name: t.String(),
+            type: t.String(),
+            projectId: t.String(),
+            status: t.Optional(t.String()),
+            location: t.Optional(t.String()),
+            serialNumber: t.Optional(t.String()),
+            notes: t.Optional(t.String()),
+        }),
+        detail: { tags: ['equipment'], summary: 'Create equipment' }
     })
 
     // Facilities endpoints
@@ -981,8 +1170,12 @@ const app = new Elysia({ prefix: '/api' })
             id: t.String()
         }),
         body: t.Object({
-            // @ts-ignore - Elysia type issue with multiple Union types
-            status: t.Union(t.Literal('pending'), t.Literal('approved'), t.Literal('rejected'), t.Literal('cancelled'))
+            status: t.Union([
+                t.Literal('pending'),
+                t.Literal('approved'),
+                t.Literal('rejected'),
+                t.Literal('cancelled')
+            ])
         }),
         detail: { tags: ['bookings'], summary: 'Update booking status' }
     })
@@ -1109,9 +1302,12 @@ const app = new Elysia({ prefix: '/api' })
         body: t.Object({
             unitId: t.String(),
             subject: t.String(),
-            message: t.Optional(t.String()),
+            message: t.String(),
+            priority: t.Optional(t.String()),
+            category: t.Optional(t.String()),
+            images: t.Optional(t.Array(t.String())),
         }),
-        detail: { tags: ['support'], summary: 'Create support ticket' },
+        detail: { tags: ['support'], summary: 'Create support ticket' }
     })
 
     .get('/support/:id', async ({ params }) => {
@@ -1123,28 +1319,22 @@ const app = new Elysia({ prefix: '/api' })
         const ticket = await db.query.supportTickets.findFirst({
             where: eq(supportTickets.id, params.id),
             with: {
-                unit: true,
-                user: {
-                    columns: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        phone: true,
-                    }
+                responses: {
+                    orderBy: asc(supportTicketResponses.createdAt)
                 }
             }
         })
 
         if (!ticket) {
-            return { success: false, error: 'Support ticket not found' }
+            return { success: false, error: 'Ticket not found' }
         }
 
         return { success: true, data: ticket }
     }, {
         params: t.Object({
-            id: t.String(),
+            id: t.String()
         }),
-        detail: { tags: ['support'], summary: 'Get support ticket by ID' },
+        detail: { tags: ['support'], summary: 'Get support ticket by ID' }
     })
 
     .patch('/support/:id', async ({ params, body }) => {
@@ -1153,27 +1343,191 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Unauthorized' }
         }
 
-        // Only admin/super_admin can update tickets
-        if (session.user.role !== 'admin' && session.user.role !== 'super_admin') {
-            return { success: false, error: 'Forbidden - Admin access required' }
+        // Check permissions (admin or owner)
+        const ticket = await db.query.supportTickets.findFirst({
+            where: eq(supportTickets.id, params.id)
+        })
+
+        if (!ticket) {
+            return { success: false, error: 'Ticket not found' }
+        }
+
+        const isAdmin = session.user.role === 'admin' || session.user.role === 'super_admin'
+        const isOwner = ticket.userId === session.user.id
+
+        if (!isAdmin && !isOwner) {
+            return { success: false, error: 'Forbidden' }
         }
 
         const [result] = await db.update(supportTickets)
-            .set(body)
+            .set({
+                ...body,
+            })
             .where(eq(supportTickets.id, params.id))
             .returning()
 
-        if (!result) {
+        return { success: true, data: result }
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        body: t.Object({
+            status: t.Optional(t.String()),
+            priority: t.Optional(t.String()),
+            category: t.Optional(t.String()),
+        }),
+        detail: { tags: ['support'], summary: 'Update support ticket' }
+    })
+
+    .post('/support/:id/responses', async ({ params, body }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const ticket = await db.query.supportTickets.findFirst({
+            where: eq(supportTickets.id, params.id)
+        })
+
+        if (!ticket) {
             return { success: false, error: 'Support ticket not found' }
         }
 
-        return { success: true, data: result }
+        const isAdmin = session.user.role === 'admin' || session.user.role === 'super_admin'
+        const isOwner = ticket.userId === session.user.id
+
+        if (!isAdmin && !isOwner) {
+            return { success: false, error: 'Forbidden - You can only respond to your own tickets' }
+        }
+
+        const [response] = await db.insert(supportTicketResponses).values({
+            ticketId: params.id,
+            message: body.message,
+            isFromAdmin: isAdmin,
+            createdBy: session.user.id!,
+        }).returning()
+
+        // Update ticket status to in_progress if it's still open and admin responded
+        if (isAdmin && ticket.status === 'open') {
+            await db.update(supportTickets)
+                .set({
+                    status: 'in_progress',
+                    repliedAt: new Date(),
+                    repliedBy: session.user.id!,
+                })
+                .where(eq(supportTickets.id, params.id))
+        }
+
+        return { success: true, data: response }
     }, {
-        params: t.Object({ id: t.String() }),
-        body: t.Object({
-            status: t.Optional(t.String()),
+        params: t.Object({
+            id: t.String()
         }),
-        detail: { tags: ['support'], summary: 'Update support ticket status (Admin only)' },
+        body: t.Object({
+            message: t.String(),
+        }),
+        detail: { tags: ['support'], summary: 'Add response to a support ticket' }
+    })
+
+    // Equipment endpoints
+    .get('/equipment', async ({ query }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'maintenance' && session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const data = await db.query.equipment.findMany({
+            limit: query.limit ? parseInt(query.limit) : 50,
+            orderBy: desc(equipment.createdAt),
+        })
+
+        return { success: true, data }
+    }, {
+        query: t.Object({
+            limit: t.Optional(t.String())
+        }),
+        detail: { tags: ['equipment'], summary: 'Get all equipment' }
+    })
+
+    .post('/equipment', async ({ body }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'maintenance' && session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const [newItem] = await db.insert(equipment).values({
+            name: body.name,
+            type: body.type,
+            projectId: body.projectId,
+            status: body.status || 'available',
+            location: body.location,
+            serialNumber: body.serialNumber,
+            notes: body.notes,
+        }).returning()
+
+        return { success: true, data: newItem }
+    }, {
+        body: t.Object({
+            name: t.String(),
+            type: t.String(),
+            projectId: t.String(),
+            status: t.Optional(t.String()),
+            location: t.String(),
+            serialNumber: t.Optional(t.String()),
+            notes: t.Optional(t.String()),
+        }),
+        detail: { tags: ['equipment'], summary: 'Create new equipment' }
+    })
+
+    .put('/equipment/:id', async ({ params, body }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'maintenance' && session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const [updatedItem] = await db.update(equipment)
+            .set({
+                ...body,
+                ...(body.purchasePrice !== undefined ? { purchasePrice: String(body.purchasePrice) } : {}),
+                updatedAt: new Date(),
+            } as any)
+            .where(eq(equipment.id, params.id))
+            .returning()
+
+        return { success: true, data: updatedItem }
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        body: t.Object({
+            name: t.Optional(t.String()),
+            type: t.Optional(t.String()),
+            status: t.Optional(t.String()),
+            location: t.Optional(t.String()),
+            serialNumber: t.Optional(t.String()),
+            notes: t.Optional(t.String()),
+            purchaseDate: t.Optional(t.String()),
+            purchasePrice: t.Optional(t.Number()),
+        }),
+        detail: { tags: ['equipment'], summary: 'Update equipment' }
+    })
+
+    .delete('/equipment/:id', async ({ params }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'maintenance' && session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const [deletedItem] = await db.delete(equipment)
+            .where(eq(equipment.id, params.id))
+            .returning()
+
+        return { success: true, data: deletedItem }
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        detail: { tags: ['equipment'], summary: 'Delete equipment' }
     })
 
     // Payment Settings endpoints

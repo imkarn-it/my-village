@@ -85,7 +85,9 @@ export default function SupportTicketDetailPage({ params }: { params: Promise<{ 
             if (response.data?.success && response.data.data) {
                 setTicket(response.data.data);
                 setNewStatus(response.data.data.status || "open");
-                setResponses([]);
+
+                // Fetch responses
+                await fetchResponses();
             }
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : "ไม่สามารถโหลดข้อมูลตั๋วงความได้";
@@ -93,6 +95,21 @@ export default function SupportTicketDetailPage({ params }: { params: Promise<{ 
             setError(errorMessage);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchResponses = async () => {
+        try {
+            const responsesResponse = await (api.support({ id }) as unknown as {
+                responses: { get: () => Promise<{ data: { success: boolean; data: TicketResponse[] } | null }> }
+            }).responses.get();
+
+            if (responsesResponse.data?.success && responsesResponse.data.data) {
+                setResponses(responsesResponse.data.data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch responses:", err);
+            // Not critical - ticket still works without responses
         }
     };
 
@@ -126,13 +143,32 @@ export default function SupportTicketDetailPage({ params }: { params: Promise<{ 
 
         setIsSubmitting(true);
         try {
-            // TODO: Add response API when ready
-            toast.success("ส่งข้อความตอบกลับเรียบร้อยแล้ว");
-            setNewResponse("");
+            // Call API to add response
+            const response = await (api.support({ id }) as unknown as {
+                responses: {
+                    post: (body: { message: string }) => Promise<{
+                        data: { success: boolean; data: TicketResponse } | null;
+                        error: { value: unknown } | null;
+                    }>
+                }
+            }).responses.post({ message: newResponse.trim() });
 
-            if (ticket && ticket.status === "open") {
-                setNewStatus("in_progress");
-                await handleStatusUpdate();
+            if (response.error) {
+                throw new Error(String(response.error.value));
+            }
+
+            if (response.data?.success) {
+                toast.success("ส่งข้อความตอบกลับเรียบร้อยแล้ว");
+                setNewResponse("");
+
+                // Refresh responses
+                await fetchResponses();
+
+                // Update ticket status if needed
+                if (ticket && ticket.status === "open") {
+                    setNewStatus("in_progress");
+                    setTicket(prev => prev ? { ...prev, status: "in_progress" } : null);
+                }
             }
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : "ไม่สามารถส่งข้อความได้";
@@ -294,8 +330,8 @@ export default function SupportTicketDetailPage({ params }: { params: Promise<{ 
                                         <div
                                             key={response.id}
                                             className={`p-4 rounded-lg ${response.isFromAdmin
-                                                    ? "bg-blue-50 dark:bg-blue-900/20 ml-8"
-                                                    : "bg-slate-50 dark:bg-slate-800/50 mr-8"
+                                                ? "bg-blue-50 dark:bg-blue-900/20 ml-8"
+                                                : "bg-slate-50 dark:bg-slate-800/50 mr-8"
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between mb-2">

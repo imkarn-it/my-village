@@ -231,20 +231,20 @@ export default function MaintenancePendingPage() {
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">งานที่รอดำเนินการ</h1>
-                        <p className="text-gray-600 mt-1">รายการแจ้งซ่อมที่ยังไม่ได้รับมอบหมาย</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">งานที่รอดำเนินการ</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">รายการแจ้งซ่อมที่ยังไม่ได้รับมอบหมาย</p>
                     </div>
                 </div>
                 <div className="space-y-4">
                     {[1, 2, 3, 4, 5].map((i) => (
                         <Card key={i} className="animate-pulse">
                             <CardHeader>
-                                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                                <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    <div className="h-4 bg-gray-200 rounded"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -259,8 +259,8 @@ export default function MaintenancePendingPage() {
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">งานที่รอดำเนินการ</h1>
-                        <p className="text-gray-600 mt-1">รายการแจ้งซ่อมที่ยังไม่ได้รับมอบหมาย</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">งานที่รอดำเนินการ</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">รายการแจ้งซ่อมที่ยังไม่ได้รับมอบหมาย</p>
                     </div>
                 </div>
                 <Card className="border-red-200 bg-red-50">
@@ -280,10 +280,10 @@ export default function MaintenancePendingPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">งานที่รอดำเนินการ</h1>
-                    <p className="text-gray-600 mt-1">รายการแจ้งซ่อมที่ยังไม่ได้รับมอบหมาย</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">งานที่รอดำเนินการ</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">รายการแจ้งซ่อมที่ยังไม่ได้รับมอบหมาย</p>
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-slate-500 dark:text-slate-400">
                     ทั้งหมด {filteredTickets.length} รายการ
                 </div>
             </div>
@@ -291,7 +291,7 @@ export default function MaintenancePendingPage() {
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                     <Input
                         placeholder="ค้นหาตามชื่อ, ห้อง, หรือรายละเอียด..."
                         value={searchQuery}
@@ -325,9 +325,9 @@ export default function MaintenancePendingPage() {
             {filteredTickets.length === 0 ? (
                 <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardContent className="pt-6 text-center">
-                        <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <Wrench className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold mb-2">ไม่มีงานที่รอดำเนินการ</h3>
-                        <p className="text-gray-600">
+                        <p className="text-slate-600 dark:text-slate-400">
                             {searchQuery || categoryFilter !== "ทั้งหมด" || priorityFilter !== "all"
                                 ? "ไม่พบรายการที่ตรงตามเงื่อนไข"
                                 : "ไม่มีงานที่รอการดำเนินการในขณะนี้"}
@@ -342,11 +342,11 @@ export default function MaintenancePendingPage() {
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="text-xl font-semibold text-gray-900">{ticket.title}</h3>
+                                            <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{ticket.title}</h3>
                                             {getPriorityBadge(ticket.priority)}
                                             <Badge variant="outline">{ticket.category}</Badge>
                                         </div>
-                                        <p className="text-gray-600 line-clamp-2">{ticket.description}</p>
+                                        <p className="text-slate-600 dark:text-slate-400 line-clamp-2">{ticket.description}</p>
                                     </div>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -380,15 +380,15 @@ export default function MaintenancePendingPage() {
                             <CardContent>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                                     <div className="flex items-center gap-2">
-                                        <Home className="h-4 w-4 text-gray-400" />
+                                        <Home className="h-4 w-4 text-slate-400" />
                                         <span>ห้อง: {ticket.unit?.number || "ไม่ระบุ"}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <User className="h-4 w-4 text-gray-400" />
+                                        <User className="h-4 w-4 text-slate-400" />
                                         <span>ผู้แจ้ง: {ticket.user?.name}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Clock className="h-4 w-4 text-gray-400" />
+                                        <Clock className="h-4 w-4 text-slate-400" />
                                         <span>
                                             {format(new Date(ticket.createdAt), "PPP HH:mm", { locale: th })}
                                         </span>
@@ -396,7 +396,7 @@ export default function MaintenancePendingPage() {
                                 </div>
                                 {ticket.user?.phone && (
                                     <div className="flex items-center gap-2 mt-3 text-sm">
-                                        <Phone className="h-4 w-4 text-gray-400" />
+                                        <Phone className="h-4 w-4 text-slate-400" />
                                         <span className="font-mono">{ticket.user.phone}</span>
                                         <Button size="sm" variant="outline" className="ml-auto">
                                             <MessageCircle className="w-4 h-4 mr-1" />

@@ -169,7 +169,7 @@ export default function MaintenanceCompletedPage() {
             case "high": return "bg-orange-100 text-orange-800";
             case "medium": return "bg-yellow-100 text-yellow-800";
             case "low": return "bg-green-100 text-green-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -194,14 +194,14 @@ export default function MaintenanceCompletedPage() {
                     {Array.from({ length: 5 }, (_, i) => (
                         <Card key={i} className="animate-pulse">
                             <CardContent className="p-6">
-                                <div className="h-20 bg-gray-200 rounded"></div>
+                                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
                 <Card className="animate-pulse">
                     <CardContent className="p-6">
-                        <div className="h-96 bg-gray-200 rounded"></div>
+                        <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded"></div>
                     </CardContent>
                 </Card>
             </div>
@@ -216,8 +216,8 @@ export default function MaintenanceCompletedPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">เสร็จสิ้นทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.totalCompleted}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">เสร็จสิ้นทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalCompleted}</p>
                             </div>
                             <CheckCircle className="h-8 w-8 text-green-600" />
                         </div>
@@ -228,8 +228,8 @@ export default function MaintenanceCompletedPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">เวลาเฉลี่ย</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.avgCompletionTime} นาที</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">เวลาเฉลี่ย</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.avgCompletionTime} นาที</p>
                             </div>
                             <Timer className="h-8 w-8 text-blue-600" />
                         </div>
@@ -240,8 +240,8 @@ export default function MaintenanceCompletedPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">คะแนนเฉลี่ย</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.avgRating}/5</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">คะแนนเฉลี่ย</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.avgRating}/5</p>
                             </div>
                             <Star className="h-8 w-8 text-yellow-500" />
                         </div>
@@ -252,8 +252,8 @@ export default function MaintenanceCompletedPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ยอดรวมค่าใช้จ่าย</p>
-                                <p className="text-2xl font-bold text-gray-900">฿{stats.totalCost.toLocaleString()}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ยอดรวมค่าใช้จ่าย</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">฿{stats.totalCost.toLocaleString()}</p>
                             </div>
                             <TrendingUp className="h-8 w-8 text-purple-600" />
                         </div>
@@ -264,8 +264,8 @@ export default function MaintenanceCompletedPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">อัตราเสร็จงาน</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.completionRate}%</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">อัตราเสร็จงาน</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.completionRate}%</p>
                             </div>
                             <AlertCircle className="h-8 w-8 text-indigo-600" />
                         </div>
@@ -276,8 +276,8 @@ export default function MaintenanceCompletedPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">งานที่เสร็จสิ้นแล้ว</h1>
-                    <p className="text-gray-600">รายการงานซ่อมบำรุงที่ดำเนินการเสร็จสิ้นแล้ว</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">งานที่เสร็จสิ้นแล้ว</h1>
+                    <p className="text-slate-600 dark:text-slate-400">รายการงานซ่อมบำรุงที่ดำเนินการเสร็จสิ้นแล้ว</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={exportReport}>
@@ -293,7 +293,7 @@ export default function MaintenanceCompletedPage() {
                     <div className="flex flex-col lg:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                                 <Input
                                     placeholder="ค้นหาจากชื่องานหรือรหัสตั๋ว..."
                                     value={searchTerm}
@@ -342,13 +342,13 @@ export default function MaintenanceCompletedPage() {
                 <CardContent>
                     {filteredTasks.length === 0 ? (
                         <div className="text-center py-12">
-                            <CheckCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            <CheckCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                                 {searchTerm || categoryFilter !== "all" || priorityFilter !== "all"
                                     ? "ไม่พบงานที่ตรงตามเงื่อนไข"
                                     : "ยังไม่มีงานที่เสร็จสิ้น"}
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-slate-600 dark:text-slate-400">
                                 {searchTerm || categoryFilter !== "all" || priorityFilter !== "all"
                                     ? "ลองปรับเปลี่ยนเงื่อนไขการค้นหา"
                                     : "งานที่เสร็จสิ้นจะแสดงที่นี่"}
@@ -372,7 +372,7 @@ export default function MaintenanceCompletedPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {filteredTasks.map((task) => (
-                                        <TableRow key={task.id} className="hover:bg-gray-50">
+                                        <TableRow key={task.id} className="hover:bg-slate-50 dark:bg-slate-800/50">
                                             <TableCell className="font-medium">
                                                 {task.ticketId}
                                             </TableCell>
@@ -387,13 +387,13 @@ export default function MaintenanceCompletedPage() {
                                             <TableCell>{task.category}</TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <User className="w-4 h-4 text-gray-400" />
+                                                    <User className="w-4 h-4 text-slate-400" />
                                                     {task.assignedTo}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4 text-gray-400" />
+                                                    <Calendar className="w-4 h-4 text-slate-400" />
                                                     {format(new Date(task.completedAt), "d MMM yyyy", { locale: th })}
                                                 </div>
                                             </TableCell>
@@ -403,10 +403,10 @@ export default function MaintenanceCompletedPage() {
                                                 {task.rating ? (
                                                     <div className="flex items-center gap-1">
                                                         {renderStars(task.rating)}
-                                                        <span className="text-sm text-gray-600 ml-1">({task.rating})</span>
+                                                        <span className="text-sm text-slate-600 dark:text-slate-400 ml-1">({task.rating})</span>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-sm text-gray-400">-</span>
+                                                    <span className="text-sm text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
@@ -435,7 +435,7 @@ export default function MaintenanceCompletedPage() {
                             <div className="flex items-start justify-between">
                                 <div>
                                     <h3 className="text-lg font-semibold">รายละเอียดการซ่อม</h3>
-                                    <p className="text-gray-600">ตั๋ว: {selectedTask.ticketId}</p>
+                                    <p className="text-slate-600 dark:text-slate-400">ตั๋ว: {selectedTask.ticketId}</p>
                                 </div>
                                 <Button
                                     variant="ghost"
@@ -451,19 +451,19 @@ export default function MaintenanceCompletedPage() {
                             {/* Basic Info */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">ชื่องาน</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">ชื่องาน</label>
                                     <p className="font-medium">{selectedTask.title}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">หมวดหมู่</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">หมวดหมู่</label>
                                     <p>{selectedTask.category}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">ผู้รับผิดชอบ</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">ผู้รับผิดชอบ</label>
                                     <p>{selectedTask.assignedTo}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">ระยะเวลา</label>
+                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">ระยะเวลา</label>
                                     <p>{selectedTask.duration} นาที</p>
                                 </div>
                             </div>
@@ -471,7 +471,7 @@ export default function MaintenanceCompletedPage() {
                             {/* Cost Breakdown */}
                             <div>
                                 <h4 className="font-medium mb-2">สรุปค่าใช้จ่าย</h4>
-                                <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 space-y-2">
                                     <div className="flex justify-between">
                                         <span>ค่าแรง</span>
                                         <span>฿{selectedTask.cost.labor}</span>
@@ -493,10 +493,10 @@ export default function MaintenanceCompletedPage() {
                                     <h4 className="font-medium mb-2">อะไหล่ที่ใช้</h4>
                                     <div className="space-y-2">
                                         {selectedTask.partsUsed.map((part, index) => (
-                                            <div key={index} className="flex justify-between items-center bg-gray-50 rounded-lg p-3">
+                                            <div key={index} className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
                                                 <div>
                                                     <p className="font-medium">{part.name}</p>
-                                                    <p className="text-sm text-gray-600">จำนวน: {part.quantity}</p>
+                                                    <p className="text-sm text-slate-600 dark:text-slate-400">จำนวน: {part.quantity}</p>
                                                 </div>
                                                 <p className="font-medium">฿{part.totalCost}</p>
                                             </div>
@@ -509,13 +509,13 @@ export default function MaintenanceCompletedPage() {
                             {selectedTask.rating && (
                                 <div>
                                     <h4 className="font-medium mb-2">คะแนนและความคิดเห็น</h4>
-                                    <div className="bg-gray-50 rounded-lg p-4">
+                                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
                                         <div className="flex items-center gap-2 mb-2">
                                             {renderStars(selectedTask.rating)}
                                             <span className="font-medium">({selectedTask.rating}/5)</span>
                                         </div>
                                         {selectedTask.feedback && (
-                                            <p className="text-gray-700">&quot;{selectedTask.feedback}&quot;</p>
+                                            <p className="text-slate-700 dark:text-slate-300">&quot;{selectedTask.feedback}&quot;</p>
                                         )}
                                     </div>
                                 </div>
@@ -524,8 +524,8 @@ export default function MaintenanceCompletedPage() {
                             {/* Notes */}
                             <div>
                                 <h4 className="font-medium mb-2">บันทึกการดำเนินการ</h4>
-                                <div className="bg-gray-50 rounded-lg p-4">
-                                    <p className="text-gray-700 whitespace-pre-wrap">{selectedTask.notes}</p>
+                                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
+                                    <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{selectedTask.notes}</p>
                                 </div>
                             </div>
 

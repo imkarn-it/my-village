@@ -191,9 +191,9 @@ export default function SuperAdminReportsPage() {
     const getStatusColor = (status: string) => {
         switch (status) {
             case "active": return "bg-green-100 text-green-800";
-            case "inactive": return "bg-gray-100 text-gray-800";
+            case "inactive": return "bg-slate-100 dark:bg-slate-800 text-gray-800";
             case "maintenance": return "bg-yellow-100 text-yellow-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -327,8 +327,8 @@ This is an automated report from My Village System.
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">รายงาน Super Admin</h1>
-                    <p className="text-gray-600">ภาพรวมข้อมูลระบบทั้งหมด</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">รายงาน Super Admin</h1>
+                    <p className="text-slate-600 dark:text-slate-400">ภาพรวมข้อมูลระบบทั้งหมด</p>
                 </div>
                 <div className="flex gap-2">
                     <div className="flex gap-2">
@@ -377,8 +377,8 @@ This is an automated report from My Village System.
                         <CardContent className="p-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex-1">
-                                    <p className="text-sm font-medium text-gray-600">{metric.name}</p>
-                                    <p className="text-2xl font-bold text-gray-900">
+                                    <p className="text-sm font-medium text-slate-600 dark:text-slate-400">{metric.name}</p>
+                                    <p className="text-2xl font-bold text-slate-900 dark:text-white">
                                         {metric.name === "รายได้รวม"
                                             ? `฿${metric.value.toLocaleString('th-TH')}`
                                             : metric.value.toLocaleString('th-TH')
@@ -492,14 +492,14 @@ This is an automated report from My Village System.
                             </TableHeader>
                             <TableBody>
                                 {projects.map((project) => (
-                                    <TableRow key={project.id} className="hover:bg-gray-50">
+                                    <TableRow key={project.id} className="hover:bg-slate-50 dark:bg-slate-800/50">
                                         <TableCell className="font-medium">{project.name}</TableCell>
                                         <TableCell>{project.code}</TableCell>
                                         <TableCell>{project.totalUsers.toLocaleString('th-TH')}</TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
                                                 <span className="font-medium">{project.activeUsers}</span>
-                                                <span className="text-sm text-gray-500">
+                                                <span className="text-sm text-slate-500 dark:text-slate-400">
                                                     ({((project.activeUsers / project.totalUsers) * 100).toFixed(1)}%)
                                                 </span>
                                             </div>

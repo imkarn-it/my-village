@@ -176,7 +176,7 @@ export default function RepairChecklistPage() {
             case "high": return "bg-orange-100 text-orange-800";
             case "medium": return "bg-yellow-100 text-yellow-800";
             case "low": return "bg-green-100 text-green-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -185,7 +185,7 @@ export default function RepairChecklistPage() {
             case "completed": return "bg-green-100 text-green-800";
             case "verified": return "bg-blue-100 text-blue-800";
             case "in_progress": return "bg-yellow-100 text-yellow-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -280,8 +280,8 @@ export default function RepairChecklistPage() {
                     <ArrowLeft className="w-5 h-5" />
                 </Button>
                 <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-gray-900">Checklist การตรวจสอบหลังซ่อม</h1>
-                    <p className="text-gray-600">{ticket.ticketNumber}</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Checklist การตรวจสอบหลังซ่อม</h1>
+                    <p className="text-slate-600 dark:text-slate-400">{ticket.ticketNumber}</p>
                 </div>
                 <Button
                     onClick={handleSaveChecklist}
@@ -328,24 +328,24 @@ export default function RepairChecklistPage() {
                 <CardContent className="space-y-4">
                     <div>
                         <h3 className="font-semibold text-lg">{ticket.title}</h3>
-                        <p className="text-gray-600 mt-1">{ticket.description}</p>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">{ticket.description}</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-gray-400" />
+                            <MapPin className="w-4 h-4 text-slate-400" />
                             <span>{ticket.location} - {ticket.unit}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <User className="w-4 h-4 text-gray-400" />
+                            <User className="w-4 h-4 text-slate-400" />
                             <span>ผู้แจ้ง: {ticket.requester}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Wrench className="w-4 h-4 text-gray-400" />
+                            <Wrench className="w-4 h-4 text-slate-400" />
                             <span>ประเภท: {ticket.category}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-gray-400" />
+                            <Clock className="w-4 h-4 text-slate-400" />
                             <span>แจ้ง: {format(new Date(ticket.reportedDate), "d MMM yyyy HH:mm", { locale: th })}</span>
                         </div>
                     </div>
@@ -368,7 +368,7 @@ export default function RepairChecklistPage() {
                             >
                                 <Wrench className="w-6 h-6" />
                                 <span className="text-sm font-medium">{template.name}</span>
-                                <span className="text-xs text-gray-500">{template.items.length} รายการ</span>
+                                <span className="text-xs text-slate-500 dark:text-slate-400">{template.items.length} รายการ</span>
                             </Button>
                         ))}
                     </div>
@@ -382,7 +382,7 @@ export default function RepairChecklistPage() {
                         <h3 className="font-semibold">ความคืบหน้า</h3>
                         <span className="text-2xl font-bold text-blue-600">{calculateProgress()}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
                         <div
                             className="bg-blue-600 h-3 rounded-full transition-all duration-300"
                             style={{ width: `${calculateProgress()}%` }}
@@ -408,7 +408,7 @@ export default function RepairChecklistPage() {
                     <CardContent className="space-y-6">
                         {Object.entries(groupedChecklist).map(([category, items]) => (
                             <div key={category}>
-                                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                <h4 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                                     <div className="w-2 h-2 bg-blue-600 rounded-full" />
                                     {category}
                                 </h4>
@@ -476,7 +476,7 @@ export default function RepairChecklistPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div>
-                        <label className="text-sm font-medium text-gray-700">ความพึงพอใจ</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">ความพึงพอใจ</label>
                         <div className="flex gap-2 mt-2">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <Button
@@ -514,9 +514,9 @@ export default function RepairChecklistPage() {
                     </Button>
 
                     {residentSignature && (
-                        <div className="border rounded-lg p-4 bg-gray-50">
+                        <div className="border rounded-lg p-4 bg-slate-50 dark:bg-slate-800/50">
                             <Image src={residentSignature} alt="Assinatura" width={200} height={80} className="h-20 w-auto" />
-                            <p className="text-sm text-gray-600 mt-2">ลายเซ็น: {ticket.requester}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">ลายเซ็น: {ticket.requester}</p>
                         </div>
                     )}
                 </CardContent>
@@ -535,8 +535,8 @@ export default function RepairChecklistPage() {
                     <div className="space-y-4">
                         {/* Camera placeholder */}
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                            <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600 mb-4">คลิกเพื่อเปิดกล้องถ่ายรูป</p>
+                            <Camera className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                            <p className="text-slate-600 dark:text-slate-400 mb-4">คลิกเพื่อเปิดกล้องถ่ายรูป</p>
                             <Button>
                                 <Camera className="w-4 h-4 mr-2" />
                                 เปิดกล้อง
@@ -572,9 +572,9 @@ export default function RepairChecklistPage() {
 
                     <div className="space-y-4">
                         {/* Signature placeholder */}
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
-                            <Signature className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600 mb-4">พื้นที่ลงนาม</p>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-slate-50 dark:bg-slate-800/50">
+                            <Signature className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                            <p className="text-slate-600 dark:text-slate-400 mb-4">พื้นที่ลงนาม</p>
                             <Button variant="outline">
                                 เริ่มลงนาม
                             </Button>

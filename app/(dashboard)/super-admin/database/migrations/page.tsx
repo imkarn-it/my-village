@@ -189,7 +189,7 @@ export default function DatabaseMigrationsPage() {
             case "running":
                 return "bg-blue-100 text-blue-800";
             default:
-                return "bg-gray-100 text-gray-800";
+                return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -307,8 +307,8 @@ export default function DatabaseMigrationsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">จัดการฐานข้อมูล</h1>
-                    <p className="text-gray-600 mt-1">Migrations, Seeds และ Backups</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">จัดการฐานข้อมูล</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">Migrations, Seeds และ Backups</p>
                 </div>
                 <Button onClick={() => setShowBackupDialog(true)}>
                     <Upload className="h-4 w-4 mr-2" />
@@ -322,8 +322,8 @@ export default function DatabaseMigrationsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Migrations ทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-900">{migrations.length}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Migrations ทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{migrations.length}</p>
                             </div>
                             <GitBranch className="h-8 w-8 text-blue-500" />
                         </div>
@@ -333,7 +333,7 @@ export default function DatabaseMigrationsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">นำไปใช้แล้ว</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">นำไปใช้แล้ว</p>
                                 <p className="text-2xl font-bold text-green-600">{getAppliedMigrations.length}</p>
                             </div>
                             <CheckCircle className="h-8 w-8 text-green-500" />
@@ -344,7 +344,7 @@ export default function DatabaseMigrationsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">รอดำเนินการ</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">รอดำเนินการ</p>
                                 <p className="text-2xl font-bold text-yellow-600">{getPendingMigrations.length}</p>
                             </div>
                             <Clock className="h-8 w-8 text-yellow-500" />
@@ -355,7 +355,7 @@ export default function DatabaseMigrationsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Backups</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Backups</p>
                                 <p className="text-2xl font-bold text-purple-600">{backups.length}</p>
                             </div>
                             <Database className="h-8 w-8 text-purple-500" />
@@ -424,11 +424,11 @@ export default function DatabaseMigrationsPage() {
                                             <TableCell>
                                                 <div>
                                                     <p className="font-medium">{migration.name}</p>
-                                                    <p className="text-sm text-gray-500">
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">
                                                         {migration.description}
                                                     </p>
                                                     <div className="flex items-center gap-2 mt-1">
-                                                        <Code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                                        <Code className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
                                                             {migration.id}
                                                         </Code>
                                                         <Button
@@ -456,7 +456,7 @@ export default function DatabaseMigrationsPage() {
                                                 {migration.duration ? (
                                                     <span className="text-sm">{migration.duration}</span>
                                                 ) : (
-                                                    <span className="text-sm text-gray-500">-</span>
+                                                    <span className="text-sm text-slate-500 dark:text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
@@ -465,7 +465,7 @@ export default function DatabaseMigrationsPage() {
                                                         {formatDate(migration.appliedAt)}
                                                     </span>
                                                 ) : (
-                                                    <span className="text-sm text-gray-500">-</span>
+                                                    <span className="text-sm text-slate-500 dark:text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
@@ -540,7 +540,7 @@ export default function DatabaseMigrationsPage() {
                                                 <p className="font-medium">{seed.table}</p>
                                             </TableCell>
                                             <TableCell>
-                                                <span className="text-sm text-gray-600">{seed.description}</span>
+                                                <span className="text-sm text-slate-600 dark:text-slate-400">{seed.description}</span>
                                             </TableCell>
                                             <TableCell>
                                                 <span className="font-medium">{seed.records}</span>
@@ -557,7 +557,7 @@ export default function DatabaseMigrationsPage() {
                                                 {seed.lastRun ? (
                                                     <span className="text-sm">{formatDate(seed.lastRun)}</span>
                                                 ) : (
-                                                    <span className="text-sm text-gray-500">Never</span>
+                                                    <span className="text-sm text-slate-500 dark:text-slate-400">Never</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
@@ -625,10 +625,10 @@ export default function DatabaseMigrationsPage() {
                                         <TableRow key={backup.id}>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <FileText className="h-4 w-4 text-gray-400" />
+                                                    <FileText className="h-4 w-4 text-slate-400" />
                                                     <div>
                                                         <p className="font-medium">{backup.filename}</p>
-                                                        <p className="text-xs text-gray-500">{backup.id}</p>
+                                                        <p className="text-xs text-slate-500 dark:text-slate-400">{backup.id}</p>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -640,7 +640,7 @@ export default function DatabaseMigrationsPage() {
                                                     className={
                                                         backup.type === "automatic"
                                                             ? "bg-blue-100 text-blue-800"
-                                                            : "bg-gray-100 text-gray-800"
+                                                            : "bg-slate-100 dark:bg-slate-800 text-gray-800"
                                                     }
                                                 >
                                                     {backup.type}

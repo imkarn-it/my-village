@@ -62,7 +62,7 @@ const emergencyTypes = [
     { value: "fire", label: "ไฟไหม", icon: "🔥", color: "bg-orange-500" },
     { value: "security", label: "ความปลอดภัย", icon: "🚨", color: "bg-purple-500" },
     { value: "utility", label: "สาธารณูติบำรุง", icon: "⚡", color: "bg-yellow-500" },
-    { value: "other", label: "อื่นๆ", icon: "❗", color: "bg-gray-500" },
+    { value: "other", label: "อื่นๆ", icon: "❗", color: "bg-slate-50 dark:bg-slate-800/500" },
 ];
 
 const severityLevels = [
@@ -236,7 +236,7 @@ export default function SecurityEmergencyPage() {
 
     const getSeverityColor = (severity: string) => {
         const level = severityLevels.find(l => l.value === severity);
-        return level?.color || "bg-gray-100 text-gray-800";
+        return level?.color || "bg-slate-100 dark:bg-slate-800 text-gray-800";
     };
 
     if (loading) {
@@ -244,16 +244,16 @@ export default function SecurityEmergencyPage() {
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">แจัดการเหตุฉุกเฉิน</h1>
-                        <p className="text-gray-600 mt-1">ระบบแจ้งเหตุฉุกเฉินทันที</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">แจัดการเหตุฉุกเฉิน</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">ระบบแจ้งเหตุฉุกเฉินทันที</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
                         <Card key={i} className="animate-pulse">
                             <CardContent className="pt-6">
-                                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                                <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+                                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
                             </CardContent>
                         </Card>
                     ))}
@@ -267,8 +267,8 @@ export default function SecurityEmergencyPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">แจัดการเหตุฉุกเฉิน</h1>
-                    <p className="text-gray-600 mt-1">ระบบแจ้งเหตุฉุกเฉินทันที</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">แจัดการเหตุฉุกเฉิน</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">ระบบแจ้งเหตุฉุกเฉินทันที</p>
                 </div>
                 <div className="flex gap-2">
                     <Button
@@ -491,7 +491,7 @@ export default function SecurityEmergencyPage() {
                 </CardHeader>
                 <CardContent>
                     {alerts.length === 0 ? (
-                        <p className="text-center text-gray-500 py-8">
+                        <p className="text-center text-slate-500 dark:text-slate-400 py-8">
                             ไม่มีเหตุฉุกเฉินที่กำลังดำเนินการ
                         </p>
                     ) : (
@@ -499,7 +499,7 @@ export default function SecurityEmergencyPage() {
                             {alerts.map((alert) => (
                                 <div
                                     key={alert.id}
-                                    className="border-l-4 border-red-500 p-4 rounded-lg hover:bg-gray-50 cursor-pointer"
+                                    className="border-l-4 border-red-500 p-4 rounded-lg hover:bg-slate-50 dark:bg-slate-800/50 cursor-pointer"
                                     onClick={() => setSelectedAlert(alert)}
                                 >
                                     <div className="flex items-start justify-between">
@@ -511,8 +511,8 @@ export default function SecurityEmergencyPage() {
                                                     {severityLevels.find(l => l.value === alert.severity)?.label}
                                                 </Badge>
                                             </div>
-                                            <p className="text-gray-700 mb-2">{alert.description}</p>
-                                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                                            <p className="text-slate-700 dark:text-slate-300 mb-2">{alert.description}</p>
+                                            <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
                                                 {alert.location.unitNumber && (
                                                     <div className="flex items-center gap-1">
                                                         <MapPin className="w-4 h-4" />
@@ -572,7 +572,7 @@ export default function SecurityEmergencyPage() {
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-sm text-gray-500">ประเภท</span>
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">ประเภท</span>
                                     <div className="flex items-center gap-2">
                                         <span className="text-xl">{getEmergencyIcon(selectedAlert.type)}</span>
                                         <p className="font-medium">
@@ -581,7 +581,7 @@ export default function SecurityEmergencyPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <span className="text-sm text-gray-500">ระดับความ</span>
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">ระดับความ</span>
                                     <Badge className={getSeverityColor(selectedAlert.severity)}>
                                         {severityLevels.find(l => l.value === selectedAlert.severity)?.label}
                                     </Badge>
@@ -590,19 +590,19 @@ export default function SecurityEmergencyPage() {
 
                             <div>
                                 <h3 className="font-semibold mb-2">{selectedAlert.title}</h3>
-                                <p className="text-gray-700">{selectedAlert.description}</p>
+                                <p className="text-slate-700 dark:text-slate-300">{selectedAlert.description}</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-sm text-gray-500">สถานที่</span>
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">สถานที่</span>
                                     <p className="font-medium">
                                         {selectedAlert.location.unitNumber && `${selectedAlert.location.unitNumber}`}
                                         {selectedAlert.location.details && ` - ${selectedAlert.location.details}`}
                                     </p>
                                 </div>
                                 <div>
-                                    <span className="text-sm text-gray-500">ผู้แจ้ง</span>
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">ผู้แจ้ง</span>
                                     <p className="font-medium">
                                         {selectedAlert.reportedBy}
                                     </p>

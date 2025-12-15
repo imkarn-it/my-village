@@ -139,7 +139,7 @@ export default function MaintenanceMobileTasksPage() {
             case "high": return "bg-orange-100 text-orange-800 border-orange-200";
             case "medium": return "bg-yellow-100 text-yellow-800 border-yellow-200";
             case "low": return "bg-green-100 text-green-800 border-green-200";
-            default: return "bg-gray-100 text-gray-800 border-gray-200";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800 border-gray-200";
         }
     };
 
@@ -206,8 +206,8 @@ export default function MaintenanceMobileTasksPage() {
                         {/* Header */}
                         <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
-                                <h3 className="font-semibold text-gray-900 text-sm">{task.title}</h3>
-                                <p className="text-xs text-gray-500 mt-1">{task.ticketNumber}</p>
+                                <h3 className="font-semibold text-slate-900 dark:text-white text-sm">{task.title}</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{task.ticketNumber}</p>
                             </div>
                             <Badge className={getPriorityColor(task.priority)} variant="outline">
                                 {getPriorityLabel(task.priority)}
@@ -215,7 +215,7 @@ export default function MaintenanceMobileTasksPage() {
                         </div>
 
                         {/* Details */}
-                        <div className="space-y-2 text-xs text-gray-600">
+                        <div className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
                             <div className="flex items-center gap-2">
                                 <MapPin className="w-3 h-3" />
                                 <span>{task.location} - {task.unit}</span>
@@ -231,7 +231,7 @@ export default function MaintenanceMobileTasksPage() {
                                     {task.dueDate && ` - ${format(new Date(task.dueDate), "HH:mm")}`}
                                 </span>
                                 {task.estimatedDuration && (
-                                    <span className="text-gray-400">({task.estimatedDuration} นาที)</span>
+                                    <span className="text-slate-400">({task.estimatedDuration} นาที)</span>
                                 )}
                             </div>
                         </div>
@@ -284,7 +284,7 @@ export default function MaintenanceMobileTasksPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-800/50 pb-20">
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sticky top-0 z-10">
                 <div className="flex items-center gap-4 mb-3">
@@ -306,13 +306,13 @@ export default function MaintenanceMobileTasksPage() {
 
                 {/* Search */}
                 <div className="relative mb-3">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
                         type="text"
                         placeholder="ค้นหางาน..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 bg-white text-gray-900 placeholder-gray-500"
+                        className="pl-10 bg-white text-slate-900 dark:text-white placeholder-gray-500"
                     />
                 </div>
 
@@ -321,7 +321,7 @@ export default function MaintenanceMobileTasksPage() {
                     <select
                         value={selectedPriority}
                         onChange={(e) => setSelectedPriority(e.target.value)}
-                        className="px-3 py-1 rounded-lg bg-white text-gray-900 text-sm border-0"
+                        className="px-3 py-1 rounded-lg bg-white text-slate-900 dark:text-white text-sm border-0"
                     >
                         <option value="all">ทุกความสำคัญ</option>
                         <option value="urgent">ด่วนที่สุด</option>
@@ -332,7 +332,7 @@ export default function MaintenanceMobileTasksPage() {
                     <select
                         value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value)}
-                        className="px-3 py-1 rounded-lg bg-white text-gray-900 text-sm border-0"
+                        className="px-3 py-1 rounded-lg bg-white text-slate-900 dark:text-white text-sm border-0"
                     >
                         <option value="all">ทุกสถานะ</option>
                         <option value="pending">รอดำเนินการ</option>
@@ -364,8 +364,8 @@ export default function MaintenanceMobileTasksPage() {
                         ) : (
                             <Card className="bg-white border-0 shadow-sm">
                                 <CardContent className="p-8 text-center">
-                                    <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                    <p className="text-gray-600">ไม่มีงานที่รอดำเนินการ</p>
+                                    <Clock className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                                    <p className="text-slate-600 dark:text-slate-400">ไม่มีงานที่รอดำเนินการ</p>
                                 </CardContent>
                             </Card>
                         )}
@@ -377,8 +377,8 @@ export default function MaintenanceMobileTasksPage() {
                         ) : (
                             <Card className="bg-white border-0 shadow-sm">
                                 <CardContent className="p-8 text-center">
-                                    <Wrench className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                    <p className="text-gray-600">ไม่มีงานที่กำลังดำเนินการ</p>
+                                    <Wrench className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                                    <p className="text-slate-600 dark:text-slate-400">ไม่มีงานที่กำลังดำเนินการ</p>
                                 </CardContent>
                             </Card>
                         )}
@@ -390,8 +390,8 @@ export default function MaintenanceMobileTasksPage() {
                         ) : (
                             <Card className="bg-white border-0 shadow-sm">
                                 <CardContent className="p-8 text-center">
-                                    <CheckCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                    <p className="text-gray-600">ไม่มีงานที่เสร็จสิ้น</p>
+                                    <CheckCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                                    <p className="text-slate-600 dark:text-slate-400">ไม่มีงานที่เสร็จสิ้น</p>
                                 </CardContent>
                             </Card>
                         )}

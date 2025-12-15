@@ -200,7 +200,7 @@ export default function MaintenanceHistoryPage() {
             case "completed": return "bg-green-100 text-green-800";
             case "cancelled": return "bg-red-100 text-red-800";
             case "pending": return "bg-yellow-100 text-yellow-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -235,14 +235,14 @@ export default function MaintenanceHistoryPage() {
                     {Array.from({ length: 4 }, (_, i) => (
                         <Card key={i} className="animate-pulse">
                             <CardContent className="p-6">
-                                <div className="h-20 bg-gray-200 rounded"></div>
+                                <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
                 <Card className="animate-pulse">
                     <CardContent className="p-6">
-                        <div className="h-96 bg-gray-200 rounded"></div>
+                        <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded"></div>
                     </CardContent>
                 </Card>
             </div>
@@ -257,8 +257,8 @@ export default function MaintenanceHistoryPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">รวมทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.totalRecords}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">รวมทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalRecords}</p>
                             </div>
                             <History className="h-8 w-8 text-blue-600" />
                         </div>
@@ -269,7 +269,7 @@ export default function MaintenanceHistoryPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">เสร็จสิ้น</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">เสร็จสิ้น</p>
                                 <p className="text-2xl font-bold text-green-600">{stats.completedCount}</p>
                             </div>
                             <CheckCircle className="h-8 w-8 text-green-600" />
@@ -281,7 +281,7 @@ export default function MaintenanceHistoryPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ยกเลิก</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ยกเลิก</p>
                                 <p className="text-2xl font-bold text-red-600">{stats.cancelledCount}</p>
                             </div>
                             <XCircle className="h-8 w-8 text-red-600" />
@@ -293,7 +293,7 @@ export default function MaintenanceHistoryPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">รอดำเนินการ</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">รอดำเนินการ</p>
                                 <p className="text-2xl font-bold text-yellow-600">{stats.pendingCount}</p>
                             </div>
                             <AlertCircle className="h-8 w-8 text-yellow-600" />
@@ -318,16 +318,16 @@ export default function MaintenanceHistoryPage() {
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between mb-1">
                                             <p className="text-sm font-medium">{issue.issue}</p>
-                                            <p className="text-sm text-gray-600">{issue.count} ครั้ง</p>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400">{issue.count} ครั้ง</p>
                                         </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                             <div
                                                 className="bg-blue-600 h-2 rounded-full"
                                                 style={{ width: `${issue.percentage}%` }}
                                             />
                                         </div>
                                     </div>
-                                    <span className="ml-3 text-sm text-gray-600 w-12 text-right">
+                                    <span className="ml-3 text-sm text-slate-600 dark:text-slate-400 w-12 text-right">
                                         {issue.percentage}%
                                     </span>
                                 </div>
@@ -350,16 +350,16 @@ export default function MaintenanceHistoryPage() {
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between mb-1">
                                             <p className="text-sm font-medium">{cat.category}</p>
-                                            <p className="text-sm text-gray-600">{cat.count} รายการ</p>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400">{cat.count} รายการ</p>
                                         </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                             <div
                                                 className="bg-green-600 h-2 rounded-full"
                                                 style={{ width: `${cat.percentage}%` }}
                                             />
                                         </div>
                                     </div>
-                                    <span className="ml-3 text-sm text-gray-600 w-12 text-right">
+                                    <span className="ml-3 text-sm text-slate-600 dark:text-slate-400 w-12 text-right">
                                         {cat.percentage}%
                                     </span>
                                 </div>
@@ -372,8 +372,8 @@ export default function MaintenanceHistoryPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">ประวัติการซ่อมบำรุง</h1>
-                    <p className="text-gray-600">บันทึกประวัติการดำเนินงานซ่อมบำรุงทั้งหมด</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">ประวัติการซ่อมบำรุง</h1>
+                    <p className="text-slate-600 dark:text-slate-400">บันทึกประวัติการดำเนินงานซ่อมบำรุงทั้งหมด</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={exportHistory}>
@@ -389,7 +389,7 @@ export default function MaintenanceHistoryPage() {
                     <div className="flex flex-col lg:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                                 <Input
                                     placeholder="ค้นหาจากชื่องาน, รหัสตั๋ว, หรือประเภทปัญหา..."
                                     value={searchTerm}
@@ -458,13 +458,13 @@ export default function MaintenanceHistoryPage() {
                 <CardContent>
                     {filteredRecords.length === 0 ? (
                         <div className="text-center py-12">
-                            <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            <History className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                                 {searchTerm || statusFilter !== "all" || categoryFilter !== "all"
                                     ? "ไม่พบประวัติที่ตรงตามเงื่อนไข"
                                     : "ยังไม่มีประวัติการซ่อมบำรุง"}
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-slate-600 dark:text-slate-400">
                                 {searchTerm || statusFilter !== "all" || categoryFilter !== "all"
                                     ? "ลองปรับเปลี่ยนเงื่อนไขการค้นหา"
                                     : "ประวัติการซ่อมบำรุงจะแสดงที่นี่"}
@@ -490,7 +490,7 @@ export default function MaintenanceHistoryPage() {
                                     {filteredRecords.map((record) => (
                                         <TableRow
                                             key={record.id}
-                                            className={`hover:bg-gray-50 border-l-4 ${getPriorityColor(record.priority)}`}
+                                            className={`hover:bg-slate-50 dark:bg-slate-800/50 border-l-4 ${getPriorityColor(record.priority)}`}
                                         >
                                             <TableCell className="font-medium">
                                                 {record.ticketId}
@@ -512,7 +512,7 @@ export default function MaintenanceHistoryPage() {
                                                         {record.unit.building}-{record.unit.number}
                                                     </p>
                                                 ) : (
-                                                    <span className="text-gray-400">-</span>
+                                                    <span className="text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
@@ -522,7 +522,7 @@ export default function MaintenanceHistoryPage() {
                                             </TableCell>
                                             <TableCell>
                                                 {record.assignedTo || (
-                                                    <span className="text-gray-400">-</span>
+                                                    <span className="text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
@@ -537,14 +537,14 @@ export default function MaintenanceHistoryPage() {
                                                 {record.duration ? (
                                                     <span className="text-sm">{record.duration} นาที</span>
                                                 ) : (
-                                                    <span className="text-gray-400">-</span>
+                                                    <span className="text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                             <TableCell>
                                                 {record.cost ? (
                                                     <p className="font-medium">฿{record.cost.total.toLocaleString()}</p>
                                                 ) : (
-                                                    <span className="text-gray-400">-</span>
+                                                    <span className="text-slate-400">-</span>
                                                 )}
                                             </TableCell>
                                         </TableRow>

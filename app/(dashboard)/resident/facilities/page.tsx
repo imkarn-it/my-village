@@ -81,8 +81,8 @@ export default function FacilitiesPage() {
     const fetchFacilities = async () => {
         try {
             setLoading(true);
-            // @ts-ignore - API types
-            const { data } = await api.facilities.get();
+            const response = await api.facilities.get() as { data: Facility[] | null };
+            const { data } = response;
             if (data && Array.isArray(data)) {
                 // Filter only active facilities
                 const activeFacilities = data.filter((f: Facility) => f.isActive !== false);
@@ -156,8 +156,8 @@ export default function FacilitiesPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">สิ่งอำนวยความสะดวก</h1>
-                    <p className="text-gray-600 mt-1">จองใช้สิ่งอำนวยความสะดวกในโครงการ</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">สิ่งอำนวยความสะดวก</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">จองใช้สิ่งอำนวยความสะดวกในโครงการ</p>
                 </div>
                 <Link href="/resident/bookings">
                     <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-[1.02]">

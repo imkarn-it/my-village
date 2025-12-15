@@ -335,8 +335,8 @@ export default function DatabaseTablesPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Database Tables</h1>
-                    <p className="text-gray-600 mt-1">View and manage all database tables</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Database Tables</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">View and manage all database tables</p>
                 </div>
                 <Button>
                     <RefreshCw className="h-4 w-4 mr-2" />
@@ -350,8 +350,8 @@ export default function DatabaseTablesPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">จำนวนตารางงาน</p>
-                                <p className="text-2xl font-bold text-gray-900">{tables.length}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">จำนวนตารางงาน</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{tables.length}</p>
                             </div>
                             <Table className="h-8 w-8 text-blue-500" />
                         </div>
@@ -361,8 +361,8 @@ export default function DatabaseTablesPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">แถวนข้อมูลทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-900">{totalRecords.toLocaleString()}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">แถวนข้อมูลทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalRecords.toLocaleString()}</p>
                             </div>
                             <BarChart2 className="h-8 w-8 text-green-500" />
                         </div>
@@ -372,8 +372,8 @@ export default function DatabaseTablesPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ขนาดข้อมูล</p>
-                                <p className="text-2xl font-bold text-gray-900">{totalSize.toFixed(1)} MB</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ขนาดข้อมูล</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalSize.toFixed(1)} MB</p>
                             </div>
                             <Database className="h-8 w-8 text-orange-500" />
                         </div>
@@ -383,7 +383,7 @@ export default function DatabaseTablesPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ตารางงานที่มี Relations</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ตารางงานที่มี Relations</p>
                                 <p className="text-2xl font-bold text-purple-600">
                                     {tables.filter(t => t.hasRelations).length}
                                 </p>
@@ -400,7 +400,7 @@ export default function DatabaseTablesPage() {
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                                 <Input
                                     placeholder="ค้นหาชื่อตารางงาน..."
                                     value={searchTerm}
@@ -460,8 +460,8 @@ export default function DatabaseTablesPage() {
                                     <TableCell>
                                         <div>
                                             <p className="font-medium">{table.displayName}</p>
-                                            <p className="text-sm text-gray-500">{table.name}</p>
-                                            <p className="text-xs text-gray-400 mt-1">{table.description}</p>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">{table.name}</p>
+                                            <p className="text-xs text-slate-400 mt-1">{table.description}</p>
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -558,7 +558,7 @@ export default function DatabaseTablesPage() {
                                         {tableData.rows.length === 0 ? (
                                             <TableRow>
                                                 <TableCell colSpan={tableData.columns.length} className="text-center py-8">
-                                                    <p className="text-gray-500">ไม่มีข้อมูลในตารางงานนี้</p>
+                                                    <p className="text-slate-500 dark:text-slate-400">ไม่มีข้อมูลในตารางงานนี้</p>
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
@@ -572,7 +572,7 @@ export default function DatabaseTablesPage() {
                                                         {index === 2 && <span className="font-medium">John Doe</span>}
                                                         {index === 3 && <Badge>resident</Badge>}
                                                         {index === 4 && <Badge className="bg-blue-100 text-blue-800">uuid</Badge>}
-                                                        {index === 5 && <span className="text-gray-500">2025-01-15</span>}
+                                                        {index === 5 && <span className="text-slate-500 dark:text-slate-400">2025-01-15</span>}
                                                     </TableCell>
                                                 ))}
                                             </TableRow>
@@ -581,7 +581,7 @@ export default function DatabaseTablesPage() {
                                 </Table>
                             </div>
                             <div className="flex justify-between items-center pt-4 border-t">
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                     {isLoading ? "กำลังโหลดข้อมูล..." : `แสดง ${tableData.rows.length} แถวน`}
                                 </p>
                                 <div className="flex gap-2">
@@ -660,7 +660,7 @@ export default function DatabaseTablesPage() {
                     </DialogDescription>
                     <div className="mt-4 p-4 bg-red-50 rounded-lg">
                         <p className="font-medium">ยืนยันยืนอีก:</p>
-                        <ul className="list-disc list-inside mt-2 text-sm text-gray-700">
+                        <ul className="list-disc list-inside mt-2 text-sm text-slate-700 dark:text-slate-300">
                             <li>สำรอง backup ข้อมูลก่อนลบ</li>
                             <li>ตรวจสอบถานผลกระทบ</li>
                             <li>ให้้หน้าที่จะต้องการลบข้อมูลในอนาคต่อไป</li>

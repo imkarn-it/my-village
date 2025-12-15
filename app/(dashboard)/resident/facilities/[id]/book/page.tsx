@@ -67,12 +67,11 @@ export default function FacilityBookingPage() {
     const fetchFacility = useCallback(async () => {
         try {
             setLoading(true);
-            // @ts-ignore - Eden Treaty type issue
-            const { data } = await api.facilities.get({ query: { id: facilityId } });
-            // @ts-ignore - Type mismatch issue
-            if (data && data.success && data.data.length > 0) {
-                // @ts-ignore - Type mismatch issue
-                setFacility(data.data[0]);
+            const response = await (api.facilities.get as unknown as (options: { query: { id: string } }) => Promise<{
+                data: { success: boolean; data: Facility[] } | null;
+            }>)({ query: { id: facilityId } });
+            if (response.data?.success && response.data.data.length > 0) {
+                setFacility(response.data.data[0]);
             } else {
                 setError("ไม่พบสิ่งอำนวยความสะดวก");
             }
@@ -176,7 +175,7 @@ export default function FacilityBookingPage() {
                             กลับ
                         </Button>
                     </Link>
-                    <div className="h-8 bg-gray-200 rounded w-64 animate-pulse"></div>
+                    <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-64 animate-pulse"></div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div className="space-y-6">
@@ -228,8 +227,8 @@ export default function FacilityBookingPage() {
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">{facility.name}</h1>
-                    <p className="text-gray-600 mt-1">จองใช้สิ่งอำนวยความสะดวก</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{facility.name}</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">จองใช้สิ่งอำนวยความสะดวก</p>
                 </div>
             </div>
 
@@ -265,13 +264,13 @@ export default function FacilityBookingPage() {
                             {facility.description && (
                                 <div>
                                     <h3 className="font-semibold mb-2">รายละเอียด</h3>
-                                    <p className="text-gray-600">{facility.description}</p>
+                                    <p className="text-slate-600 dark:text-slate-400">{facility.description}</p>
                                 </div>
                             )}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {facility.openTime && facility.closeTime && (
                                     <div className="flex items-center gap-2">
-                                        <Clock className="h-4 w-4 text-gray-400" />
+                                        <Clock className="h-4 w-4 text-slate-400" />
                                         <span className="text-sm">
                                             {facility.openTime} - {facility.closeTime}
                                         </span>
@@ -279,7 +278,7 @@ export default function FacilityBookingPage() {
                                 )}
                                 {facility.maxCapacity && (
                                     <div className="flex items-center gap-2">
-                                        <Users className="h-4 w-4 text-gray-400" />
+                                        <Users className="h-4 w-4 text-slate-400" />
                                         <span className="text-sm">ความจุ {facility.maxCapacity} คน</span>
                                     </div>
                                 )}

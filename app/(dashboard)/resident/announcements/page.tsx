@@ -75,13 +75,13 @@ export default function AnnouncementsPage() {
             {loading ? (
                 <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
-                        <Card key={i} className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 h-32 animate-pulse" />
+                        <Card key={i} className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 h-32 animate-pulse" />
                     ))}
                 </div>
             ) : error ? (
                 <ErrorMessage message={error} onRetry={refresh} />
             ) : filteredAnnouncements.length === 0 ? (
-                <Card className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
+                <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardContent className="flex flex-col items-center justify-center py-16">
                         <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mb-4">
                             <Bell className="w-8 h-8 text-purple-500 dark:text-purple-400" />
@@ -102,7 +102,7 @@ export default function AnnouncementsPage() {
                         return (
                             <Card
                                 key={announcement.id}
-                                className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300 cursor-pointer group hover:shadow-xl hover:shadow-purple-500/5"
+                                className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300 cursor-pointer group hover:shadow-xl hover:shadow-purple-500/5"
                             >
                                 <CardContent className="p-5">
                                     <div className="flex items-start justify-between gap-4">

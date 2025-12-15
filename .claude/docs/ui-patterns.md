@@ -78,6 +78,29 @@ const statusColors = {
 <Card className="bg-red-50/80 dark:bg-red-900/20 border-red-200 dark:border-red-500/30 backdrop-blur-sm">
 ```
 
+### GlassCard Component (RECOMMENDED!)
+
+ใช้ `GlassCard` component สำหรับ glassmorphism อัตโนมัติ:
+
+```tsx
+import { GlassCard, GlassCardHeader, GlassCardContent, GlassCardTitle } from "@/components/ui/glass-card"
+
+// ใช้ได้ทันทีโดยไม่ต้องเพิ่ม className
+<GlassCard>
+    <GlassCardHeader>
+        <GlassCardTitle>Title</GlassCardTitle>
+    </GlassCardHeader>
+    <GlassCardContent>
+        Content here
+    </GlassCardContent>
+</GlassCard>
+
+// Variants
+<GlassCard variant="default">...</GlassCard>   // Standard
+<GlassCard variant="elevated">...</GlassCard>  // More shadow
+<GlassCard variant="gradient">...</GlassCard>  // Gradient border
+```
+
 ### Gradient Buttons
 ```tsx
 // Resident

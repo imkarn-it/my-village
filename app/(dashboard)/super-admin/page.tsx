@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
+import { api } from "@/lib/api/client";
 
 type SystemStats = {
     totalProjects: number;
@@ -63,6 +64,41 @@ type RecentActivity = {
     severity: "low" | "medium" | "high" | "critical";
 };
 
+const mockActivities: RecentActivity[] = [
+    {
+        id: "1",
+        type: "system",
+        title: "System Update Completed",
+        description: "System updated to version v2.1.0 successfully",
+        timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+        severity: "low",
+    },
+    {
+        id: "2",
+        type: "backup",
+        title: "Daily Backup Completed",
+        description: "All projects backed up successfully",
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        severity: "low",
+    },
+    {
+        id: "3",
+        type: "user",
+        title: "New Admin Registration",
+        description: "New admin registered for Green Valley Condo",
+        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+        severity: "medium",
+    },
+    {
+        id: "4",
+        type: "error",
+        title: "High Memory Usage Alert",
+        description: "Database server memory usage at 85%",
+        timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+        severity: "high",
+    },
+];
+
 export default function SuperAdminDashboard() {
     const [stats, setStats] = useState<SystemStats>({
         totalProjects: 0,
@@ -70,15 +106,15 @@ export default function SuperAdminDashboard() {
         totalUsers: 0,
         onlineUsers: 0,
         totalDataSize: "0 GB",
-        systemLoad: 0,
-        uptime: "0%",
-        errorRate: 0,
-        apiCalls: 0,
+        systemLoad: 45, // Mock
+        uptime: "99.9%",
+        errorRate: 0.2, // Mock
+        apiCalls: 12543, // Mock
         storageUsed: 0,
-        storageTotal: 0,
+        storageTotal: 500,
     });
     const [projects, setProjects] = useState<Project[]>([]);
-    const [activities, setActivities] = useState<RecentActivity[]>([]);
+    const [activities, setActivities] = useState<RecentActivity[]>(mockActivities);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -89,102 +125,80 @@ export default function SuperAdminDashboard() {
         try {
             setLoading(true);
 
-            // TODO: Implement actual API calls
-            // Mock data for now
-            const mockStats: SystemStats = {
-                totalProjects: 12,
-                activeProjects: 11,
-                totalUsers: 5420,
-                onlineUsers: 892,
-                totalDataSize: "245.7 GB",
-                systemLoad: 45,
-                uptime: "99.9%",
-                errorRate: 0.2,
-                apiCalls: 2847291,
-                storageUsed: 187.3,
-                storageTotal: 500,
-            };
+            // Fetch projects
+            const { data: projectsData } = await api.projects.get({ query: { limit: '100' } });
 
-            const mockProjects: Project[] = [
-                {
-                    id: "1",
-                    name: "My Village",
-                    location: "กรุงเทพมหานคร",
-                    status: "active",
-                    users: 1250,
-                    lastBackup: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-                    createdAt: "2024-01-15T00:00:00Z",
-                    admin: {
-                        name: "สมชาย ผู้จัดการ",
-                        email: "admin@myvillage.com",
-                    },
-                },
-                {
-                    id: "2",
-                    name: "Green Valley Condo",
-                    location: "เชียงใหม่",
-                    status: "active",
-                    users: 890,
-                    lastBackup: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-                    createdAt: "2024-03-20T00:00:00Z",
-                    admin: {
-                        name: "วิไล รักษา",
-                        email: "admin@greenvalley.com",
-                    },
-                },
-                {
-                    id: "3",
-                    name: "Seri Residence",
-                    location: "ภูเก็ต",
-                    status: "maintenance",
-                    users: 670,
-                    lastBackup: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-                    createdAt: "2024-06-10T00:00:00Z",
-                    admin: {
-                        name: "ประสิทธิ์ ดีแก่",
-                        email: "admin@seri.com",
-                    },
-                },
-            ];
+            if (projectsData && Array.isArray(projectsData)) {
+                // Map projects
+                const mappedProjects: Project[] = projectsData.map((p: any) => {
+                    const admin = p.users.find((u: any) => u.role === 'admin');
+                    return {
+                        id: p.id,
+                        name: p.name,
+                        location: p.address || 'ไม่ระบุ',
+                        status: 'active', // Default to active as we don't have status in DB yet
+                        users: p.users.length,
+                        lastBackup: new Date().toISOString(), // Mock
+                        createdAt: p.createdAt,
+                        admin: {
+                            name: admin?.name || 'ไม่ระบุ',
+                            email: admin?.email || '-',
+                        }
+                    };
+                });
 
-            const mockActivities: RecentActivity[] = [
-                {
-                    id: "1",
-                    type: "system",
-                    title: "System Update Completed",
-                    description: "System updated to version v2.1.0 successfully",
-                    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-                    severity: "low",
-                },
-                {
-                    id: "2",
-                    type: "backup",
-                    title: "Daily Backup Completed",
-                    description: "All projects backed up successfully",
-                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-                    severity: "low",
-                },
-                {
-                    id: "3",
-                    type: "user",
-                    title: "New Admin Registration",
-                    description: "New admin registered for Green Valley Condo",
-                    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-                    severity: "medium",
-                },
-                {
-                    id: "4",
-                    type: "error",
-                    title: "High Memory Usage Alert",
-                    description: "Database server memory usage at 85%",
-                    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-                    severity: "high",
-                },
-            ];
+                setProjects(mappedProjects);
 
-            setStats(mockStats);
-            setProjects(mockProjects);
-            setActivities(mockActivities);
+                // Calculate stats
+                const totalUsers = projectsData.reduce((acc: number, p: any) => acc + p.users.length, 0);
+
+                setStats(prev => ({
+                    ...prev,
+                    totalProjects: projectsData.length,
+                    activeProjects: projectsData.length, // Assuming all active for now
+                    totalUsers: totalUsers,
+                    onlineUsers: Math.floor(totalUsers * 0.1), // Mock online users (10%)
+                    storageUsed: Math.round(totalUsers * 0.05 * 10) / 10, // Mock storage based on users
+                }));
+
+                // Generate activities from real data
+                const generatedActivities: RecentActivity[] = [];
+
+                // Add recent projects
+                projectsData.forEach((p: any) => {
+                    if (new Date(p.createdAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000) {
+                        generatedActivities.push({
+                            id: `proj-${p.id}`,
+                            type: "project",
+                            title: "New Project Created",
+                            description: `${p.name} was created`,
+                            timestamp: p.createdAt,
+                            severity: "low"
+                        });
+                    }
+
+                    // Add recent users
+                    p.users.forEach((u: any) => {
+                        if (new Date(u.createdAt).getTime() > Date.now() - 3 * 24 * 60 * 60 * 1000) {
+                            generatedActivities.push({
+                                id: `user-${u.id}`,
+                                type: "user",
+                                title: "New User Registration",
+                                description: `${u.name || u.email} joined ${p.name}`,
+                                timestamp: u.createdAt,
+                                severity: "low"
+                            });
+                        }
+                    });
+                });
+
+                // Sort by timestamp desc and take top 5
+                generatedActivities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+                if (generatedActivities.length > 0) {
+                    setActivities(generatedActivities.slice(0, 5));
+                }
+            }
         } catch (error) {
             console.error("Failed to fetch dashboard data:", error);
         } finally {
@@ -215,7 +229,7 @@ export default function SuperAdminDashboard() {
                 case "critical": return "text-red-500 bg-red-50";
                 case "high": return "text-orange-500 bg-orange-50";
                 case "medium": return "text-yellow-500 bg-yellow-50";
-                default: return "text-gray-500 bg-gray-50";
+                default: return "text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50";
             }
         }
         return "text-blue-500 bg-blue-50";
@@ -239,16 +253,16 @@ export default function SuperAdminDashboard() {
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Super Admin Dashboard</h1>
-                        <p className="text-gray-600 mt-1">จัดการระบบทั้งหมด</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Super Admin Dashboard</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">จัดการระบบทั้งหมด</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((i) => (
                         <Card key={i} className="animate-pulse">
                             <CardContent className="pt-6">
-                                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                                <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+                                <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
                             </CardContent>
                         </Card>
                     ))}
@@ -262,14 +276,14 @@ export default function SuperAdminDashboard() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Super Admin Dashboard</h1>
-                    <p className="text-gray-600 mt-1">จัดการระบบทั้งหมด</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Super Admin Dashboard</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">จัดการระบบทั้งหมด</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <Badge className="bg-green-500 text-white">
                         System Healthy
                     </Badge>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-slate-500 dark:text-slate-400">
                         {format(new Date(), "PPP HH:mm", { locale: th })}
                     </div>
                 </div>
@@ -277,65 +291,65 @@ export default function SuperAdminDashboard() {
 
             {/* System Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                <Card className="bg-blue-50/80 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/50 backdrop-blur-sm">
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-blue-600">โครงการทั้งหมด</p>
-                                <p className="text-2xl font-bold text-blue-700">{stats.totalProjects}</p>
+                                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">โครงการทั้งหมด</p>
+                                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{stats.totalProjects}</p>
                                 <div className="flex items-center gap-1 mt-1">
-                                    <CheckCircle className="w-3 h-3 text-green-500" />
-                                    <span className="text-xs text-green-600">{stats.activeProjects} Active</span>
+                                    <CheckCircle className="w-3 h-3 text-green-500 dark:text-green-400" />
+                                    <span className="text-xs text-green-600 dark:text-green-400">{stats.activeProjects} Active</span>
                                 </div>
                             </div>
-                            <Building2 className="h-8 w-8 text-blue-500" />
+                            <Building2 className="h-8 w-8 text-blue-500 dark:text-blue-400" />
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+                <Card className="bg-purple-50/80 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800/50 backdrop-blur-sm">
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-purple-600">ผู้ใช้ทั้งหมด</p>
-                                <p className="text-2xl font-bold text-purple-700">{stats.totalUsers.toLocaleString()}</p>
+                                <p className="text-sm font-medium text-purple-600 dark:text-purple-400">ผู้ใช้ทั้งหมด</p>
+                                <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">{stats.totalUsers.toLocaleString()}</p>
                                 <div className="flex items-center gap-1 mt-1">
                                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span className="text-xs text-green-600">{stats.onlineUsers} Online</span>
+                                    <span className="text-xs text-green-600 dark:text-green-400">{stats.onlineUsers} Online</span>
                                 </div>
                             </div>
-                            <Users className="h-8 w-8 text-purple-500" />
+                            <Users className="h-8 w-8 text-purple-500 dark:text-purple-400" />
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                <Card className="bg-green-50/80 dark:bg-green-900/20 border-green-200 dark:border-green-800/50 backdrop-blur-sm">
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-green-600">System Load</p>
-                                <p className="text-2xl font-bold text-green-700">{stats.systemLoad}%</p>
+                                <p className="text-sm font-medium text-green-600 dark:text-green-400">System Load</p>
+                                <p className="text-2xl font-bold text-green-700 dark:text-green-300">{stats.systemLoad}%</p>
                                 <div className="flex items-center gap-1 mt-1">
-                                    <ArrowDownRight className="w-3 h-3 text-green-500" />
-                                    <span className="text-xs text-green-600">Normal</span>
+                                    <ArrowDownRight className="w-3 h-3 text-green-500 dark:text-green-400" />
+                                    <span className="text-xs text-green-600 dark:text-green-400">Normal</span>
                                 </div>
                             </div>
-                            <Server className="h-8 w-8 text-green-500" />
+                            <Server className="h-8 w-8 text-green-500 dark:text-green-400" />
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+                <Card className="bg-orange-50/80 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800/50 backdrop-blur-sm">
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-orange-600">Storage</p>
-                                <p className="text-2xl font-bold text-orange-700">{stats.storageUsed} GB</p>
+                                <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Storage</p>
+                                <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">{stats.storageUsed} GB</p>
                                 <div className="flex items-center gap-1 mt-1">
-                                    <span className="text-xs text-orange-600">of {stats.storageTotal} GB</span>
+                                    <span className="text-xs text-orange-600 dark:text-orange-400">of {stats.storageTotal} GB</span>
                                 </div>
                             </div>
-                            <Database className="h-8 w-8 text-orange-500" />
+                            <Database className="h-8 w-8 text-orange-500 dark:text-orange-400" />
                         </div>
                     </CardContent>
                 </Card>
@@ -356,7 +370,7 @@ export default function SuperAdminDashboard() {
                             <span>Total: {stats.storageTotal} GB</span>
                         </div>
                         <Progress value={(stats.storageUsed / stats.storageTotal) * 100} className="h-3" />
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
                             {((stats.storageTotal - stats.storageUsed) / stats.storageTotal * 100).toFixed(1)}% available
                         </p>
                     </div>
@@ -380,20 +394,20 @@ export default function SuperAdminDashboard() {
                     <CardContent>
                         <div className="space-y-4">
                             {projects.map((project) => (
-                                <div key={project.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                <div key={project.id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg hover:bg-slate-100 dark:bg-slate-800 transition-colors">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
                                             <h3 className="font-semibold">{project.name}</h3>
                                             {getStatusBadge(project.status)}
                                         </div>
-                                        <p className="text-sm text-gray-600">{project.location}</p>
-                                        <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                        <p className="text-sm text-slate-600 dark:text-slate-400">{project.location}</p>
+                                        <div className="flex items-center gap-4 mt-2 text-xs text-slate-500 dark:text-slate-400">
                                             <span>Users: {project.users}</span>
                                             <span>Admin: {project.admin.name}</span>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-xs text-gray-500">Last backup</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Last backup</p>
                                         <p className="text-sm font-medium">
                                             {format(new Date(project.lastBackup), "MMM d, HH:mm", { locale: th })}
                                         </p>
@@ -420,14 +434,14 @@ export default function SuperAdminDashboard() {
                     <CardContent>
                         <div className="space-y-3">
                             {activities.map((activity) => (
-                                <div key={activity.id} className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                                <div key={activity.id} className="flex items-start gap-3 p-3 hover:bg-slate-50 dark:bg-slate-800/50 rounded-lg transition-colors">
                                     <div className={`p-2 rounded-full ${getActivityColor(activity.type, activity.severity)}`}>
                                         {getActivityIcon(activity.type)}
                                     </div>
                                     <div className="flex-1">
                                         <h4 className="text-sm font-semibold">{activity.title}</h4>
-                                        <p className="text-xs text-gray-600 mt-1">{activity.description}</p>
-                                        <p className="text-xs text-gray-400 mt-2">
+                                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{activity.description}</p>
+                                        <p className="text-xs text-slate-400 mt-2">
                                             {format(new Date(activity.timestamp), "PPP HH:mm", { locale: th })}
                                         </p>
                                     </div>

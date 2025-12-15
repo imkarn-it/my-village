@@ -21,6 +21,7 @@ import {
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 import { api } from "@/lib/api/client";
+import type { ApiResponse, BookingWithRelations } from "@/lib/api/types";
 
 type Booking = {
     id: string;
@@ -89,9 +90,13 @@ export default function BookingsPage() {
         if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการจองนี้?")) return;
 
         try {
-            // @ts-ignore - Eden Treaty type inference issue
-            const { data } = await api.bookings({ id }).patch({ status: "cancelled" });
-            if (data) {
+            const response = await (api.bookings({ id }) as unknown as {
+                patch: (body: { status: string }) => Promise<{
+                    data: ApiResponse<BookingWithRelations> | null;
+                    error: { value: unknown } | null;
+                }>;
+            }).patch({ status: "cancelled" });
+            if (response.data?.success) {
                 await fetchBookings();
             }
         } catch {
@@ -168,8 +173,8 @@ export default function BookingsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">การจองของฉัน</h1>
-                    <p className="text-gray-600 mt-1">ดูการจองสิ่งอำนวยความสะดวกของคุณ</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">การจองของฉัน</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">ดูการจองสิ่งอำนวยความสะดวกของคุณ</p>
                 </div>
                 <Link href="/resident/facilities">
                     <Button>
@@ -205,11 +210,11 @@ export default function BookingsPage() {
             {filteredBookings.length === 0 ? (
                 <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardContent className="pt-6 text-center">
-                        <CalendarDays className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <CalendarDays className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold mb-2">
                             {filter === "all" ? "ยังไม่มีการจอง" : `ไม่มีการจอง${filter === "upcoming" ? "ที่จะถึง" : filter === "pending" ? "ที่รออนุมัติ" : "ที่ผ่านมา"}`}
                         </h3>
-                        <p className="text-gray-600 mb-4">
+                        <p className="text-slate-600 dark:text-slate-400 mb-4">
                             {filter === "all" ? "คุณยังไม่เคยจองสิ่งอำนวยความสะดวก" : `ไม่พบการจองที่ตรงตามเงื่อนไข`}
                         </p>
                         {filter === "all" && (
@@ -227,17 +232,17 @@ export default function BookingsPage() {
                         const canCancel = !isPast && ["pending", "approved"].includes(booking.status);
 
                         return (
-                            <Card key={booking.id}>
+                            <Card key={booking.id} className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                                 <CardHeader className="pb-3">
                                     <div className="flex items-start justify-between">
                                         <div>
                                             <CardTitle className="text-xl">{booking.facility?.name || "สิ่งอำนวยความสะดวก"}</CardTitle>
                                             <div className="flex items-center gap-4 mt-2">
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                                                     <CalendarDays className="h-4 w-4" />
                                                     {format(bookingDateTime, "PPP", { locale: th })}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                                                     <Clock className="h-4 w-4" />
                                                     {booking.startTime} - {booking.endTime}
                                                 </div>
@@ -268,10 +273,10 @@ export default function BookingsPage() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="text-sm text-gray-600">
+                                        <div className="text-sm text-slate-600 dark:text-slate-400">
                                             <span className="font-medium">รหัสการจอง:</span> {booking.id.slice(0, 8)}...
                                         </div>
-                                        <div className="text-sm text-gray-600">
+                                        <div className="text-sm text-slate-600 dark:text-slate-400">
                                             <span className="font-medium">จองเมื่อ:</span>{" "}
                                             {format(new Date(booking.createdAt), "PPP", { locale: th })}
                                         </div>
@@ -284,7 +289,7 @@ export default function BookingsPage() {
                                         </div>
                                     )}
                                     {booking.status === "cancelled" && (
-                                        <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                                        <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-gray-200 rounded-md">
                                             <p className="text-sm text-gray-800">การจองนี้ถูกยกเลิกแล้ว</p>
                                         </div>
                                     )}

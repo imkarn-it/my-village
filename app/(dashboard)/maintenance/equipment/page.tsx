@@ -17,16 +17,12 @@ import {
 import {
     Wrench,
     Search,
-
     Plus,
-
     MapPin,
     CheckCircle,
     AlertTriangle,
     Clock,
     History,
-
-
     Activity,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -38,11 +34,11 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { api } from "@/lib/api/client";
 
 type Equipment = {
     id: string;
@@ -80,81 +76,6 @@ type MaintenanceRecord = {
     }>;
 };
 
-const mockEquipment: Equipment[] = [
-    {
-        id: "1",
-        name: "ชุดเครื่องมือไฟฟ้าแบบครบ",
-        type: "tools",
-        serialNumber: "ELT-2024-001",
-        status: "available",
-        location: "ห้องเก็บช่าง A",
-        lastMaintenance: "2025-01-10",
-        nextMaintenance: "2025-04-10",
-        warranty: {
-            provider: "บริษัท อุปกรณ์ไฟฟ้า",
-            expires: "2027-01-10"
-        },
-        purchaseDate: "2024-01-10",
-        purchasePrice: 45000,
-        notes: "ชุดประกอบมิติครบครบ แบบครบ"
-    },
-    {
-        id: "2",
-        name: "รถเข็นขนาดใหญ่่",
-        type: "vehicle",
-        serialNumber: "CT-2023-045",
-        status: "in_use",
-        location: "อาคาร A ชั้น 2",
-        assignedTo: "ช่างสมศักดิ์",
-        lastMaintenance: "2025-01-05",
-        purchaseDate: "2023-05-15",
-        purchasePrice: 250000,
-        notes: "รถเข็นรับสินค้า 2 ตัน"
-    },
-    {
-        id: "3",
-        name: "เครื่องดูดซึม",
-        type: "safety",
-        serialNumber: "TH-2024-078",
-        status: "maintenance",
-        location: "ศูนย์ซ่อม",
-        lastMaintenance: "2025-01-12",
-        nextMaintenance: "2025-01-20",
-        warranty: {
-            provider: "SafetyTech Solutions",
-            expires: "2026-07-12"
-        },
-        purchaseDate: "2024-07-12",
-        purchasePrice: 150000,
-        notes: "เครื่องดูดซึมคลื่นคลื่น 4"
-    },
-    {
-        id: "4",
-        name: "เครื่องทำความสะอาน",
-        type: "cleaning",
-        status: "available",
-        location: "ห้องน้ำชั้น 1",
-        lastMaintenance: "2025-01-08",
-        nextMaintenance: "2025-04-08",
-        purchaseDate: "2024-03-20",
-        purchasePrice: 35000,
-        notes: "เครื่องทำความขนาด 6 ลิตร"
-    },
-    {
-        id: "5",
-        name: "ชุดเครื่องมือก่อสร้าง",
-        type: "tools",
-        serialNumber: "TL-2023-012",
-        status: "available",
-        location: "ห้องเก็บช่าง B",
-        lastMaintenance: "2025-01-15",
-        nextMaintenance: "2025-07-15",
-        purchaseDate: "2023-06-15",
-        purchasePrice: 28000,
-        notes: "เครื่องก่อสร้างสำหรับช่างมือ"
-    }
-];
-
 const mockMaintenanceRecords: MaintenanceRecord[] = [
     {
         id: "1",
@@ -185,7 +106,7 @@ const mockMaintenanceRecords: MaintenanceRecord[] = [
 
 export default function EquipmentPage() {
     const [equipment, setEquipment] = useState<Equipment[]>([]);
-    const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>([]);
+    const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>(mockMaintenanceRecords);
 
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -193,16 +114,39 @@ export default function EquipmentPage() {
     const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
     const [showAddDialog, setShowAddDialog] = useState(false);
+    const [showEditDialog, setShowEditDialog] = useState(false);
 
 
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            setEquipment(mockEquipment);
-            setMaintenanceRecords(mockMaintenanceRecords);
-
-        }, 1000);
+        fetchEquipment();
     }, []);
+
+    const fetchEquipment = async () => {
+        try {
+            const { data } = await api.equipment.get({ query: { limit: '100' } });
+            if (data && Array.isArray(data)) {
+                // Map API data to Equipment type
+                const mappedEquipment: Equipment[] = (data as any[]).map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                    type: item.type as "tools" | "vehicle" | "safety" | "cleaning" | "other",
+                    serialNumber: item.serialNumber || undefined,
+                    status: item.status as "available" | "in_use" | "maintenance" | "retired",
+                    location: item.location || 'ไม่ระบุ',
+                    assignedTo: item.assignedTo,
+                    lastMaintenance: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
+                    nextMaintenance: undefined,
+                    purchaseDate: item.purchaseDate,
+                    purchasePrice: item.purchasePrice ? Number(item.purchasePrice) : undefined,
+                    notes: item.notes || '',
+                }));
+                setEquipment(mappedEquipment);
+            }
+        } catch (error) {
+            console.error("Failed to fetch equipment:", error);
+            toast.error("ไม่สามารถโหลดข้อมูลอุปกรณ์ได้");
+        }
+    };
 
     const filteredEquipment = equipment.filter(item => {
         const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -239,8 +183,8 @@ export default function EquipmentPage() {
             case "available": return "bg-green-100 text-green-800";
             case "in_use": return "bg-blue-100 text-blue-800";
             case "maintenance": return "bg-red-100 text-red-800";
-            case "retired": return "bg-gray-100 text-gray-800";
-            default: return "bg-gray-100 text-gray-800";
+            case "retired": return "bg-slate-100 dark:bg-slate-800 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -281,8 +225,8 @@ export default function EquipmentPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">จัดการอุปกรณ์</h1>
-                    <p className="text-gray-600">ติดตามและจัดการอุปกรณ์และเครื่องมือต่างๆ</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">จัดการอุปกรณ์</h1>
+                    <p className="text-slate-600 dark:text-slate-400">ติดตามและจัดการอุปกรณ์และเครื่องมือต่างๆ</p>
                 </div>
                 <Button onClick={() => setShowAddDialog(true)}>
                     <Plus className="w-4 h-4 mr-2" />
@@ -296,8 +240,8 @@ export default function EquipmentPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-900">{equipment.length}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{equipment.length}</p>
                             </div>
                             <Wrench className="h-8 w-8 text-blue-600" />
                         </div>
@@ -307,7 +251,7 @@ export default function EquipmentPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">พร้อมใช้งาน</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">พร้อมใช้งาน</p>
                                 <p className="text-2xl font-bold text-green-600">
                                     {equipment.filter(e => e.status === "available").length}
                                 </p>
@@ -320,7 +264,7 @@ export default function EquipmentPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">กำลังใช้งาน</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">กำลังใช้งาน</p>
                                 <p className="text-2xl font-bold text-blue-600">
                                     {equipment.filter(e => e.status === "in_use").length}
                                 </p>
@@ -333,7 +277,7 @@ export default function EquipmentPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ซ่อมบำรุง</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ซ่อมบำรุง</p>
                                 <p className="text-2xl font-bold text-red-600">
                                     {equipment.filter(e => e.status === "maintenance").length}
                                 </p>
@@ -350,7 +294,7 @@ export default function EquipmentPage() {
                     <div className="flex flex-col lg:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                                 <Input
                                     placeholder="ค้นหาจากชื่อหรือ S/N..."
                                     value={searchTerm}
@@ -396,9 +340,9 @@ export default function EquipmentPage() {
                 <CardContent>
                     {filteredEquipment.length === 0 ? (
                         <div className="text-center py-12">
-                            <Wrench className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">ไม่พบอุปกรณ์</h3>
-                            <p className="text-gray-600">ยังไม่มีอุปกรณ์ที่ตรงตามเงื่อนไข</p>
+                            <Wrench className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">ไม่พบอุปกรณ์</h3>
+                            <p className="text-slate-600 dark:text-slate-400">ยังไม่มีอุปกรณ์ที่ตรงตามเงื่อนไข</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
@@ -410,13 +354,14 @@ export default function EquipmentPage() {
                                         <TableHead>S/N</TableHead>
                                         <TableHead>สถานะ</TableHead>
                                         <TableHead>ที่ตั้งงาน</TableHead>
+                                        <TableHead className="text-right">จัดการ</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {filteredEquipment.map((item) => (
                                         <TableRow
                                             key={item.id}
-                                            className={`hover:bg-gray-50 ${isOverdueForMaintenance(item)
+                                            className={`hover:bg-slate-50 dark:bg-slate-800/50 ${isOverdueForMaintenance(item)
                                                 ? "border-l-4 border-l-orange-500"
                                                 : ""
                                                 }`}
@@ -437,8 +382,21 @@ export default function EquipmentPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-1 text-sm">
-                                                    <MapPin className="w-3 h-3 text-gray-400" />
+                                                    <MapPin className="w-3 h-3 text-slate-400" />
                                                     <span>{item.location}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button variant="ghost" size="sm" onClick={() => setSelectedEquipment(item)}>
+                                                        <History className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => {
+                                                        setSelectedEquipment(item);
+                                                        setShowEditDialog(true);
+                                                    }}>
+                                                        <Wrench className="w-4 h-4" />
+                                                    </Button>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -459,69 +417,240 @@ export default function EquipmentPage() {
                             เพิ่มข้อมูลอุปกรณ์ใหม่ในระบบ
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="name">ชื่ออุปกรณ์ *</Label>
-                                <Input
-                                    id="name"
-                                    placeholder="เช่น เครื่องมือไฟฟ้าแบบครบ"
-                                />
+                    <form onSubmit={async (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(e.currentTarget);
+                        const data = {
+                            name: formData.get('name') as string,
+                            serialNumber: formData.get('serialNumber') as string,
+                            type: formData.get('type') as string,
+                            location: formData.get('location') as string,
+                            notes: formData.get('notes') as string,
+                            projectId: 'default-project',
+                        };
+
+                        try {
+                            const { error } = await api.equipment.post(data);
+                            if (error) throw error;
+                            toast.success("เพิ่มอุปกรณ์สำเร็จ");
+                            setShowAddDialog(false);
+                            fetchEquipment();
+                        } catch (error) {
+                            console.error(error);
+                            toast.error("ไม่สามารถเพิ่มอุปกรณ์ได้");
+                        }
+                    }}>
+                        <div className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="name">ชื่ออุปกรณ์ *</Label>
+                                    <Input
+                                        id="name"
+                                        name="name"
+                                        required
+                                        placeholder="เช่น เครื่องมือไฟฟ้าแบบครบ"
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="serialNumber">หมายเลขที่บี่ *</Label>
+                                    <Input
+                                        id="serialNumber"
+                                        name="serialNumber"
+                                        placeholder="เช่น ELT-2024-001"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="type">ประเภท *</Label>
+                                    <Select name="type" required defaultValue="tools">
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="เลือกประเภท" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="tools">เครื่องมือ</SelectItem>
+                                            <SelectItem value="vehicle">ยานพาหนะ</SelectItem>
+                                            <SelectItem value="safety">อุปกรณ์ความปลอดภัย</SelectItem>
+                                            <SelectItem value="cleaning">อุปกรณ์ทำความ</SelectItem>
+                                            <SelectItem value="other">อื่นๆ</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Label htmlFor="location">ที่ตั้งงาน *</Label>
+                                    <Input
+                                        id="location"
+                                        name="location"
+                                        placeholder="เช่น ห้องเก็บช่าง A"
+                                    />
+                                </div>
                             </div>
                             <div>
-                                <Label htmlFor="serialNumber">หมายเลขที่บี่ *</Label>
-                                <Input
-                                    id="serialNumber"
-                                    placeholder="เช่น ELT-2024-001"
+                                <Label htmlFor="notes">บันทึกเพิ่มเติม</Label>
+                                <Textarea
+                                    id="notes"
+                                    name="notes"
+                                    placeholder="รายละเอียดเกี่ยวกับอุปกรณ์..."
+                                    rows={3}
                                 />
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="type">ประเภท *</Label>
-                                <Select>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="เลือกประเภท" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="tools">เครื่องมือ</SelectItem>
-                                        <SelectItem value="vehicle">ยานพาหนะ</SelectItem>
-                                        <SelectItem value="safety">อุปกรณ์ความปลอดภัย</SelectItem>
-                                        <SelectItem value="cleaning">อุปกรณ์ทำความ</SelectItem>
-                                        <SelectItem value="other">อื่นๆ</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div>
-                                <Label htmlFor="location">ที่ตั้งงาน *</Label>
-                                <Input
-                                    id="location"
-                                    placeholder="เช่น ห้องเก็บช่าง A"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <Label htmlFor="notes">บันทึกเพิ่มเติม</Label>
-                            <Textarea
-                                id="notes"
-                                placeholder="รายละเอียดเกี่ยวกับอุปกรณ์..."
-                                rows={3}
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowAddDialog(false)}>
-                            ยกเลิก
-                        </Button>
-                        <Button onClick={() => setShowAddDialog(false)}>
-                            เพิ่มอุปกรณ์
-                        </Button>
-                    </DialogFooter>
+                        <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setShowAddDialog(false)}>
+                                ยกเลิก
+                            </Button>
+                            <Button type="submit">
+                                เพิ่มอุปกรณ์
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 </DialogContent>
             </Dialog>
 
+            {/* Edit Equipment Dialog */}
+            {selectedEquipment && showEditDialog && (
+                <Dialog open={showEditDialog} onOpenChange={(open) => {
+                    setShowEditDialog(open);
+                    if (!open) setSelectedEquipment(null);
+                }}>
+                    <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                            <DialogTitle>แก้ไขข้อมูลอุปกรณ์</DialogTitle>
+                            <DialogDescription>
+                                แก้ไขข้อมูลอุปกรณ์: {selectedEquipment.name}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={async (e) => {
+                            e.preventDefault();
+                            const formData = new FormData(e.currentTarget);
+                            const data = {
+                                name: formData.get('name') as string,
+                                serialNumber: formData.get('serialNumber') as string,
+                                type: formData.get('type') as string,
+                                status: formData.get('status') as string,
+                                location: formData.get('location') as string,
+                                notes: formData.get('notes') as string,
+                            };
+
+                            try {
+                                const { error } = await api.equipment({ id: selectedEquipment.id }).put(data);
+                                if (error) throw error;
+                                toast.success("อัปเดตข้อมูลสำเร็จ");
+                                setShowEditDialog(false);
+                                setSelectedEquipment(null);
+                                fetchEquipment();
+                            } catch (error) {
+                                console.error(error);
+                                toast.error("ไม่สามารถอัปเดตข้อมูลได้");
+                            }
+                        }}>
+                            <div className="space-y-4 py-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="edit-name">ชื่ออุปกรณ์ *</Label>
+                                        <Input
+                                            id="edit-name"
+                                            name="name"
+                                            defaultValue={selectedEquipment.name}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="edit-serialNumber">หมายเลขที่บี่ *</Label>
+                                        <Input
+                                            id="edit-serialNumber"
+                                            name="serialNumber"
+                                            defaultValue={selectedEquipment.serialNumber}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="edit-type">ประเภท *</Label>
+                                        <Select name="type" defaultValue={selectedEquipment.type}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="tools">เครื่องมือ</SelectItem>
+                                                <SelectItem value="vehicle">ยานพาหนะ</SelectItem>
+                                                <SelectItem value="safety">อุปกรณ์ความปลอดภัย</SelectItem>
+                                                <SelectItem value="cleaning">อุปกรณ์ทำความ</SelectItem>
+                                                <SelectItem value="other">อื่นๆ</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="edit-status">สถานะ *</Label>
+                                        <Select name="status" defaultValue={selectedEquipment.status}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="available">พร้อมใช้งาน</SelectItem>
+                                                <SelectItem value="in_use">กำลังใช้งาน</SelectItem>
+                                                <SelectItem value="maintenance">กำลังซ่อมบำรุง</SelectItem>
+                                                <SelectItem value="retired">เลิกใช้งาน</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <Label htmlFor="edit-location">ที่ตั้งงาน *</Label>
+                                    <Input
+                                        id="edit-location"
+                                        name="location"
+                                        defaultValue={selectedEquipment.location}
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="edit-notes">บันทึกเพิ่มเติม</Label>
+                                    <Textarea
+                                        id="edit-notes"
+                                        name="notes"
+                                        defaultValue={selectedEquipment.notes}
+                                        rows={3}
+                                    />
+                                </div>
+                            </div>
+                            <DialogFooter className="flex justify-between sm:justify-between">
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={async () => {
+                                        if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบอุปกรณ์นี้?')) {
+                                            try {
+                                                const { error } = await api.equipment({ id: selectedEquipment.id }).delete();
+                                                if (error) throw error;
+                                                toast.success("ลบอุปกรณ์สำเร็จ");
+                                                setShowEditDialog(false);
+                                                setSelectedEquipment(null);
+                                                fetchEquipment();
+                                            } catch (error) {
+                                                console.error(error);
+                                                toast.error("ไม่สามารถลบอุปกรณ์ได้");
+                                            }
+                                        }
+                                    }}
+                                >
+                                    ลบอุปกรณ์
+                                </Button>
+                                <div className="flex gap-2">
+                                    <Button type="button" variant="outline" onClick={() => setShowEditDialog(false)}>
+                                        ยกเลิก
+                                    </Button>
+                                    <Button type="submit">
+                                        บันทึก
+                                    </Button>
+                                </div>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+            )}
+
             {/* Maintenance History Dialog */}
-            {selectedEquipment && (
+            {selectedEquipment && !showEditDialog && (
                 <Dialog open={!!selectedEquipment} onOpenChange={() => setSelectedEquipment(null)}>
                     <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
@@ -530,7 +659,7 @@ export default function EquipmentPage() {
                         <div className="py-4">
                             <div className="mb-4">
                                 <h3 className="font-semibold">{selectedEquipment.name}</h3>
-                                <p className="text-sm text-gray-600">{selectedEquipment.serialNumber}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">{selectedEquipment.serialNumber}</p>
                             </div>
 
                             <div className="space-y-4">
@@ -541,7 +670,7 @@ export default function EquipmentPage() {
                                                 <p className="font-medium">
                                                     {record.type === "routine" ? "บำรุงตามกำหนด" : "ซ่อม"}
                                                 </p>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                                     {format(new Date(record.performedAt), "d MMMM yyyy, HH:mm", { locale: th })}
                                                 </p>
                                             </div>
@@ -555,25 +684,25 @@ export default function EquipmentPage() {
                                                 {record.type === "routine" ? "ประจำเดือน" : "ซ่อม"}
                                             </Badge>
                                         </div>
-                                        <p className="text-gray-700">{record.description}</p>
+                                        <p className="text-slate-700 dark:text-slate-300">{record.description}</p>
                                         {record.cost && (
-                                            <p className="text-sm font-medium text-gray-900 mt-2">
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white mt-2">
                                                 ค่าใช้จ่าย: ฿{record.cost.toLocaleString('th-TH')}
                                             </p>
                                         )}
                                         {record.parts && record.parts.length > 0 && (
                                             <div className="mt-2">
-                                                <p className="text-sm font-medium text-gray-700 mb-1">อะไหล่ที่ใช้:</p>
+                                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">อะไหล่ที่ใช้:</p>
                                                 <div className="space-y-1">
                                                     {record.parts.map((part, index) => (
-                                                        <div key={index} className="text-sm text-gray-600">
+                                                        <div key={index} className="text-sm text-slate-600 dark:text-slate-400">
                                                             • {part.name} x{part.quantity} (฿{part.cost.toLocaleString('th-TH')})
                                                         </div>
                                                     ))}
                                                 </div>
                                             </div>
                                         )}
-                                        <div className="flex items-center gap-2 mt-3 text-sm text-gray-500">
+                                        <div className="flex items-center gap-2 mt-3 text-sm text-slate-500 dark:text-slate-400">
                                             <span>ดำเนินการโดย:</span>
                                             <span className="font-medium">{record.performedBy}</span>
                                         </div>
@@ -582,8 +711,8 @@ export default function EquipmentPage() {
 
                                 {getMaintenanceHistory(selectedEquipment.id).length === 0 && (
                                     <div className="text-center py-8">
-                                        <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                        <p className="text-gray-600">ยังไม่มีประวัติการบำรุุง</p>
+                                        <History className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                                        <p className="text-slate-600 dark:text-slate-400">ยังไม่มีประวัติการบำรุุง</p>
                                     </div>
                                 )}
                             </div>

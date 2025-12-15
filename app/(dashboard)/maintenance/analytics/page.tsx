@@ -178,8 +178,8 @@ export default function MaintenanceAnalytics() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">วิเคราะห์ข้อมูลซ่อมบำรุง</h1>
-                    <p className="text-gray-600">สถิติและรายงานการทำงานของแผนกซ่อมบำรุง</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">วิเคราะห์ข้อมูลซ่อมบำรุง</h1>
+                    <p className="text-slate-600 dark:text-slate-400">สถิติและรายงานการทำงานของแผนกซ่อมบำรุง</p>
                 </div>
                 <div className="flex gap-2">
                     <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
@@ -210,8 +210,8 @@ export default function MaintenanceAnalytics() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">งานทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-900">{data.totalJobs}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">งานทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{data.totalJobs}</p>
                                 <p className="text-sm text-green-600">
                                     เสร็จ {data.completedJobs} ({getCompletionRate()}%)
                                 </p>
@@ -225,9 +225,9 @@ export default function MaintenanceAnalytics() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ระยะเวลาเฉลี่ย</p>
-                                <p className="text-2xl font-bold text-gray-900">{data.averageCompletionTime}</p>
-                                <p className="text-sm text-gray-600">วันทำงาน</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ระยะเวลาเฉลี่ย</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{data.averageCompletionTime}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">วันทำงาน</p>
                             </div>
                             <Clock className="h-8 w-8 text-yellow-600" />
                         </div>
@@ -238,9 +238,9 @@ export default function MaintenanceAnalytics() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ต้นทุนรวม</p>
-                                <p className="text-2xl font-bold text-gray-900">฿{data.totalCost.toLocaleString('th-TH')}</p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ต้นทุนรวม</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">฿{data.totalCost.toLocaleString('th-TH')}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">
                                     เฉลี่ย ฿{(data.totalCost / Math.max(data.completedJobs, 1)).toFixed(0)}/งาน
                                 </p>
                             </div>
@@ -253,9 +253,9 @@ export default function MaintenanceAnalytics() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">อะไหล่ที่ใช้</p>
-                                <p className="text-2xl font-bold text-gray-900">{data.partsUsed}</p>
-                                <p className="text-sm text-gray-600">รายการ</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">อะไหล่ที่ใช้</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{data.partsUsed}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">รายการ</p>
                             </div>
                             <Package className="h-8 w-8 text-purple-600" />
                         </div>
@@ -442,19 +442,19 @@ export default function MaintenanceAnalytics() {
                             <div key={tech.id} className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${index === 0 ? 'bg-yellow-100 text-yellow-800' :
-                                        index === 1 ? 'bg-gray-100 text-gray-800' :
+                                        index === 1 ? 'bg-slate-100 dark:bg-slate-800 text-gray-800' :
                                             'bg-orange-100 text-orange-800'
                                         }`}>
                                         {index + 1}
                                     </div>
                                     <div>
                                         <p className="font-medium">{tech.name}</p>
-                                        <p className="text-sm text-gray-500">{tech.completedJobs} งาน</p>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">{tech.completedJobs} งาน</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
                                     <p className="font-medium">{tech.rating} ⭐</p>
-                                    <p className="text-sm text-gray-500">{tech.averageTime} วัน</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">{tech.averageTime} วัน</p>
                                 </div>
                             </div>
                         ))}

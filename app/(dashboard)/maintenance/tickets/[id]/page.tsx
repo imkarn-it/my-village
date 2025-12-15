@@ -234,16 +234,16 @@ export default function MaintenanceTicketDetailPage({ params }: { params: Promis
                             <ArrowLeft className="w-5 h-5" />
                         </Button>
                     </Link>
-                    <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
                 </div>
                 <Card className="animate-pulse">
                     <CardHeader>
-                        <div className="h-6 bg-gray-200 rounded w-2/3"></div>
+                        <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            <div className="h-4 bg-gray-200 rounded"></div>
-                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
                         </div>
                     </CardContent>
                 </Card>
@@ -335,7 +335,7 @@ export default function MaintenanceTicketDetailPage({ params }: { params: Promis
                         <CardContent className="space-y-4">
                             <div>
                                 <h3 className="font-semibold text-lg mb-2">{ticket.title}</h3>
-                                <p className="text-gray-700 whitespace-pre-wrap">{ticket.description}</p>
+                                <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{ticket.description}</p>
                             </div>
 
                             {/* Images */}
@@ -380,15 +380,15 @@ export default function MaintenanceTicketDetailPage({ params }: { params: Promis
                                         <div key={note.id} className="border-l-4 border-blue-200 pl-4 py-2">
                                             <div className="flex items-center justify-between mb-1">
                                                 <span className="text-sm font-medium">{note.createdBy}</span>
-                                                <span className="text-xs text-gray-500">
+                                                <span className="text-xs text-slate-500 dark:text-slate-400">
                                                     {format(new Date(note.createdAt), "PPP HH:mm", { locale: th })}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-gray-700">{note.message}</p>
+                                            <p className="text-sm text-slate-700 dark:text-slate-300">{note.message}</p>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-gray-500 text-sm">ยังไม่มีบันทึก</p>
+                                    <p className="text-slate-500 dark:text-slate-400 text-sm">ยังไม่มีบันทึก</p>
                                 )}
                             </div>
 
@@ -425,22 +425,22 @@ export default function MaintenanceTicketDetailPage({ params }: { params: Promis
                             {ticket.user && (
                                 <>
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                            <User className="w-5 h-5 text-gray-600" />
+                                        <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                                            <User className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                                         </div>
                                         <div>
                                             <p className="font-medium">{ticket.user.name}</p>
-                                            <p className="text-sm text-gray-500">ลูกบ้าน</p>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">ลูกบ้าน</p>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-sm">
-                                            <Mail className="w-4 h-4 text-gray-400" />
+                                            <Mail className="w-4 h-4 text-slate-400" />
                                             <span>{ticket.user.email}</span>
                                         </div>
                                         {ticket.user.phone && (
                                             <div className="flex items-center gap-2 text-sm">
-                                                <Phone className="w-4 h-4 text-gray-400" />
+                                                <Phone className="w-4 h-4 text-slate-400" />
                                                 <span>{ticket.user.phone}</span>
                                             </div>
                                         )}
@@ -458,12 +458,12 @@ export default function MaintenanceTicketDetailPage({ params }: { params: Promis
                             </CardHeader>
                             <CardContent>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                        <Home className="w-5 h-5 text-gray-600" />
+                                    <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                                        <Home className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                                     </div>
                                     <div>
                                         <p className="font-medium">{ticket.unit.number}</p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             ตึก {ticket.unit.building} ชั้น {ticket.unit.floor}
                                         </p>
                                     </div>
@@ -482,7 +482,7 @@ export default function MaintenanceTicketDetailPage({ params }: { params: Promis
                                 <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                                 <div>
                                     <p className="text-sm font-medium">แจ้งซ่อม</p>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">
                                         {format(new Date(ticket.createdAt), "PPP HH:mm", { locale: th })}
                                     </p>
                                 </div>
@@ -491,7 +491,7 @@ export default function MaintenanceTicketDetailPage({ params }: { params: Promis
                                 <div className="w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
                                 <div>
                                     <p className="text-sm font-medium">อัปเดตล่าสุด</p>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">
                                         {format(new Date(ticket.updatedAt), "PPP HH:mm", { locale: th })}
                                     </p>
                                 </div>

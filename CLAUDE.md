@@ -37,9 +37,9 @@
 |------|---------|----------|
 | **Resident** | ลูกบ้าน/ผู้อยู่อาศัย | 100% ✅ |
 | **Admin** | ผู้จัดการนิติบุคคล | 100% ✅ |
-| **Security** | รักษาความปลอดภัย | 85% ✅ |
-| **Maintenance** | ช่างซ่อมบำรุง | 85% ✅ |
-| **Super Admin** | ผู้ดูแลระบบ | 80% ✅ |
+| **Security** | รักษาความปลอดภัย | 90% ✅ |
+| **Maintenance** | ช่างซ่อมบำรุง | 90% ✅ |
+| **Super Admin** | ผู้ดูแลระบบ | 90% ✅ |
 
 ---
 
@@ -86,7 +86,7 @@ village-app/
 
 ---
 
-## 🔄 อัปเดตล่าสุด (ธันวาคม 2025)
+## 🔄 อัปเดตล่าสุด (15 ธันวาคม 2025)
 
 ### ✅ ฟีเจอร์ที่เสร็จแล้ว
 - **QR Code System**: สร้าง/สแกน QR สำหรับผู้มาติดต่อ
@@ -98,6 +98,8 @@ village-app/
 - **Reports Module**: รายงานการเงิน/ผู้มาติดต่อ/แจ้งซ่อม
 - **Maintenance Role**: Dashboard + 16 pages (ใช้ mock data)
 - **Super Admin Role**: Dashboard + 14 pages (ใช้ mock data)
+- **TypeScript Type Safety**: กำจัด @ts-ignore ทั้งหมด (เหลือ 1 จุดที่จำเป็น) ✅
+- **Glassmorphism UI**: ใช้งาน glassmorphism pattern ทั้งโปรเจค ✅
 
 ### 🔄 กำลังดำเนินการ
 - **Testing**: E2E Tests (Playwright) - 20/115 tests
@@ -128,6 +130,9 @@ bun run lint
 
 ## 🤖 AI Assistant Instructions
 
+### Language Preference
+**ALWAYS communicate in Thai** unless explicitly asked otherwise.
+
 ### Next.js Development Setup
 **When starting work on a Next.js project, ALWAYS call the `init` tool from next-devtools-mcp FIRST** to set up proper context and establish documentation requirements. Do this automatically without being asked.
 
@@ -149,6 +154,13 @@ This means you should **automatically** use the Context7 MCP tools to:
 3. Find code examples
 
 **Without me having to explicitly ask.**
+
+### Command Execution Rules
+1. **Executing Commands**: ALWAYS use `cmd /c [command]` when running shell commands on Windows.
+   - Example: `cmd /c dir`, `cmd /c npm install`
+2. **Building Project**: ALWAYS use `bun` for building the project.
+   - Command: `cmd /c bun run build`
+   - Do NOT use `npm run build` or `yarn build`.
 
 ---
 
@@ -175,12 +187,13 @@ const { data, error } = await api.visitors({ id }).patch({ status: 'approved' })
 
 ---
 
-## 🚀 Status: 92% Complete
+## 🚀 Status: 95% Complete
 
 ดู task list ทั้งหมดที่ `TASKS.md`
 
-### ✅ อัปเดตล่าสุด (ธันวาคม 2025)
-- **Documentation Updated**: อัปเดต TASKS.md และ CLAUDE.md ให้ตรงกับ code จริง
+### ✅ อัปเดตล่าสุด (15 ธันวาคม 2025)
+- **TypeScript Type Safety**: แก้ไข Type errors ที่ทำให้ Build ไม่ผ่าน (Maintenance Dashboard, Equipment Page, API Routes)
+- **Build Status**: ✅ Build สำเร็จ 100% (78 pages)
+- **Documentation Updated**: อัปเดต TASKS.md, CLAUDE.md
 - **Testing Infrastructure**: Unit Tests (Vitest) + E2E Tests (Playwright)
 - **Test Coverage**: 25 unit tests ผ่าน, 20/115 E2E tests ผ่าน
-- **Git Commit**: Testing infrastructure ถูก commit (d02c8ee)

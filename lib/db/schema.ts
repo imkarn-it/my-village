@@ -247,6 +247,18 @@ export const supportTickets = pgTable('support_tickets', {
 })
 
 // ==========================================
+// 12.1 Support Ticket Responses (การตอบกลับ)
+// ==========================================
+export const supportTicketResponses = pgTable('support_ticket_responses', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    ticketId: uuid('ticket_id').references(() => supportTickets.id).notNull(),
+    message: text('message').notNull(),
+    isFromAdmin: boolean('is_from_admin').default(false),
+    createdBy: uuid('created_by').references(() => users.id).notNull(),
+    createdAt: timestamp('created_at').defaultNow(),
+})
+
+// ==========================================
 // 13. Guard Checkpoints (จุดตรวจ รปภ.)
 // ==========================================
 export const guardCheckpoints = pgTable('guard_checkpoints', {
@@ -327,6 +339,33 @@ export const announcementsRelations = relations(announcements, ({ one }) => ({
     }),
 }))
 
+export const supportTicketsRelations = relations(supportTickets, ({ one, many }) => ({
+    unit: one(units, {
+        fields: [supportTickets.unitId],
+        references: [units.id],
+    }),
+    user: one(users, {
+        fields: [supportTickets.userId],
+        references: [users.id],
+    }),
+    repliedByUser: one(users, {
+        fields: [supportTickets.repliedBy],
+        references: [users.id],
+    }),
+    responses: many(supportTicketResponses),
+}))
+
+export const supportTicketResponsesRelations = relations(supportTicketResponses, ({ one }) => ({
+    ticket: one(supportTickets, {
+        fields: [supportTicketResponses.ticketId],
+        references: [supportTickets.id],
+    }),
+    createdByUser: one(users, {
+        fields: [supportTicketResponses.createdBy],
+        references: [users.id],
+    }),
+}))
+
 // ==========================================
 // Type Exports
 // ==========================================
@@ -365,6 +404,9 @@ export type NewSosAlert = typeof sosAlerts.$inferInsert
 
 export type SupportTicket = typeof supportTickets.$inferSelect
 export type NewSupportTicket = typeof supportTickets.$inferInsert
+
+export type SupportTicketResponse = typeof supportTicketResponses.$inferSelect
+export type NewSupportTicketResponse = typeof supportTicketResponses.$inferInsert
 
 export type GuardCheckpoint = typeof guardCheckpoints.$inferSelect
 export type NewGuardCheckpoint = typeof guardCheckpoints.$inferInsert

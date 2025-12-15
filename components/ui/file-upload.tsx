@@ -126,12 +126,24 @@ export function FileUpload({
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accept: accept.split(',').reduce((acc, type) => {
-            if (type.includes('*')) {
-                const ext = type.split('/')[0];
-                acc[ext] = [type];
+            type = type.trim();
+            if (type === 'image/*') {
+                acc['image/*'] = [];
+            } else if (type === '.pdf') {
+                acc['application/pdf'] = ['.pdf'];
+            } else if (type === '.doc') {
+                acc['application/msword'] = ['.doc'];
+            } else if (type === '.docx') {
+                acc['application/vnd.openxmlformats-officedocument.wordprocessingml.document'] = ['.docx'];
+            } else if (type === '.xls') {
+                acc['application/vnd.ms-excel'] = ['.xls'];
+            } else if (type === '.xlsx') {
+                acc['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'] = ['.xlsx'];
+            } else if (type.startsWith('.')) {
+                const ext = type.replace('.', '');
+                acc[`application/${ext}`] = [type];
             } else {
-                const ext = type.split('.').pop();
-                if (ext) acc[ext] = [type];
+                if (!acc[type]) acc[type] = [];
             }
             return acc;
         }, {} as Record<string, string[]>),

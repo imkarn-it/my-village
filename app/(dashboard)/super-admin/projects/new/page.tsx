@@ -171,8 +171,8 @@ export default function NewProjectPage() {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">สร้างโครงการใหม่</h1>
-                        <p className="text-gray-600">เพิ่มโครงการคอนโดหรือหมู่บ้านใหม่ในระบบ</p>
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">สร้างโครงการใหม่</h1>
+                        <p className="text-slate-600 dark:text-slate-400">เพิ่มโครงการคอนโดหรือหมู่บ้านใหม่ในระบบ</p>
                     </div>
                 </div>
             </div>
@@ -460,7 +460,7 @@ export default function NewProjectPage() {
                                 />
                                 <div>
                                     <p className="font-medium">ใช้งานระบบ QR Code ผู้มาติดต่อ</p>
-                                    <p className="text-sm text-gray-500">อนุญาตให้ลูกบ้านสร้าง QR Code สำหรับผู้มาเยือน</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">อนุญาตให้ลูกบ้านสร้าง QR Code สำหรับผู้มาเยือน</p>
                                 </div>
                             </label>
 
@@ -476,7 +476,7 @@ export default function NewProjectPage() {
                                 />
                                 <div>
                                     <p className="font-medium">ต้องการอนุมัติการแจ้งซ่อม</p>
-                                    <p className="text-sm text-gray-500">คำขอซ่อมต้องได้รับการอนุมัติจากแอดมินก่อนดำเนินการ</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">คำขอซ่อมต้องได้รับการอนุมัติจากแอดมินก่อนดำเนินการ</p>
                                 </div>
                             </label>
 
@@ -492,7 +492,7 @@ export default function NewProjectPage() {
                                 />
                                 <div>
                                     <p className="font-medium">เปิดใช้งานระบบจองพื้นที่ส่วนกลาง</p>
-                                    <p className="text-sm text-gray-500">ลูกบ้านสามารถจองใช้สิ่งอำนวยความสะดวกได้</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">ลูกบ้านสามารถจองใช้สิ่งอำนวยความสะดวกได้</p>
                                 </div>
                             </label>
 
@@ -508,7 +508,7 @@ export default function NewProjectPage() {
                                 />
                                 <div>
                                     <p className="font-medium">เปิดใช้งานระบบ SOS ฉุกเฉิน</p>
-                                    <p className="text-sm text-gray-500">ลูกบ้านสามารถกดปุ่มแจ้งเหตุฉุกเฉินได้</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">ลูกบ้านสามารถกดปุ่มแจ้งเหตุฉุกเฉินได้</p>
                                 </div>
                             </label>
                         </div>

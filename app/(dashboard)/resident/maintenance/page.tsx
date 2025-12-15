@@ -146,45 +146,43 @@ export default function MaintenancePage(): React.JSX.Element {
     useEffect(() => {
         const fetchUnits = async () => {
             try {
-                const { data } = await api.units.get()
-                // @ts-ignore API response structure mismatch - using type assertion for data.data
-                if (data && data.success && Array.isArray(data.data) && data.data.length > 0) {
-                    // @ts-ignore API response structure mismatch - using type assertion for units array
-                    setUnits(data.data as Unit[])
-                    // @ts-ignore TypeScript can't infer array index type - using type assertion for ID
-                    setSelectedUnitId((data.data[0] as { id: string }).id)
+                const response = await api.units.get() as {
+                    data: { success: boolean; data: Unit[] } | null;
+                };
+                if (response.data?.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
+                    setUnits(response.data.data);
+                    setSelectedUnitId(response.data.data[0].id);
                 } else {
-                    setIsLoading(false)
+                    setIsLoading(false);
                 }
             } catch (error) {
-                console.error("Failed to fetch units:", error)
-                setIsLoading(false)
+                console.error("Failed to fetch units:", error);
+                setIsLoading(false);
             }
-        }
-        fetchUnits()
-    }, [])
+        };
+        fetchUnits();
+    }, []);
 
     useEffect(() => {
         const fetchRequests = async () => {
-            if (!selectedUnitId) return
-            setIsLoading(true)
+            if (!selectedUnitId) return;
+            setIsLoading(true);
             try {
-                // @ts-ignore API response structure mismatch - dynamic API endpoint access
-                const { data } = await api.maintenance.get({ query: { unitId: selectedUnitId } })
-                // @ts-ignore API response data type mismatch - unknown structure from server
-                if (data && data.success && data.data) {
-                    // @ts-ignore Type assertion needed for maintenance requests array
-                    setRequests(data.data as unknown)
+                const response = await (api.maintenance.get as unknown as (options: { query: { unitId: string } }) => Promise<{
+                    data: { success: boolean; data: MaintenanceRequest[] } | null;
+                }>)({ query: { unitId: selectedUnitId } });
+                if (response.data?.success && response.data.data) {
+                    setRequests(response.data.data);
                 }
             } catch (error) {
-                console.error("Failed to fetch maintenance requests:", error)
-                toast.error("ไม่สามารถดึงข้อมูลการแจ้งซ่อมได้")
+                console.error("Failed to fetch maintenance requests:", error);
+                toast.error("ไม่สามารถดึงข้อมูลการแจ้งซ่อมได้");
             } finally {
-                setIsLoading(false)
+                setIsLoading(false);
             }
-        }
-        fetchRequests()
-    }, [selectedUnitId])
+        };
+        fetchRequests();
+    }, [selectedUnitId]);
 
     const filteredRequests = requests.filter(r =>
         r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

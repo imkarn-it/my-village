@@ -216,7 +216,7 @@ export default function ResidentTransportPage() {
             case "picked_up": return "bg-purple-100 text-purple-800";
             case "completed": return "bg-green-100 text-green-800";
             case "cancelled": return "bg-red-100 text-red-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -253,15 +253,15 @@ export default function ResidentTransportPage() {
         return (
             <div className="space-y-6">
                 <div className="animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded w-64 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-96"></div>
+                    <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-64 mb-2"></div>
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-96"></div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="animate-pulse">
-                        <div className="h-64 bg-gray-200 rounded"></div>
+                        <div className="h-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
                     </div>
                     <div className="animate-pulse">
-                        <div className="h-64 bg-gray-200 rounded"></div>
+                        <div className="h-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
                     </div>
                 </div>
             </div>
@@ -312,15 +312,15 @@ export default function ResidentTransportPage() {
 
                             <div className="space-y-2 text-sm">
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">เบื้องต้น:</span>
+                                    <span className="text-slate-600 dark:text-slate-400">เบื้องต้น:</span>
                                     <span className="font-medium">฿{provider.baseFare}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">ต่อกิโลเมตร:</span>
+                                    <span className="text-slate-600 dark:text-slate-400">ต่อกิโลเมตร:</span>
                                     <span className="font-medium">฿{provider.perKm}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">เวลามาถึง:</span>
+                                    <span className="text-slate-600 dark:text-slate-400">เวลามาถึง:</span>
                                     <span className="font-medium">{provider.estimatedTime}</span>
                                 </div>
                             </div>
@@ -355,11 +355,11 @@ export default function ResidentTransportPage() {
                 <CardContent>
                     {requests.length === 0 ? (
                         <div className="text-center py-12">
-                            <Car className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            <Car className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                                 ยังไม่มีประวัติการเรียกใช้บริการ
                             </h3>
-                            <p className="text-gray-600 mb-4">
+                            <p className="text-slate-600 dark:text-slate-400 mb-4">
                                 เริ่มต้นใช้บริการเรียกรถของคุณ
                             </p>
                             <Button onClick={() => setShowNewRequestForm(true)}>
@@ -370,14 +370,14 @@ export default function ResidentTransportPage() {
                     ) : (
                         <div className="space-y-4">
                             {requests.map((request) => (
-                                <div key={request.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                                <div key={request.id} className="border rounded-lg p-4 hover:bg-slate-50 dark:bg-slate-800/50">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
                                                 {getTypeIcon(request.type)}
                                                 <div>
                                                     <p className="font-medium">{getTypeLabel(request.type)}</p>
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="text-sm text-slate-600 dark:text-slate-400">
                                                         {format(new Date(request.createdAt), "d MMM yyyy, HH:mm", { locale: th })}
                                                     </p>
                                                 </div>
@@ -388,20 +388,20 @@ export default function ResidentTransportPage() {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                                                 <div>
-                                                    <p className="text-sm text-gray-500">ผู้โดยสาร</p>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">ผู้โดยสาร</p>
                                                     <p className="font-medium">{request.passengerName}</p>
                                                     <p className="text-sm">{request.passengerPhone}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm text-gray-500">ห้องพัก</p>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">ห้องพัก</p>
                                                     <p className="font-medium">{request.unitNumber}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm text-gray-500">จุดรับ</p>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">จุดรับ</p>
                                                     <p className="font-medium">{request.pickupLocation}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm text-gray-500">จุดส่ง</p>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">จุดส่ง</p>
                                                     <p className="font-medium">{request.destination}</p>
                                                 </div>
                                             </div>
@@ -429,7 +429,7 @@ export default function ResidentTransportPage() {
 
                                             {request.fare && (
                                                 <div className="mt-4 text-right">
-                                                    <span className="text-lg font-bold text-gray-900">฿{request.fare}</span>
+                                                    <span className="text-lg font-bold text-slate-900 dark:text-white">฿{request.fare}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -596,7 +596,7 @@ export default function ResidentTransportPage() {
 
                         <div className="p-6">
                             <div className="text-center mb-4">
-                                <p className="text-gray-600 mb-2">คะแนนความพึงพอใจ</p>
+                                <p className="text-slate-600 dark:text-slate-400 mb-2">คะแนนความพึงพอใจ</p>
                                 <div className="flex justify-center gap-2">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button

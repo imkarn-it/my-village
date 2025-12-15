@@ -111,7 +111,7 @@ export default function MaintenanceMobilePage() {
             case "high": return "bg-orange-100 text-orange-800 border-orange-200";
             case "medium": return "bg-yellow-100 text-yellow-800 border-yellow-200";
             case "low": return "bg-green-100 text-green-800 border-green-200";
-            default: return "bg-gray-100 text-gray-800 border-gray-200";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800 border-gray-200";
         }
     };
 
@@ -151,7 +151,7 @@ export default function MaintenanceMobilePage() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-800/50 pb-20">
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sticky top-0 z-10">
                 <div className="flex items-center justify-between mb-3">
@@ -171,13 +171,13 @@ export default function MaintenanceMobilePage() {
 
                 {/* Search Bar */}
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <input
                         type="text"
                         placeholder="ค้นหางาน..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg text-gray-900 placeholder-gray-500"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg text-slate-900 dark:text-white placeholder-gray-500"
                     />
                 </div>
             </div>
@@ -189,8 +189,8 @@ export default function MaintenanceMobilePage() {
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-600">วันนี้</p>
-                                    <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">วันนี้</p>
+                                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
                                 </div>
                                 <Activity className="w-8 h-8 text-blue-500" />
                             </div>
@@ -200,7 +200,7 @@ export default function MaintenanceMobilePage() {
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-600">เสร็จแล้ว</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">เสร็จแล้ว</p>
                                     <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
                                 </div>
                                 <CheckCircle className="w-8 h-8 text-green-500" />
@@ -213,11 +213,11 @@ export default function MaintenanceMobilePage() {
                 <Card className="bg-white border-0 shadow-sm mb-4">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700">ความคืบหน้าวันนี้</span>
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">ความคืบหน้าวันนี้</span>
                             <span className="text-sm font-bold text-blue-600">{completionPercentage}%</span>
                         </div>
                         <Progress value={completionPercentage} className="h-2" />
-                        <div className="flex justify-between mt-2 text-xs text-gray-600">
+                        <div className="flex justify-between mt-2 text-xs text-slate-600 dark:text-slate-400">
                             <span>เสร็จ {stats.completed}/{stats.total} งาน</span>
                             <span>เหลือ {stats.total - stats.completed} งาน</span>
                         </div>
@@ -252,7 +252,7 @@ export default function MaintenanceMobilePage() {
             {/* Today's Tasks */}
             <div className="px-4">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-lg font-bold text-gray-900">งานวันนี้</h2>
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">งานวันนี้</h2>
                     <Link href="/maintenance/schedule">
                         <Button variant="ghost" size="sm">
                             ดูทั้งหมด
@@ -271,8 +271,8 @@ export default function MaintenanceMobilePage() {
                                     {/* Header */}
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="flex-1">
-                                            <h3 className="font-semibold text-gray-900">{task.title}</h3>
-                                            <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                                            <h3 className="font-semibold text-slate-900 dark:text-white">{task.title}</h3>
+                                            <div className="flex items-center gap-2 mt-1 text-sm text-slate-600 dark:text-slate-400">
                                                 <MapPin className="w-3 h-3" />
                                                 {task.location}
                                                 <span>•</span>
@@ -327,8 +327,8 @@ export default function MaintenanceMobilePage() {
                 {filteredTasks.length === 0 && (
                     <Card className="bg-white border-0 shadow-sm">
                         <CardContent className="p-8 text-center">
-                            <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600">ไม่พบงานที่ค้นหา</p>
+                            <Search className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                            <p className="text-slate-600 dark:text-slate-400">ไม่พบงานที่ค้นหา</p>
                         </CardContent>
                     </Card>
                 )}

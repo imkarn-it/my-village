@@ -386,7 +386,7 @@ export default function MaintenanceInProgressPage() {
             case "completed":
                 return "text-green-600 bg-green-50";
             default:
-                return "text-gray-600 bg-gray-50";
+                return "text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50";
         }
     };
 
@@ -410,8 +410,8 @@ export default function MaintenanceInProgressPage() {
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">งานที่กำลังดำเนินการ</h1>
-                        <p className="text-gray-600 mt-1">ติดตามความคือหนาของงานที่ได้รับมอบหมาย</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">งานที่กำลังดำเนินการ</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">ติดตามความคือหนาของงานที่ได้รับมอบหมาย</p>
                     </div>
                 </div>
                 <div className="space-y-4">
@@ -419,9 +419,9 @@ export default function MaintenanceInProgressPage() {
                         <Card key={i} className="animate-pulse">
                             <CardContent className="pt-6">
                                 <div className="space-y-3">
-                                    <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                                    <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -436,10 +436,10 @@ export default function MaintenanceInProgressPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">งานที่กำลังดำเนินการ</h1>
-                    <p className="text-gray-600 mt-1">ติดตามความคือหนาของงานที่ได้รับมอบหมาย</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">งานที่กำลังดำเนินการ</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">ติดตามความคือหนาของงานที่ได้รับมอบหมาย</p>
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-slate-500 dark:text-slate-400">
                     ทั้งหมด {filteredTasks.length} งาน
                 </div>
             </div>
@@ -450,7 +450,7 @@ export default function MaintenanceInProgressPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">กำลังดำเนินการ</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">กำลังดำเนินการ</p>
                                 <p className="text-2xl font-bold text-blue-600">{tasks.length}</p>
                             </div>
                             <Wrench className="h-8 w-8 text-blue-500" />
@@ -462,7 +462,7 @@ export default function MaintenanceInProgressPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">รองอะไหคุณ</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">รองอะไหคุณ</p>
                                 <p className="text-2xl font-bold text-yellow-600">
                                     {tasks.filter(t => t.status === "waiting_parts").length}
                                 </p>
@@ -476,7 +476,7 @@ export default function MaintenanceInProgressPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ความคือหนาเฉลี่ย</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ความคือหนาเฉลี่ย</p>
                                 <p className="text-2xl font-bold text-orange-600">
                                     {Math.round(tasks.reduce((acc, task) => acc + task.progress, 0) / tasks.length)}%
                                 </p>
@@ -490,7 +490,7 @@ export default function MaintenanceInProgressPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ช่างที่ปฏิบาทหนาย</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ช่างที่ปฏิบาทหนาย</p>
                                 <p className="text-2xl font-bold text-green-600">
                                     {technicians.length}
                                 </p>
@@ -504,7 +504,7 @@ export default function MaintenanceInProgressPage() {
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                     <Input
                         placeholder="ค้นหางาน..."
                         value={searchQuery}
@@ -543,9 +543,9 @@ export default function MaintenanceInProgressPage() {
             {filteredTasks.length === 0 ? (
                 <Card>
                     <CardContent className="pt-6 text-center">
-                        <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <Wrench className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold mb-2">ไม่มีงานที่กำลังดำเนินการ</h3>
-                        <p className="text-gray-600">
+                        <p className="text-slate-600 dark:text-slate-400">
                             {searchQuery || categoryFilter !== "all" || priorityFilter !== "all"
                                 ? "ไม่พบงานที่ตรงตามเงื่อนไข"
                                 : "ไม่มีงานที่กำลังดำเนินการในขณะนี้"}
@@ -566,7 +566,7 @@ export default function MaintenanceInProgressPage() {
                                                 {getStatusLabel(task.status)}
                                             </Badge>
                                         </div>
-                                        <p className="text-gray-600 line-clamp-2">{task.description}</p>
+                                        <p className="text-slate-600 dark:text-slate-400 line-clamp-2">{task.description}</p>
                                     </div>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -606,15 +606,15 @@ export default function MaintenanceInProgressPage() {
                                     {/* Task Details */}
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                                         <div className="flex items-center gap-2">
-                                            <Home className="h-4 w-4 text-gray-400" />
+                                            <Home className="h-4 w-4 text-slate-400" />
                                             <span>ห้อง: {task.unit?.number || "ส่วนกลาง"}</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-gray-400" />
+                                            <User className="h-4 w-4 text-slate-400" />
                                             <span>ผู้แจ้ง: {task.user?.name}</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Calendar className="h-4 w-4 text-gray-400" />
+                                            <Calendar className="h-4 w-4 text-slate-400" />
                                             <span>กำหนด: {technicians.find(t => t.id === task.assignedTo)?.name || "ไม่ระบุ"}</span>
                                         </div>
                                     </div>
@@ -623,7 +623,7 @@ export default function MaintenanceInProgressPage() {
                                     <div className="border-t pt-4">
                                         <div className="space-y-2 text-sm">
                                             <div className="flex items-center gap-2">
-                                                <Clock className="h-4 w-4 text-gray-400" />
+                                                <Clock className="h-4 w-4 text-slate-400" />
                                                 <span>แจ้งซ่อม: {format(new Date(task.createdAt), "PPP HH:mm", { locale: th })}</span>
                                             </div>
                                             {task.startedAt && (
@@ -646,10 +646,10 @@ export default function MaintenanceInProgressPage() {
                                                 <h4 className="text-sm font-medium mb-2">อะไหคุณ</h4>
                                                 <div className="space-y-1">
                                                     {task.parts.map((part) => (
-                                                        <div key={part.id} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
+                                                        <div key={part.id} className="flex items-center justify-between text-sm p-2 bg-slate-50 dark:bg-slate-800/50 rounded">
                                                             <div>
                                                                 <span className="font-medium">{part.name}</span>
-                                                                <span className="text-gray-500 ml-2">
+                                                                <span className="text-slate-500 dark:text-slate-400 ml-2">
                                                                     x{part.quantity}
                                                                 </span>
                                                             </div>
@@ -673,11 +673,11 @@ export default function MaintenanceInProgressPage() {
                                                         <div key={note.id} className="p-2 bg-blue-50 rounded text-sm">
                                                             <div className="flex justify-between items-start mb-1">
                                                                 <span className="font-medium">{note.createdBy}</span>
-                                                                <span className="text-xs text-gray-500">
+                                                                <span className="text-xs text-slate-500 dark:text-slate-400">
                                                                     {format(new Date(note.createdAt), "HH:mm", { locale: th })}
                                                                 </span>
                                                             </div>
-                                                            <p className="text-gray-700">{note.message}</p>
+                                                            <p className="text-slate-700 dark:text-slate-300">{note.message}</p>
                                                         </div>
                                                     ))}
                                                 </div>

@@ -84,9 +84,9 @@ export default function BookingDetailPage() {
             case "rejected":
                 return "bg-red-100 text-red-800";
             case "cancelled":
-                return "bg-gray-100 text-gray-800";
+                return "bg-slate-100 dark:bg-slate-800 text-gray-800";
             default:
-                return "bg-gray-100 text-gray-800";
+                return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -202,8 +202,8 @@ export default function BookingDetailPage() {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">รายละเอียดการจอง</h1>
-                        <p className="text-gray-600">รหัสการจอง: {booking.qrCode}</p>
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">รายละเอียดการจอง</h1>
+                        <p className="text-slate-600 dark:text-slate-400">รหัสการจอง: {booking.qrCode}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export default function BookingDetailPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="flex items-start gap-4">
-                                <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
+                                <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center relative overflow-hidden">
                                     <Image
                                         src={booking.facilityImage || "/placeholder.png"}
                                         alt={booking.facilityName}
@@ -263,13 +263,13 @@ export default function BookingDetailPage() {
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="text-lg font-semibold">{booking.facilityName}</h3>
-                                    <div className="flex items-center gap-2 mt-1 text-gray-600">
+                                    <div className="flex items-center gap-2 mt-1 text-slate-600 dark:text-slate-400">
                                         <MapPin className="h-4 w-4" />
                                         <span className="text-sm">{booking.facilityLocation}</span>
                                     </div>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <Users className="h-4 w-4 text-gray-400" />
-                                        <span className="text-sm text-gray-600">
+                                        <Users className="h-4 w-4 text-slate-400" />
+                                        <span className="text-sm text-slate-600 dark:text-slate-400">
                                             จำนวนผู้เข้าใช้: {booking.participants} คน
                                         </span>
                                     </div>
@@ -285,19 +285,19 @@ export default function BookingDetailPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-gray-400" />
+                                <Calendar className="h-4 w-4 text-slate-400" />
                                 <span className="font-medium">วันที่:</span>
                                 <span>{formatDate(booking.bookingDate)}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-gray-400" />
+                                <Clock className="h-4 w-4 text-slate-400" />
                                 <span className="font-medium">เวลา:</span>
                                 <span>
                                     {formatTime(booking.startTime)} - {formatTime(booking.endTime)}
                                 </span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-gray-400" />
+                                <Clock className="h-4 w-4 text-slate-400" />
                                 <span className="font-medium">ระยะเวลา:</span>
                                 <span>
                                     {Math.round(
@@ -325,7 +325,7 @@ export default function BookingDetailPage() {
                                 <CardTitle>หมายเหตุ</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-gray-700">{booking.notes}</p>
+                                <p className="text-slate-700 dark:text-slate-300">{booking.notes}</p>
                             </CardContent>
                         </Card>
                     )}
@@ -339,17 +339,17 @@ export default function BookingDetailPage() {
                             <CardTitle className="text-center">QR Code สำหรับเช็คอิน</CardTitle>
                         </CardHeader>
                         <CardContent className="text-center">
-                            <div className="w-48 h-48 bg-gray-100 mx-auto rounded-lg flex items-center justify-center">
+                            <div className="w-48 h-48 bg-slate-100 dark:bg-slate-800 mx-auto rounded-lg flex items-center justify-center">
                                 <div className="text-center">
-                                    <div className="w-32 h-32 bg-gray-200 mx-auto mb-2 rounded flex items-center justify-center">
-                                        <span className="text-2xl font-bold text-gray-500">
+                                    <div className="w-32 h-32 bg-slate-200 dark:bg-slate-700 mx-auto mb-2 rounded flex items-center justify-center">
+                                        <span className="text-2xl font-bold text-slate-500 dark:text-slate-400">
                                             QR
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-600">{booking.qrCode}</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">{booking.qrCode}</p>
                                 </div>
                             </div>
-                            <p className="text-xs text-gray-500 mt-4">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
                                 แสดง QR Code นี้ต่อเจ้าหน้าที่เพื่อเช็คอิน
                             </p>
                         </CardContent>
@@ -362,11 +362,11 @@ export default function BookingDetailPage() {
                         </CardHeader>
                         <CardContent className="space-y-3 text-sm">
                             <div>
-                                <span className="text-gray-600">สร้างเมื่อ:</span>
+                                <span className="text-slate-600 dark:text-slate-400">สร้างเมื่อ:</span>
                                 <p className="font-medium">{formatDateTime(booking.createdAt)}</p>
                             </div>
                             <div>
-                                <span className="text-gray-600">อัปเดตล่าสุด:</span>
+                                <span className="text-slate-600 dark:text-slate-400">อัปเดตล่าสุด:</span>
                                 <p className="font-medium">{formatDateTime(booking.updatedAt || booking.createdAt)}</p>
                             </div>
                         </CardContent>
@@ -378,7 +378,7 @@ export default function BookingDetailPage() {
                             <CardTitle className="text-sm">ติดต่อสอบถาม</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
                                 หากมีข้อสงสัยเกี่ยวกับการจอง
                             </p>
                             <Link href="/resident/support/new">

@@ -52,45 +52,43 @@ export default function ParcelsPage(): React.JSX.Element {
     useEffect(() => {
         const fetchUnits = async () => {
             try {
-                const { data } = await api.units.get()
-                // @ts-ignore API response structure mismatch - using type assertion for data.data
-                if (data && data.success && Array.isArray(data.data) && data.data.length > 0) {
-                    // @ts-ignore API response structure mismatch - using type assertion for units array
-                    setUnits(data.data as Unit[])
-                    // @ts-ignore TypeScript can't infer array index type - using type assertion for ID
-                    setSelectedUnitId((data.data[0] as { id: string }).id)
+                const response = await api.units.get() as {
+                    data: { success: boolean; data: Unit[] } | null;
+                };
+                if (response.data?.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
+                    setUnits(response.data.data);
+                    setSelectedUnitId(response.data.data[0].id);
                 } else {
-                    setIsLoading(false)
+                    setIsLoading(false);
                 }
             } catch (error) {
-                console.error("Failed to fetch units:", error)
-                setIsLoading(false)
+                console.error("Failed to fetch units:", error);
+                setIsLoading(false);
             }
-        }
-        fetchUnits()
-    }, [])
+        };
+        fetchUnits();
+    }, []);
 
     useEffect(() => {
         const fetchParcels = async () => {
-            if (!selectedUnitId) return
-            setIsLoading(true)
+            if (!selectedUnitId) return;
+            setIsLoading(true);
             try {
-                // @ts-ignore API response structure mismatch - dynamic API endpoint access
-                const { data } = await api.parcels.get({ query: { unitId: selectedUnitId } })
-                // @ts-ignore API response data type mismatch - unknown structure from server
-                if (data && data.success && data.data) {
-                    // @ts-ignore Type assertion needed for parcels array from API response
-                    setParcels(data.data as unknown)
+                const response = await (api.parcels.get as unknown as (options: { query: { unitId: string } }) => Promise<{
+                    data: { success: boolean; data: Parcel[] } | null;
+                }>)({ query: { unitId: selectedUnitId } });
+                if (response.data?.success && response.data.data) {
+                    setParcels(response.data.data);
                 }
             } catch (error) {
-                console.error("Failed to fetch parcels:", error)
-                toast.error("ไม่สามารถดึงข้อมูลพัสดุได้")
+                console.error("Failed to fetch parcels:", error);
+                toast.error("ไม่สามารถดึงข้อมูลพัสดุได้");
             } finally {
-                setIsLoading(false)
+                setIsLoading(false);
             }
-        }
-        fetchParcels()
-    }, [selectedUnitId])
+        };
+        fetchParcels();
+    }, [selectedUnitId]);
 
     const filteredParcels = parcels.filter(p =>
         p.trackingNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||

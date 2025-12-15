@@ -268,20 +268,20 @@ export default function SuperAdminProjectsPage() {
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">โครงการทั้งหมด</h1>
-                        <p className="text-gray-600 mt-1">จัดการโครงการทั้งหมดในระบบ</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">โครงการทั้งหมด</h1>
+                        <p className="text-slate-600 dark:text-slate-400 mt-1">จัดการโครงการทั้งหมดในระบบ</p>
                     </div>
                 </div>
                 <div className="space-y-4">
                     {[1, 2, 3, 4].map((i) => (
                         <Card key={i} className="animate-pulse">
                             <CardHeader>
-                                <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                                <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    <div className="h-4 bg-gray-200 rounded"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -296,8 +296,8 @@ export default function SuperAdminProjectsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">โครงการทั้งหมด</h1>
-                    <p className="text-gray-600 mt-1">จัดการโครงการทั้งหมดในระบบ</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">โครงการทั้งหมด</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">จัดการโครงการทั้งหมดในระบบ</p>
                 </div>
                 <Link href="/super-admin/projects/new">
                     <Button>
@@ -313,7 +313,7 @@ export default function SuperAdminProjectsPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">โครงการทั้งหมด</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">โครงการทั้งหมด</p>
                                 <p className="text-2xl font-bold">{projects.length}</p>
                             </div>
                             <Building2 className="h-8 w-8 text-blue-500" />
@@ -324,7 +324,7 @@ export default function SuperAdminProjectsPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Active</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Active</p>
                                 <p className="text-2xl font-bold text-green-600">
                                     {projects.filter(p => p.status === "active").length}
                                 </p>
@@ -337,7 +337,7 @@ export default function SuperAdminProjectsPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ผู้ใช้ทั้งหมด</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ผู้ใช้ทั้งหมด</p>
                                 <p className="text-2xl font-bold text-purple-600">
                                     {projects.reduce((acc, p) => acc + p.stats.users, 0).toLocaleString()}
                                 </p>
@@ -350,7 +350,7 @@ export default function SuperAdminProjectsPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">พื้นที่จัดเก็บ</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">พื้นที่จัดเก็บ</p>
                                 <p className="text-2xl font-bold text-orange-600">
                                     {projects.reduce((acc, p) => {
                                         const size = parseFloat(p.stats.storage);
@@ -367,7 +367,7 @@ export default function SuperAdminProjectsPage() {
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                     <Input
                         placeholder="ค้นหาโครงการ..."
                         value={searchQuery}
@@ -392,9 +392,9 @@ export default function SuperAdminProjectsPage() {
             {filteredProjects.length === 0 ? (
                 <Card className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
                     <CardContent className="pt-6 text-center">
-                        <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold mb-2">ไม่พบโครงการ</h3>
-                        <p className="text-gray-600 mb-4">
+                        <p className="text-slate-600 dark:text-slate-400 mb-4">
                             {searchQuery || statusFilter !== "all"
                                 ? "ไม่พบโครงการที่ตรงตามเงื่อนไข"
                                 : "ยังไม่มีโครงการในระบบ"}
@@ -417,7 +417,7 @@ export default function SuperAdminProjectsPage() {
                                             <h3 className="text-xl font-semibold">{project.name}</h3>
                                             {getStatusBadge(project.status)}
                                         </div>
-                                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                                        <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
                                             <div className="flex items-center gap-2">
                                                 <Globe className="h-4 w-4" />
                                                 <span>{project.domain}</span>
@@ -486,31 +486,31 @@ export default function SuperAdminProjectsPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {/* Admin Info */}
                                     <div>
-                                        <h4 className="font-medium mb-3 text-sm text-gray-700">ผู้ดูแล</h4>
+                                        <h4 className="font-medium mb-3 text-sm text-slate-700 dark:text-slate-300">ผู้ดูแล</h4>
                                         <div className="space-y-1">
                                             <p className="text-sm">{project.admin.name}</p>
-                                            <p className="text-sm text-gray-600">{project.admin.email}</p>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400">{project.admin.email}</p>
                                         </div>
                                     </div>
 
                                     {/* Statistics */}
                                     <div>
-                                        <h4 className="font-medium mb-3 text-sm text-gray-700">สถิติ</h4>
+                                        <h4 className="font-medium mb-3 text-sm text-slate-700 dark:text-slate-300">สถิติ</h4>
                                         <div className="grid grid-cols-2 gap-2 text-sm">
                                             <div>
-                                                <span className="text-gray-500">ผู้ใช้:</span>
+                                                <span className="text-slate-500 dark:text-slate-400">ผู้ใช้:</span>
                                                 <span className="ml-1 font-medium">{project.stats.users}</span>
                                             </div>
                                             <div>
-                                                <span className="text-gray-500">ห้อง:</span>
+                                                <span className="text-slate-500 dark:text-slate-400">ห้อง:</span>
                                                 <span className="ml-1 font-medium">{project.stats.units}</span>
                                             </div>
                                             <div>
-                                                <span className="text-gray-500">สิ่งอำนวยความสะดวก:</span>
+                                                <span className="text-slate-500 dark:text-slate-400">สิ่งอำนวยความสะดวก:</span>
                                                 <span className="ml-1 font-medium">{project.stats.facilities}</span>
                                             </div>
                                             <div>
-                                                <span className="text-gray-500">พื้นที่:</span>
+                                                <span className="text-slate-500 dark:text-slate-400">พื้นที่:</span>
                                                 <span className="ml-1 font-medium">{project.stats.storage}</span>
                                             </div>
                                         </div>
@@ -518,7 +518,7 @@ export default function SuperAdminProjectsPage() {
 
                                     {/* Settings & Info */}
                                     <div>
-                                        <h4 className="font-medium mb-3 text-sm text-gray-700">การตั้งค่า</h4>
+                                        <h4 className="font-medium mb-3 text-sm text-slate-700 dark:text-slate-300">การตั้งค่า</h4>
                                         <div className="flex flex-wrap gap-1">
                                             {project.settings.enableMaintenance && (
                                                 <Badge variant="outline" className="text-xs">แจ้งซ่อม</Badge>
@@ -533,7 +533,7 @@ export default function SuperAdminProjectsPage() {
                                                 <Badge variant="outline" className="text-xs">สำรองอัตโนมัติ</Badge>
                                             )}
                                         </div>
-                                        <div className="mt-3 text-xs text-gray-500">
+                                        <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
                                             <div className="flex items-center gap-2">
                                                 <Server className="w-3 h-3" />
                                                 <span>สำรองข้อมูลล่าสุด: </span>

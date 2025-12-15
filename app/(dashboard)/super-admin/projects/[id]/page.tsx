@@ -201,13 +201,13 @@ export default function ProjectDetailPage() {
             case "active":
                 return "bg-green-100 text-green-800";
             case "inactive":
-                return "bg-gray-100 text-gray-800";
+                return "bg-slate-100 dark:bg-slate-800 text-gray-800";
             case "maintenance":
                 return "bg-yellow-100 text-yellow-800";
             case "archived":
                 return "bg-red-100 text-red-800";
             default:
-                return "bg-gray-100 text-gray-800";
+                return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -302,12 +302,12 @@ export default function ProjectDetailPage() {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{project.name}</h1>
                         <div className="flex items-center gap-2 mt-1">
                             <Badge className={getStatusColor(project.status)}>
                                 {getStatusText(project.status)}
                             </Badge>
-                            <span className="text-sm text-gray-500">ID: {projectId}</span>
+                            <span className="text-sm text-slate-500 dark:text-slate-400">ID: {projectId}</span>
                         </div>
                     </div>
                 </div>
@@ -371,19 +371,19 @@ export default function ProjectDetailPage() {
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div>
-                            <p className="text-sm text-gray-600">ประเภท</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">ประเภท</p>
                             <p className="font-medium capitalize">{project.type}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">โดเมน</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">โดเมน</p>
                             <p className="font-medium">{project.domain}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">สร้างเมื่อ</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">สร้างเมื่อ</p>
                             <p className="font-medium">{formatDate(project.createdAt?.toISOString() || "")}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">สถานะการตั้งค่า</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">สถานะการตั้งค่า</p>
                             <div className="flex items-center gap-2">
                                 {project.setupComplete ? (
                                     <>
@@ -400,11 +400,11 @@ export default function ProjectDetailPage() {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <p className="text-sm text-gray-600">ที่อยู่</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">ที่อยู่</p>
                         <p className="font-medium">{project.address}</p>
                     </div>
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600">คำอธิบาย</p>
+                    <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                        <p className="text-sm text-slate-600 dark:text-slate-400">คำอธิบาย</p>
                         <p className="mt-1">{project.description}</p>
                     </div>
                 </CardContent>
@@ -427,9 +427,9 @@ export default function ProjectDetailPage() {
                             <CardContent className="p-4">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">ยูนิตทั้งหมด</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ยูนิตทั้งหมด</p>
                                         <p className="text-2xl font-bold">{project.totalUnits}</p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
                                             {project.occupiedUnits} ยูนิตใช้งาน ({occupancyRate.toFixed(1)}%)
                                         </p>
                                     </div>
@@ -441,9 +441,9 @@ export default function ProjectDetailPage() {
                             <CardContent className="p-4">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">ผู้ใช้ทั้งหมด</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ผู้ใช้ทั้งหมด</p>
                                         <p className="text-2xl font-bold">{projectStats.totalUsers}</p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
                                             {projectStats.activeUsers} ใช้งานอยู่
                                         </p>
                                     </div>
@@ -455,11 +455,11 @@ export default function ProjectDetailPage() {
                             <CardContent className="p-4">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">พื้นที่จัดเก็บ</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">พื้นที่จัดเก็บ</p>
                                         <p className="text-2xl font-bold">
                                             {project.storageUsed}/{project.storageLimit} GB
                                         </p>
-                                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
                                             <div
                                                 className="bg-blue-500 h-2 rounded-full"
                                                 style={{ width: `${storagePercentage}%` }}
@@ -474,7 +474,7 @@ export default function ProjectDetailPage() {
                             <CardContent className="p-4">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600">ค่าใช้จ่าย/เดือน</p>
+                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ค่าใช้จ่าย/เดือน</p>
                                         <p className="text-2xl font-bold">฿{project.monthlyCost?.toLocaleString()}</p>
                                         <p className="text-xs text-green-600">
                                             รายได้ ฿{projectStats.monthlyRevenue.toLocaleString()}
@@ -498,13 +498,13 @@ export default function ProjectDetailPage() {
                                         <span className="text-sm">ยูนิตที่เข้าพัก</span>
                                         <span className="text-sm font-medium">{occupancyRate.toFixed(1)}%</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
                                         <div
                                             className="bg-blue-500 h-3 rounded-full"
                                             style={{ width: `${occupancyRate}%` }}
                                         />
                                     </div>
-                                    <div className="flex justify-between text-xs text-gray-500">
+                                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
                                         <span>{project.occupiedUnits} ยูนิต</span>
                                         <span>{project.totalUnits - project.occupiedUnits} ยูนิตว่าง</span>
                                     </div>
@@ -522,7 +522,7 @@ export default function ProjectDetailPage() {
                                         <span className="text-sm">บิลที่ชำระแล้ว</span>
                                         <span className="text-sm font-medium">{billPaymentRate.toFixed(1)}%</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
                                         <div
                                             className="bg-green-500 h-3 rounded-full"
                                             style={{ width: `${billPaymentRate}%` }}
@@ -531,15 +531,15 @@ export default function ProjectDetailPage() {
                                     <div className="grid grid-cols-3 gap-2 text-xs">
                                         <div className="text-center">
                                             <p className="text-green-600 font-medium">{projectStats.totalBillsPaid}</p>
-                                            <p className="text-gray-500">ชำระแล้ว</p>
+                                            <p className="text-slate-500 dark:text-slate-400">ชำระแล้ว</p>
                                         </div>
                                         <div className="text-center">
                                             <p className="text-yellow-600 font-medium">{projectStats.totalBillsPending}</p>
-                                            <p className="text-gray-500">รอชำระ</p>
+                                            <p className="text-slate-500 dark:text-slate-400">รอชำระ</p>
                                         </div>
                                         <div className="text-center">
                                             <p className="text-red-600 font-medium">{projectStats.totalBillsOverdue}</p>
-                                            <p className="text-gray-500">ค้างชำระ</p>
+                                            <p className="text-slate-500 dark:text-slate-400">ค้างชำระ</p>
                                         </div>
                                     </div>
                                 </div>
@@ -558,19 +558,19 @@ export default function ProjectDetailPage() {
                         <CardContent>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <p className="text-sm text-gray-600">สถานะการสมัคร</p>
-                                    <Badge className={project.subscriptionStatus === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">สถานะการสมัคร</p>
+                                    <Badge className={project.subscriptionStatus === "active" ? "bg-green-100 text-green-800" : "bg-slate-100 dark:bg-slate-800 text-gray-800"}>
                                         {project.subscriptionStatus === "active" ? "ใช้งานอยู่" : "หมดอายุ"}
                                     </Badge>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-600">หมดอายุวันที่</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">หมดอายุวันที่</p>
                                     <p className="font-medium">{formatDate(project.subscriptionExpiry || "")}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-600">ผู้ดูแลโครงการ</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">ผู้ดูแลโครงการ</p>
                                     <p className="font-medium">{project.adminEmail}</p>
-                                    <p className="text-sm text-gray-500">{project.adminPhone}</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">{project.adminPhone}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -600,7 +600,7 @@ export default function ProjectDetailPage() {
                                             <TableCell className="font-medium">{user.name}</TableCell>
                                             <TableCell>{user.email}</TableCell>
                                             <TableCell>
-                                                <Badge className={user.role === "admin" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"}>
+                                                <Badge className={user.role === "admin" ? "bg-blue-100 text-blue-800" : "bg-slate-100 dark:bg-slate-800 text-gray-800"}>
                                                     {user.role}
                                                 </Badge>
                                             </TableCell>
@@ -644,12 +644,12 @@ export default function ProjectDetailPage() {
                             <div className="space-y-4">
                                 {recentActivities.map((activity) => (
                                     <div key={activity.id} className="flex items-start gap-3 p-3 border rounded-lg">
-                                        <div className="p-2 bg-gray-100 rounded-lg">
-                                            <activity.icon className="h-4 w-4 text-gray-600" />
+                                        <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                                            <activity.icon className="h-4 w-4 text-slate-600 dark:text-slate-400" />
                                         </div>
                                         <div className="flex-1">
                                             <p className="text-sm">{activity.description}</p>
-                                            <p className="text-xs text-gray-500 mt-1">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                                 {formatDateTime(activity.timestamp)}
                                             </p>
                                         </div>

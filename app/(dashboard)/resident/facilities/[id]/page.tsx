@@ -302,7 +302,7 @@ export default function FacilityDetailPage({
       case "closed":
         return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-slate-100 dark:bg-slate-800 text-gray-800";
     }
   };
 
@@ -334,17 +334,17 @@ export default function FacilityDetailPage({
       <div className="mb-6">
         <Link
           href="/resident/facilities"
-          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+          className="inline-flex items-center text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           กลับไปหน้ารายการสิ่งอำนวยความสะดวก
         </Link>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{facility.name}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{facility.name}</h1>
             <div className="flex items-center gap-2 mt-1">
-              <MapPin className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-600">{facility.location}</span>
+              <MapPin className="h-4 w-4 text-slate-400" />
+              <span className="text-slate-600 dark:text-slate-400">{facility.location}</span>
               <Badge className={getStatusColor(facility.status)}>
                 {getStatusText(facility.status)}
               </Badge>
@@ -362,7 +362,7 @@ export default function FacilityDetailPage({
 
       {/* Facility Image */}
       <div className="mb-6">
-        <div className="relative h-64 md:h-96 rounded-lg overflow-hidden bg-gray-100">
+        <div className="relative h-64 md:h-96 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800">
           {facility.image ? (
             <Image
               src={facility.image}
@@ -375,7 +375,7 @@ export default function FacilityDetailPage({
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <Info className="h-12 w-12 text-gray-400" />
+              <Info className="h-12 w-12 text-slate-400" />
             </div>
           )}
         </div>
@@ -390,7 +390,7 @@ export default function FacilityDetailPage({
               <CardTitle>ข้อมูลสิ่งอำนวยความสะดวก</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700">{facility.description}</p>
+              <p className="text-slate-700 dark:text-slate-300">{facility.description}</p>
             </CardContent>
           </Card>
 
@@ -411,14 +411,14 @@ export default function FacilityDetailPage({
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-gray-400" />
+                      <Users className="h-4 w-4 text-slate-400" />
                       <span className="font-medium">ความจุ</span>
                     </div>
                     <span>{facility.capacity} คน</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-gray-400" />
+                      <Clock className="h-4 w-4 text-slate-400" />
                       <span className="font-medium">เวลาทำการ</span>
                     </div>
                     <span>
@@ -427,7 +427,7 @@ export default function FacilityDetailPage({
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-gray-400" />
+                      <Users className="h-4 w-4 text-slate-400" />
                       <span className="font-medium">กำลังใช้งาน</span>
                     </div>
                     <span>{facility.stats?.currentOccupancy || 0}/{facility.capacity} คน</span>
@@ -460,7 +460,7 @@ export default function FacilityDetailPage({
                     {facility.rules?.map((rule, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <span className="text-red-500 mt-1">•</span>
-                        <span className="text-sm text-gray-700">{rule}</span>
+                        <span className="text-sm text-slate-700 dark:text-slate-300">{rule}</span>
                       </li>
                     ))}
                   </ul>
@@ -517,7 +517,7 @@ export default function FacilityDetailPage({
                             </Avatar>
                             <div>
                               <p className="font-medium">{booking.userName}</p>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-slate-600 dark:text-slate-400">
                                 {booking.userUnit} • {booking.participants} คน
                               </p>
                             </div>
@@ -534,7 +534,7 @@ export default function FacilityDetailPage({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-center text-gray-500 py-8">
+                    <p className="text-center text-slate-500 dark:text-slate-400 py-8">
                       ไม่มีการจองในวันนี้
                     </p>
                   )}
@@ -552,7 +552,7 @@ export default function FacilityDetailPage({
                         {facility.stats?.averageRating || 0}
                       </span>
                       <div className="flex">{renderStars(Math.round(facility.stats?.averageRating || 0))}</div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-slate-500 dark:text-slate-400">
                         ({facilityReviews.length} รีวิว)
                       </span>
                     </div>
@@ -571,20 +571,20 @@ export default function FacilityDetailPage({
                               </Avatar>
                               <div>
                                 <p className="font-medium">{review.userName}</p>
-                                <p className="text-sm text-gray-600">{review.userUnit}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">{review.userUnit}</p>
                               </div>
                             </div>
                             <div className="text-right">
                               <div className="flex">{renderStars(review.rating)}</div>
-                              <p className="text-xs text-gray-500">{review.date}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">{review.date}</p>
                             </div>
                           </div>
-                          <p className="text-gray-700">{review.comment}</p>
+                          <p className="text-slate-700 dark:text-slate-300">{review.comment}</p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-center text-gray-500 py-8">
+                    <p className="text-center text-slate-500 dark:text-slate-400 py-8">
                       ยังไม่มีรีวิว
                     </p>
                   )}
@@ -603,15 +603,15 @@ export default function FacilityDetailPage({
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600">การจองทั้งหมด</span>
+                <span className="text-slate-600 dark:text-slate-400">การจองทั้งหมด</span>
                 <span className="font-medium">{facility.stats?.totalBookings || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">เดือนนี้</span>
+                <span className="text-slate-600 dark:text-slate-400">เดือนนี้</span>
                 <span className="font-medium">{facility.stats?.monthlyBookings || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">คะแนนเฉลี่ย</span>
+                <span className="text-slate-600 dark:text-slate-400">คะแนนเฉลี่ย</span>
                 <span className="font-medium">{facility.stats?.averageRating || 0}/5.0</span>
               </div>
             </CardContent>
@@ -640,7 +640,7 @@ export default function FacilityDetailPage({
               <CardTitle>ติดต่อสอบถาม</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <p className="text-gray-600">
+              <p className="text-slate-600 dark:text-slate-400">
                 สำหรับข้อมูลเพิ่มเติม หรือปัญหาการใช้งาน
               </p>
               <Link href="/resident/support/new">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
+import { api } from "@/lib/api/client";
 
 type Project = {
     id: string;
@@ -68,11 +69,6 @@ const facilityOptions = [
     { id: "shop", label: "ร้านค้า", icon: "🏪" }
 ];
 
-const provinces = [
-    "กรุงเทพมหานคร", "สมุทรปราการ", "นนทบุรี", "ปทุมธานี", "พระนครศรีอยุธยา",
-    // ... (rest of provinces)
-];
-
 export default function EditProjectPage() {
     const router = useRouter();
     const params = useParams();
@@ -104,81 +100,88 @@ export default function EditProjectPage() {
         settings: {
             allowVisitorQR: true,
             requireMaintenanceApproval: false,
-            enableFacilityBooking: true,
-            enableSOS: true
+            enableFacilityBooking: false,
+            enableSOS: false,
         }
     });
 
-    useEffect(() => {
-        // Simulate API call to fetch project
-        setTimeout(() => {
-            const mockProject: Project = {
-                id: projectId,
-                name: "My Village Condominium",
-                code: "MV001",
-                type: "condominium",
-                address: "999 ถนนสุขุมวิท แขวงคลองเตือ เขตคลองเตือ",
-                province: "กรุงเทพมหานคร",
-                district: "คลองเตือ",
-                subdistrict: "คลองเตือเหนือ",
-                postalCode: "10110",
-                totalUnits: 250,
-                floors: 25,
-                buildings: 1,
-                facilities: ["pool", "gym", "garden", "parking", "security", "elevator"],
-                description: "คอนโดมิเนียมหรูหราในทำเลทองศูนย์กลาง กรุงเทพฯ",
-                adminEmail: "admin@myvillage.com",
-                adminName: "สมศักดิ์ ใจดี",
-                adminPhone: "081-234-5678",
-                status: "active",
-                settings: {
+    const fetchProject = useCallback(async () => {
+        setLoading(true);
+        try {
+            const { data, error } = await api.projects({ id: projectId }).get();
+            if (error) throw error;
+
+            if (!data.success) {
+                throw new Error(data.error);
+            }
+
+            const projectData = data.data as unknown as Project;
+
+            if (!projectData) {
+                throw new Error("Project data not found");
+            }
+
+            setProject(projectData);
+            setFormData({
+                name: projectData.name,
+                code: projectData.code || "",
+                type: projectData.type,
+                address: projectData.address || "",
+                province: projectData.province || "",
+                district: projectData.district || "",
+                subdistrict: projectData.subdistrict || "",
+                postalCode: projectData.postalCode || "",
+                totalUnits: projectData.totalUnits || 0,
+                floors: projectData.floors || 1,
+                buildings: projectData.buildings || 1,
+                facilities: projectData.facilities || [],
+                description: projectData.description || "",
+                adminEmail: projectData.adminEmail || "",
+                adminName: projectData.adminName || "",
+                adminPhone: projectData.adminPhone || "",
+                status: projectData.status,
+                settings: projectData.settings || {
                     allowVisitorQR: true,
                     requireMaintenanceApproval: false,
-                    enableFacilityBooking: true,
-                    enableSOS: true
+                    enableFacilityBooking: false,
+                    enableSOS: false,
                 },
-                createdAt: "2025-01-01T00:00:00Z",
-                totalUsers: 200,
-                activeUsers: 185,
-                totalAnnouncements: 45,
-                totalMaintenance: 123
-            };
-
-            setProject(mockProject);
-            setFormData(mockProject);
+            });
+        } catch (error) {
+            console.error(error);
+            toast.error("ไม่สามารถโหลดข้อมูลโครงการได้");
+        } finally {
             setLoading(false);
-        }, 1000);
+        }
     }, [projectId]);
+
+    useEffect(() => {
+        if (projectId) {
+            fetchProject();
+        }
+    }, [projectId, fetchProject]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
-
         try {
-            // Validate required fields
-            if (!formData.name || !formData.code || !formData.address || !formData.totalUnits) {
-                toast.error("กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
-                setSaving(false);
-                return;
-            }
+            const { data, error } = await api.projects({ id: projectId }).patch({
+                name: formData.name,
+                type: formData.type,
+                address: formData.address,
+                status: formData.status,
+                settings: formData.settings,
+                totalUnits: formData.totalUnits,
+                description: formData.description,
+            });
+            if (error) throw error;
+            if (!data.success) throw new Error(data.error);
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            const updatedProject = {
-                ...formData,
-                id: projectId,
-                updatedAt: new Date().toISOString()
-            };
-
-            console.log("Updating project:", updatedProject);
-
-            toast.success("อัปเดตข้อมูลโครงการสำเร็จแล้ว");
+            toast.success("บันทึกข้อมูลสำเร็จ");
             router.push("/super-admin/projects");
-
         } catch (error) {
-            console.error("Error updating project:", error);
-            toast.error("เกิดข้อผิดพลาด กรุณาลองใหม่");
+            console.error(error);
+            toast.error("ไม่สามารถบันทึกข้อมูลได้");
         } finally {
             setSaving(false);
         }
@@ -186,21 +189,19 @@ export default function EditProjectPage() {
 
     const handleDelete = async () => {
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const { data, error } = await api.projects({ id: projectId }).delete();
+            if (error) throw error;
+            if (!data.success) throw new Error(data.error);
 
-            console.log("Deleting project:", projectId);
-
-            toast.success("ลบโครงการสำเร็จแล้ว");
+            toast.success("ลบโครงการสำเร็จ");
             router.push("/super-admin/projects");
-
         } catch (error) {
-            console.error("Error deleting project:", error);
+            console.error(error);
             toast.error("ไม่สามารถลบโครงการได้");
         }
     };
 
-    const handleFacilityToggle = (facilityId: string) => {
+    const toggleFacility = (facilityId: string) => {
         setFormData(prev => ({
             ...prev,
             facilities: prev.facilities?.includes(facilityId)
@@ -209,23 +210,12 @@ export default function EditProjectPage() {
         }));
     };
 
-    const getTypeLabel = (type: string) => {
-        switch (type) {
-            case "condominium": return "คอนโดมิเนียม";
-            case "apartment": return "อพาร์ตเมนต์";
-            case "housing": return "หมู่บ้านจัดสรร";
-            case "village": return "หมู่บ้าน";
-            case "office": return "อาคารสำนักงาน";
-            default: return type;
-        }
-    };
-
     const getStatusColor = (status: string) => {
         switch (status) {
             case "active": return "bg-green-100 text-green-800";
-            case "inactive": return "bg-gray-100 text-gray-800";
+            case "inactive": return "bg-slate-100 dark:bg-slate-800 text-gray-800";
             case "maintenance": return "bg-yellow-100 text-yellow-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -242,12 +232,12 @@ export default function EditProjectPage() {
         return (
             <div className="space-y-6">
                 <div className="animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded w-64 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-96"></div>
+                    <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-64 mb-2"></div>
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-96"></div>
                 </div>
                 <div className="space-y-4">
-                    <div className="animate-pulse h-96 bg-gray-200 rounded-lg"></div>
-                    <div className="animate-pulse h-64 bg-gray-200 rounded-lg"></div>
+                    <div className="animate-pulse h-96 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+                    <div className="animate-pulse h-64 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
                 </div>
             </div>
         );
@@ -257,8 +247,8 @@ export default function EditProjectPage() {
         return (
             <div className="space-y-6">
                 <div className="text-center py-12">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">ไม่พบข้อมูลโครงการ</h3>
-                    <p className="text-gray-600 mb-4">โครงการที่คุณค้นหาไม่มีอยู่ในระบบ</p>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">ไม่พบข้อมูลโครงการ</h3>
+                    <p className="text-slate-600 dark:text-slate-400 mb-4">โครงการที่คุณค้นหาไม่มีอยู่ในระบบ</p>
                     <Button asChild>
                         <Link href="/super-admin/projects">กลับรายการโครงการ</Link>
                     </Button>
@@ -279,8 +269,8 @@ export default function EditProjectPage() {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">แก้ไขข้อมูลโครงการ</h1>
-                        <p className="text-gray-600">ปรับเปลี่ยนข้อมูลโครงการ: {project.name}</p>
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">แก้ไขข้อมูลโครงการ</h1>
+                        <p className="text-slate-600 dark:text-slate-400">ปรับเปลี่ยนข้อมูลโครงการ: {project.name}</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -297,8 +287,8 @@ export default function EditProjectPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ผู้ใช้ทั้งหมด</p>
-                                <p className="text-2xl font-bold">{project.totalUsers}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ผู้ใช้ทั้งหมด</p>
+                                <p className="text-2xl font-bold">{project.totalUsers || 0}</p>
                             </div>
                             <Users className="h-8 w-8 text-blue-600" />
                         </div>
@@ -308,8 +298,8 @@ export default function EditProjectPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ใช้งานอยู่</p>
-                                <p className="text-2xl font-bold text-green-600">{project.activeUsers}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ใช้งานอยู่</p>
+                                <p className="text-2xl font-bold text-green-600">{project.activeUsers || 0}</p>
                             </div>
                             <Home className="h-8 w-8 text-green-600" />
                         </div>
@@ -319,8 +309,8 @@ export default function EditProjectPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">แจ้งซ่อม</p>
-                                <p className="text-2xl font-bold">{project.totalMaintenance}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">แจ้งซ่อม</p>
+                                <p className="text-2xl font-bold">{project.totalMaintenance || 0}</p>
                             </div>
                             <Building className="h-8 w-8 text-yellow-600" />
                         </div>
@@ -330,7 +320,7 @@ export default function EditProjectPage() {
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">สถานะ</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">สถานะ</p>
                                 <Badge className={getStatusColor(project.status)}>
                                     {getStatusLabel(project.status)}
                                 </Badge>
@@ -453,6 +443,28 @@ export default function EditProjectPage() {
                                 rows={3}
                             />
                         </div>
+
+                        <div>
+                            <Label className="mb-2 block">สิ่งอำนวยความสะดวก</Label>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                {facilityOptions.map((facility) => (
+                                    <div
+                                        key={facility.id}
+                                        className={`
+                                            cursor-pointer border rounded-lg p-4 flex flex-col items-center gap-2 transition-all
+                                            ${formData.facilities?.includes(facility.id)
+                                                ? "border-blue-600 bg-blue-50 text-blue-700"
+                                                : "border-slate-200 hover:border-slate-300"
+                                            }
+                                        `}
+                                        onClick={() => toggleFacility(facility.id)}
+                                    >
+                                        <span className="text-2xl">{facility.icon}</span>
+                                        <span className="text-sm font-medium">{facility.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -478,7 +490,7 @@ export default function EditProjectPage() {
                                 />
                                 <div>
                                     <p className="font-medium">ใช้งานระบบ QR Code ผู้มาติดต่อ</p>
-                                    <p className="text-sm text-gray-500">อนุญาตให้ลูกบ้านสร้าง QR Code สำหรับผู้มาเยือน</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">อนุญาตให้ลูกบ้านสร้าง QR Code สำหรับผู้มาเยือน</p>
                                 </div>
                             </label>
 
@@ -494,7 +506,7 @@ export default function EditProjectPage() {
                                 />
                                 <div>
                                     <p className="font-medium">ต้องการอนุมัติการแจ้งซ่อม</p>
-                                    <p className="text-sm text-gray-500">คำขอซ่อมต้องได้รับการอนุมัติจากแอดมินก่อนดำเนินการ</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">คำขอซ่อมต้องได้รับการอนุมัติจากแอดมินก่อนดำเนินการ</p>
                                 </div>
                             </label>
 
@@ -510,7 +522,7 @@ export default function EditProjectPage() {
                                 />
                                 <div>
                                     <p className="font-medium">เปิดใช้งานระบบจองพื้นที่ส่วนกลาง</p>
-                                    <p className="text-sm text-gray-500">ลูกบ้านสามารถจองใช้สิ่งอำนวยความสะดวกได้</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">ลูกบ้านสามารถจองใช้สิ่งอำนวยความสะดวกได้</p>
                                 </div>
                             </label>
 
@@ -526,7 +538,7 @@ export default function EditProjectPage() {
                                 />
                                 <div>
                                     <p className="font-medium">เปิดใช้งานระบบ SOS ฉุกเฉิน</p>
-                                    <p className="text-sm text-gray-500">ลูกบ้านสามารถกดปุ่มแจ้งเหตุฉุกเฉินได้</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">ลูกบ้านสามารถกดปุ่มแจ้งเหตุฉุกเฉินได้</p>
                                 </div>
                             </label>
                         </div>
@@ -560,7 +572,7 @@ export default function EditProjectPage() {
                                 <AlertTriangle className="w-5 h-5 text-red-600" />
                                 <h3 className="text-lg font-semibold">ยืนยันการลบโครงการ</h3>
                             </div>
-                            <p className="text-gray-600 mb-6">
+                            <p className="text-slate-600 dark:text-slate-400 mb-6">
                                 คุณแน่ใจหรือไม่ว่าต้องการลบโครงการ "{project.name}"?
                                 การกระทำนี้ไม่สามารถย้อนกลับได้
                             </p>

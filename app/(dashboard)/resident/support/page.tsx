@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +55,7 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function SupportPage() {
+    const router = useRouter();
     const [tickets, setTickets] = useState<SupportTicket[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -92,13 +94,11 @@ export default function SupportPage() {
     });
 
     const handleViewTicket = (id: string) => {
-        // TODO: Navigate to ticket detail page
-        console.log("View ticket:", id);
+        router.push(`/resident/support/${id}`);
     };
 
     const handleReply = (id: string) => {
-        // TODO: Open reply modal or navigate to detail page
-        console.log("Reply to ticket:", id);
+        router.push(`/resident/support/${id}`);
     };
 
     if (loading) {
@@ -226,7 +226,11 @@ export default function SupportPage() {
             ) : (
                 <div className="space-y-4">
                     {filteredTickets.map((ticket) => (
-                        <Card key={ticket.id} className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-blue-500/50 transition-all duration-300 cursor-pointer group hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-blue-500/5">
+                        <Card
+                            key={ticket.id}
+                            className="bg-white/80 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm hover:border-blue-500/50 transition-all duration-300 cursor-pointer group hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-blue-500/5"
+                            onClick={() => handleViewTicket(ticket.id)}
+                        >
                             <CardHeader className="pb-3">
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">

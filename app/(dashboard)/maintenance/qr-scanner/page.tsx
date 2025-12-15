@@ -178,7 +178,7 @@ export default function MaintenanceQRScannerPage() {
             case "high": return "bg-orange-100 text-orange-800";
             case "medium": return "bg-yellow-100 text-yellow-800";
             case "low": return "bg-green-100 text-green-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
@@ -188,20 +188,20 @@ export default function MaintenanceQRScannerPage() {
             case "in_progress": return "bg-blue-100 text-blue-800";
             case "assigned": return "bg-purple-100 text-purple-800";
             case "pending": return "bg-yellow-100 text-yellow-800";
-            default: return "bg-gray-100 text-gray-800";
+            default: return "bg-slate-100 dark:bg-slate-800 text-gray-800";
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-800/50 p-4">
             {/* Header */}
             <div className="flex items-center gap-4 mb-6">
                 <Button variant="ghost" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="w-5 h-5" />
                 </Button>
                 <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-gray-900">สแกน QR Code</h1>
-                    <p className="text-gray-600">สแกนเพื่อดูข้อมูลงานซ่อม</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">สแกน QR Code</h1>
+                    <p className="text-slate-600 dark:text-slate-400">สแกนเพื่อดูข้อมูลงานซ่อม</p>
                 </div>
                 <Link href="/maintenance/mobile">
                     <Button variant="ghost" size="icon">
@@ -244,8 +244,8 @@ export default function MaintenanceQRScannerPage() {
                                     </>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center h-full text-white">
-                                        <QrCode className="w-24 h-24 mb-4 text-gray-400" />
-                                        <p className="text-gray-400 text-center px-4">
+                                        <QrCode className="w-24 h-24 mb-4 text-slate-400" />
+                                        <p className="text-slate-400 text-center px-4">
                                             {error || "กดเริ่มการสแกนเพื่อใช้งานกล้อง"}
                                         </p>
                                     </div>
@@ -360,20 +360,20 @@ export default function MaintenanceQRScannerPage() {
                             <CardContent className="space-y-4">
                                 <div>
                                     <h3 className="font-semibold text-lg">{ticketInfo.title}</h3>
-                                    <p className="text-gray-600 mt-1">{ticketInfo.ticketNumber}</p>
+                                    <p className="text-slate-600 dark:text-slate-400 mt-1">{ticketInfo.ticketNumber}</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3 text-sm">
                                     <div className="flex items-center gap-2">
-                                        <MapPin className="w-4 h-4 text-gray-400" />
+                                        <MapPin className="w-4 h-4 text-slate-400" />
                                         <span>{ticketInfo.location} - {ticketInfo.unit}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <User className="w-4 h-4 text-gray-400" />
+                                        <User className="w-4 h-4 text-slate-400" />
                                         <span>ผู้แจ้ง: {ticketInfo.requester}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Clock className="w-4 h-4 text-gray-400" />
+                                        <Clock className="w-4 h-4 text-slate-400" />
                                         <span>แจ้ง: {format(new Date(ticketInfo.reportedDate), "d MMM yyyy HH:mm", { locale: th })}</span>
                                     </div>
                                 </div>

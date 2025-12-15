@@ -173,7 +173,7 @@ const roles = [
         label: "Resident",
         description: "ลูกบ้าน - ใช้งานระบบสำหรับลูกบ้าน",
         permissions: ["read"],
-        color: "bg-gray-100 text-gray-800",
+        color: "bg-slate-100 dark:bg-slate-800 text-gray-800",
     },
 ];
 
@@ -200,7 +200,7 @@ export default function SuperAdminPermissionsPage() {
 
     const getRoleColor = (role: string) => {
         const roleConfig = roles.find(r => r.name === role);
-        return roleConfig?.color || "bg-gray-100 text-gray-800";
+        return roleConfig?.color || "bg-slate-100 dark:bg-slate-800 text-gray-800";
     };
 
     const getRoleLabel = (role: string) => {
@@ -269,8 +269,8 @@ export default function SuperAdminPermissionsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">การจัดการสิทธิ์การเข้าถึง</h1>
-                    <p className="text-gray-600 mt-1">จัดการผู้ใช้และสิทธิ์การเข้าถึงระบบ</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">การจัดการสิทธิ์การเข้าถึง</h1>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">จัดการผู้ใช้และสิทธิ์การเข้าถึงระบบ</p>
                 </div>
                 <Button>
                     <Plus className="h-4 w-4 mr-2" />
@@ -284,8 +284,8 @@ export default function SuperAdminPermissionsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ผู้ใช้ทั้งหมด</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ผู้ใช้ทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalUsers}</p>
                             </div>
                             <Users className="h-8 w-8 text-blue-500" />
                         </div>
@@ -295,7 +295,7 @@ export default function SuperAdminPermissionsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ใช้งานอยู่</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ใช้งานอยู่</p>
                                 <p className="text-2xl font-bold text-green-600">{stats.activeUsers}</p>
                             </div>
                             <UserCheck className="h-8 w-8 text-green-500" />
@@ -306,7 +306,7 @@ export default function SuperAdminPermissionsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Super Admin</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Super Admin</p>
                                 <p className="text-2xl font-bold text-purple-600">{stats.superAdmins}</p>
                             </div>
                             <Shield className="h-8 w-8 text-purple-500" />
@@ -317,7 +317,7 @@ export default function SuperAdminPermissionsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Admin</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Admin</p>
                                 <p className="text-2xl font-bold text-blue-600">{stats.admins}</p>
                             </div>
                             <Key className="h-8 w-8 text-blue-500" />
@@ -328,7 +328,7 @@ export default function SuperAdminPermissionsPage() {
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">ระงับอยู่</p>
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">ระงับอยู่</p>
                                 <p className="text-2xl font-bold text-red-600">{stats.inactiveUsers}</p>
                             </div>
                             <Lock className="h-8 w-8 text-red-500" />
@@ -411,7 +411,7 @@ export default function SuperAdminPermissionsPage() {
                                             <TableCell>
                                                 <div>
                                                     <p className="font-medium">{user.name || "-"}</p>
-                                                    <p className="text-sm text-gray-500">{user.email}</p>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
@@ -441,7 +441,7 @@ export default function SuperAdminPermissionsPage() {
                                                 </span>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-1 text-sm text-gray-500">
+                                                <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
                                                     <Clock className="h-3 w-3" />
                                                     {user.lastActive}
                                                 </div>
@@ -508,7 +508,7 @@ export default function SuperAdminPermissionsPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <p className="text-sm text-gray-600">{role.description}</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">{role.description}</p>
 
                                     <div>
                                         <p className="text-sm font-medium mb-2">สิทธิ์การเข้าถึง:</p>
@@ -522,7 +522,7 @@ export default function SuperAdminPermissionsPage() {
                                     </div>
 
                                     <div className="flex justify-between items-center pt-2">
-                                        <span className="text-sm text-gray-500">
+                                        <span className="text-sm text-slate-500 dark:text-slate-400">
                                             {users.filter(u => u.role === role.name).length} ผู้ใช้
                                         </span>
                                         <Button variant="outline" size="sm">
@@ -556,7 +556,7 @@ export default function SuperAdminPermissionsPage() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="font-medium">การลงทะเบียนผู้ใช้ใหม่</p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             อนุญาตให้สร้างผู้ใช้ใหม่โดยไม่ต้องอนุมัติ
                                         </p>
                                     </div>
@@ -568,7 +568,7 @@ export default function SuperAdminPermissionsPage() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="font-medium">การรีเซ็ตรหัสผ่านด้วยตนเอง</p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             อนุญาตให้ผู้ใช้รีเซ็ตรหัสผ่านได้ด้วยตนเอง
                                         </p>
                                     </div>
@@ -580,7 +580,7 @@ export default function SuperAdminPermissionsPage() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="font-medium">ระยะเวลาเซสชัน</p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             อัตโนมัติออกจากระบบหลังไม่มีการใช้งาน 30 วัน
                                         </p>
                                     </div>
@@ -592,7 +592,7 @@ export default function SuperAdminPermissionsPage() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="font-medium">การเข้าถึง API</p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             จำกัดการเรียกใช้ API 1000 ครั้งต่อชั่วโมงต่อผู้ใช้
                                         </p>
                                     </div>

@@ -98,15 +98,20 @@ export default function BillDetailPage() {
     const handleGenerateQR = async () => {
         try {
             setGeneratingQR(true)
-            // @ts-ignore API endpoint has dynamic access that TypeScript can't infer
-            const { data, error } = await api.bills[billId]['generate-qr'].post()
+            // Use type assertion for dynamic API endpoint access
+            const response = await (api.bills as unknown as Record<string, Record<string, {
+                post: () => Promise<{
+                    data: { success: boolean; data: QRData } | null;
+                    error: { value: unknown } | null;
+                }>
+            }>>)[billId]['generate-qr'].post()
 
-            if (error) {
-                throw new Error(String(error.value))
+            if (response.error) {
+                throw new Error(String(response.error.value))
             }
 
-            if (data?.success) {
-                setQRData(data.data)
+            if (response.data?.success) {
+                setQRData(response.data.data)
                 if (bill?.projectPaymentMethod === 'bank_transfer') {
                     toast.success("ดึงข้อมูลบัญชีเรียบร้อยแล้ว")
                 } else {

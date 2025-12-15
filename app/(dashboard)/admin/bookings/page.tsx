@@ -103,7 +103,7 @@ export default function AdminBookingsPage() {
 
     const handleApprove = async (id: string) => {
         try {
-            // @ts-expect-error - Eden Treaty type inference issue
+
             const { data } = await api.bookings({ id }).patch({ status: "approved" });
             if (data) {
                 await fetchBookings();
@@ -117,7 +117,7 @@ export default function AdminBookingsPage() {
         if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธการจองนี้?")) return;
 
         try {
-            // @ts-expect-error - Eden Treaty type inference issue
+
             const { data } = await api.bookings({ id }).patch({ status: "rejected" });
             if (data) {
                 await fetchBookings();
