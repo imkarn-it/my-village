@@ -1,7 +1,7 @@
 # Page snapshot
 
 ```yaml
-- generic [active] [ref=e1]:
+- generic [ref=e1]:
   - generic [ref=e3]:
     - generic [ref=e6]:
       - link "My Village ลูกบ้าน" [ref=e8] [cursor=pointer]:
@@ -40,7 +40,7 @@
                 - img [ref=e53]
                 - generic [ref=e55]: แจ้งซ่อม
             - listitem [ref=e56]:
-              - link "บิล/ชำระเงิน" [ref=e57] [cursor=pointer]:
+              - link "บิล/ชำระเงิน" [active] [ref=e57] [cursor=pointer]:
                 - /url: /resident/bills
                 - img [ref=e58]
                 - generic [ref=e60]: บิล/ชำระเงิน
@@ -89,62 +89,28 @@
       - generic [ref=e106]:
         - generic [ref=e108]:
           - generic [ref=e109]:
-            - link [ref=e110] [cursor=pointer]:
-              - /url: /resident/visitors
-              - button [ref=e111]:
-                - img
-            - generic [ref=e112]:
-              - heading "สร้าง QR Code ผู้มาติดต่อ" [level=1] [ref=e113]:
-                - img [ref=e115]
-                - text: สร้าง QR Code ผู้มาติดต่อ
-              - paragraph [ref=e121]: ลงทะเบียนล่วงหน้าสำหรับผู้มาติดต่อ
-          - generic [ref=e124]:
-            - generic [ref=e125]:
-              - generic [ref=e126]:
-                - text: ยูนิต
-                - generic [ref=e127]: "*"
-              - combobox [ref=e128]:
-                - generic: เลือกยูนิต
-                - img
-              - combobox [ref=e129]
-            - generic [ref=e130]:
-              - generic [ref=e131]:
-                - text: ชื่อผู้มาติดต่อ
-                - generic [ref=e132]: "*"
-              - generic [ref=e133]:
-                - img [ref=e134]
-                - textbox "ชื่อผู้มาติดต่อ *" [ref=e137]:
-                  - /placeholder: ระบุชื่อ-นามสกุล
-            - generic [ref=e138]:
-              - generic [ref=e139]:
-                - generic [ref=e140]: เบอร์โทรศัพท์
-                - generic [ref=e141]:
-                  - img [ref=e142]
-                  - textbox "เบอร์โทรศัพท์" [ref=e144]:
-                    - /placeholder: 08x-xxx-xxxx
-              - generic [ref=e145]:
-                - generic [ref=e146]: ทะเบียนรถ
-                - generic [ref=e147]:
-                  - img [ref=e148]
-                  - textbox "ทะเบียนรถ" [ref=e152]:
-                    - /placeholder: กข 1234
-            - generic [ref=e153]:
-              - generic [ref=e154]:
-                - text: วัตถุประสงค์
-                - generic [ref=e155]: "*"
-              - textbox "วัตถุประสงค์ *" [ref=e156]:
-                - /placeholder: เช่น มาหาเพื่อน, ส่งของ
-            - button "สร้าง QR Code" [ref=e158]:
+            - generic [ref=e110]:
+              - heading "บิล/ชำระเงิน" [level=1] [ref=e111]:
+                - img [ref=e113]
+                - text: บิล/ชำระเงิน
+              - paragraph [ref=e115]: รายการบิลและประวัติการชำระเงิน
+            - combobox [ref=e116]:
+              - generic: C301
               - img
-              - text: สร้าง QR Code
-        - button [ref=e159]:
+          - generic [ref=e117]:
+            - tablist [ref=e118]:
+              - tab "ค้างชำระ (0)" [selected] [ref=e119]:
+                - img
+                - text: ค้างชำระ (0)
+              - tab "ชำระแล้ว (0)" [ref=e120]:
+                - img
+                - text: ชำระแล้ว (0)
+            - tabpanel "ค้างชำระ (0)" [ref=e121]:
+              - img [ref=e123]
+        - button [ref=e125]:
           - img
-  - region "Notifications alt+T":
-    - list:
-      - listitem [ref=e160]:
-        - img [ref=e162]
-        - generic [ref=e166]: เข้าสู่ระบบสำเร็จ
-  - button "Open Next.js Dev Tools" [ref=e172] [cursor=pointer]:
-    - img [ref=e173]
-  - alert [ref=e176]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e131] [cursor=pointer]:
+    - img [ref=e132]
+  - alert [ref=e135]
 ```

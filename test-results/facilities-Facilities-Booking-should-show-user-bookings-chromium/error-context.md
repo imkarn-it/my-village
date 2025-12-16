@@ -25,7 +25,7 @@
                 - img [ref=e32]
                 - generic [ref=e35]: ประกาศ
             - listitem [ref=e36]:
-              - link "ผู้มาติดต่อ" [active] [ref=e37] [cursor=pointer]:
+              - link "ผู้มาติดต่อ" [ref=e37] [cursor=pointer]:
                 - /url: /resident/visitors
                 - img [ref=e38]
                 - generic [ref=e43]: ผู้มาติดต่อ
@@ -55,7 +55,7 @@
                 - img [ref=e70]
                 - generic [ref=e76]: สิ่งอำนวยความสะดวก
             - listitem [ref=e77]:
-              - link "การจองของฉัน" [ref=e78] [cursor=pointer]:
+              - link "การจองของฉัน" [active] [ref=e78] [cursor=pointer]:
                 - /url: /resident/bookings
                 - img [ref=e79]
                 - generic [ref=e81]: การจองของฉัน
@@ -87,43 +87,17 @@
           - button [ref=e105]:
             - img
       - generic [ref=e106]:
-        - generic [ref=e108]:
-          - generic [ref=e109]:
-            - generic [ref=e110]:
-              - heading "ผู้มาติดต่อ" [level=1] [ref=e111]:
-                - img [ref=e113]
-                - text: ผู้มาติดต่อ
-              - paragraph [ref=e118]: จัดการและติดตามผู้มาติดต่อ
-            - generic [ref=e119]:
-              - combobox [ref=e120]:
-                - generic: C301
-                - img
-              - link "สร้าง QR Code" [ref=e121] [cursor=pointer]:
-                - /url: /resident/visitors/new
-                - button "สร้าง QR Code" [ref=e122]:
-                  - img
-                  - text: สร้าง QR Code
-          - generic [ref=e123]:
-            - img [ref=e124]
-            - textbox "ค้นหาผู้มาติดต่อ..." [ref=e127]
-          - generic [ref=e128]:
-            - tablist [ref=e129]:
-              - tab "รออนุมัติ (0)" [selected] [ref=e130]:
-                - img
-                - text: รออนุมัติ (0)
-              - tab "อยู่ในพื้นที่ (0)" [ref=e131]:
-                - img
-                - text: อยู่ในพื้นที่ (0)
-              - tab "ประวัติ (0)" [ref=e132]
-            - tabpanel "รออนุมัติ (0)" [ref=e133]:
-              - generic [ref=e135]:
-                - img [ref=e137]
-                - heading "ไม่มีผู้รออนุมัติ" [level=3] [ref=e140]
-                - paragraph [ref=e141]: ไม่มีผู้มาติดต่อที่รอการอนุมัติ
-        - button [ref=e142]:
+        - generic [ref=e110]:
+          - heading "การจองของฉัน" [level=1] [ref=e111]
+          - paragraph [ref=e112]: ดูการจองสิ่งอำนวยความสะดวกของคุณ
+        - button [ref=e138]:
           - img
-  - region "Notifications alt+T"
-  - button "Open Next.js Dev Tools" [ref=e148] [cursor=pointer]:
-    - img [ref=e149]
-  - alert [ref=e152]
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=e139]:
+        - img [ref=e141]
+        - generic [ref=e145]: เข้าสู่ระบบสำเร็จ
+  - button "Open Next.js Dev Tools" [ref=e151] [cursor=pointer]:
+    - img [ref=e152]
+  - alert [ref=e155]
 ```
