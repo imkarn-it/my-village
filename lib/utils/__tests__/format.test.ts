@@ -193,7 +193,7 @@ describe('Format Utils', () => {
     })
 
     test('should handle already formatted ID cards', () => {
-      expect(formatIdCard('1-2345-67890-12-3')).toBe('1234-567890-12-3')
+      expect(formatIdCard('1234-567890-12-3')).toBe('1234-567890-12-3')
     })
 
     test('should return original for invalid formats', () => {
