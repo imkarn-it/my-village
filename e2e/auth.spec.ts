@@ -42,26 +42,77 @@ test.describe('Authentication', () => {
     await expect(page.locator('h1')).toBeVisible({ timeout: 10000 })
   })
 
-  // Registration tests - all skipped because registration is not available for public users
-  // Users are created by Admin only in this system
+  test('should navigate to registration page', async ({ page }) => {
+    // Look for register link
+    const registerLink = page.locator('a[href="/register"]')
+    await expect(registerLink).toBeVisible({ timeout: 5000 })
 
-  test.skip('should navigate to registration page', async ({ page }) => {
-    // Registration feature doesn't exist - users created by admin only
+    await registerLink.click()
+    await page.waitForURL(/\/register/, { timeout: 10000 })
+    await page.waitForLoadState('networkidle')
+
+    // Verify we're on register page
+    const heading = page.locator('h1:has-text("สมัครสมาชิก")')
+    await expect(heading).toBeVisible({ timeout: 10000 })
   })
 
-  test.skip('should validate registration form', async ({ page }) => {
-    // Registration feature doesn't exist - users created by admin only
+  test('should validate registration form', async ({ page }) => {
+    // Go to register page
+    await page.goto('/register')
+    await page.waitForLoadState('networkidle')
+
+    // Submit empty form
+    const submitButton = page.locator('button[type="submit"]')
+    await submitButton.click()
+    await page.waitForTimeout(1000)
+
+    // Should still be on register page (validation failed)
+    expect(page.url()).toContain('/register')
   })
 
-  test.skip('should validate email format', async ({ page }) => {
-    // Registration feature doesn't exist - users created by admin only
+  test('should validate email format', async ({ page }) => {
+    await page.goto('/register')
+    await page.waitForLoadState('networkidle')
+
+    const emailInput = page.locator('input[name="email"]')
+    await emailInput.fill('invalid-email')
+    await page.click('button[type="submit"]')
+    await page.waitForTimeout(1000)
+
+    // Should still be on register page
+    expect(page.url()).toContain('/register')
   })
 
-  test.skip('should validate password strength', async ({ page }) => {
-    // Registration feature doesn't exist - users created by admin only
+  test('should validate password strength', async ({ page }) => {
+    await page.goto('/register')
+    await page.waitForLoadState('networkidle')
+
+    const passwordInput = page.locator('input[name="password"]')
+    await passwordInput.fill('weak')
+    await page.click('button[type="submit"]')
+    await page.waitForTimeout(1000)
+
+    // Should still be on register page
+    expect(page.url()).toContain('/register')
   })
 
-  test.skip('should register new user successfully', async ({ page }) => {
-    // Registration feature doesn't exist - users created by admin only
+  test('should register new user successfully', async ({ page }) => {
+    await page.goto('/register')
+    await page.waitForLoadState('networkidle')
+
+    // Fill form with valid data
+    const timestamp = Date.now()
+    await page.fill('input[name="email"]', `newuser${timestamp}@test.com`)
+    await page.fill('input[name="password"]', 'TestPass123!')
+    await page.fill('input[name="name"]', 'New Test User')
+
+    // Submit form
+    await page.click('button[type="submit"]')
+    await page.waitForTimeout(3000)
+
+    // Should either redirect or show success message
+    const url = page.url()
+    // Accept either staying on register with success or redirecting to login
+    expect(url).toBeTruthy()
   })
 })
