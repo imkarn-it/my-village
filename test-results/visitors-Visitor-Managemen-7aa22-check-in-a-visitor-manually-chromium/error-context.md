@@ -1,7 +1,7 @@
 # Page snapshot
 
 ```yaml
-- generic [active] [ref=e1]:
+- generic [ref=e1]:
   - generic [ref=e2]:
     - complementary [ref=e3]:
       - link "Security" [ref=e5] [cursor=pointer]:
@@ -13,7 +13,7 @@
           - /url: /security
           - img [ref=e12]
           - generic [ref=e17]: Dashboard
-        - link "ผู้มาติดต่อ" [ref=e18] [cursor=pointer]:
+        - link "ผู้มาติดต่อ" [active] [ref=e18] [cursor=pointer]:
           - /url: /security/visitors
           - img [ref=e19]
           - generic [ref=e24]: ผู้มาติดต่อ
@@ -56,100 +56,31 @@
         - generic [ref=e70]:
           - generic [ref=e71]:
             - generic [ref=e72]:
-              - heading "Dashboard รปภ." [level=1] [ref=e73]
-              - paragraph [ref=e74]: สวัสดี, Test Security
-            - generic [ref=e75]:
-              - button "สแกน QR" [ref=e76]:
-                - img
-                - text: สแกน QR
-              - button "กล้อง CCTV" [ref=e77]:
-                - img
-                - text: กล้อง CCTV
-          - generic [ref=e78]:
-            - link "ผู้มาติดต่อวันนี้ 0" [ref=e79] [cursor=pointer]:
-              - /url: /security/visitors
-              - generic [ref=e82]:
-                - generic [ref=e83]:
-                  - paragraph [ref=e84]: ผู้มาติดต่อวันนี้
-                  - paragraph [ref=e85]: "0"
-                - img [ref=e87]
-            - link "พัสดุรอรับ 2" [ref=e92] [cursor=pointer]:
-              - /url: /security/parcels
-              - generic [ref=e95]:
-                - generic [ref=e96]:
-                  - paragraph [ref=e97]: พัสดุรอรับ
-                  - paragraph [ref=e98]: "2"
-                - img [ref=e100]
-            - link "รถในพื้นที่ 0" [ref=e104] [cursor=pointer]:
-              - /url: /security/visitors?type=vehicle
-              - generic [ref=e107]:
-                - generic [ref=e108]:
-                  - paragraph [ref=e109]: รถในพื้นที่
-                  - paragraph [ref=e110]: "0"
-                - img [ref=e112]
-            - link "แจ้งเตือน 0" [ref=e116] [cursor=pointer]:
-              - /url: /security/alerts
-              - generic [ref=e119]:
-                - generic [ref=e120]:
-                  - paragraph [ref=e121]: แจ้งเตือน
-                  - paragraph [ref=e122]: "0"
-                - img [ref=e124]
-          - generic [ref=e127]:
-            - link "Check-in ผู้มาติดต่อ" [ref=e128] [cursor=pointer]:
+              - heading "ผู้มาติดต่อ (Visitors)" [level=1] [ref=e73]
+              - paragraph [ref=e74]: รายการผู้มาติดต่อทั้งหมด 0 รายการ
+            - link "Check-in ผู้มาติดต่อ" [ref=e75] [cursor=pointer]:
               - /url: /security/visitors/new
-              - button "Check-in ผู้มาติดต่อ" [ref=e129]:
+              - button "Check-in ผู้มาติดต่อ" [ref=e76]:
                 - img
-                - generic [ref=e130]: Check-in ผู้มาติดต่อ
-            - link "Check-out" [ref=e131] [cursor=pointer]:
-              - /url: /security/visitors
-              - button "Check-out" [ref=e132]:
-                - img
-                - generic [ref=e133]: Check-out
-            - link "รับพัสดุ" [ref=e134] [cursor=pointer]:
-              - /url: /security/parcels/new
-              - button "รับพัสดุ" [ref=e135]:
-                - img
-                - generic [ref=e136]: รับพัสดุ
-            - link "แจ้งเหตุฉุกเฉิน" [ref=e137] [cursor=pointer]:
-              - /url: /security/alerts/new
-              - button "แจ้งเหตุฉุกเฉิน" [ref=e138]:
-                - img
-                - generic [ref=e139]: แจ้งเหตุฉุกเฉิน
-          - generic [ref=e140]:
-            - generic [ref=e141]:
-              - generic [ref=e142]:
-                - generic [ref=e143]:
-                  - img [ref=e144]
-                  - text: ผู้มาติดต่อล่าสุด
-                - link "ดูทั้งหมด" [ref=e149] [cursor=pointer]:
-                  - /url: /security/visitors
-                  - button "ดูทั้งหมด" [ref=e150]:
-                    - text: ดูทั้งหมด
-                    - img
-              - generic [ref=e152]: ยังไม่มีผู้มาติดต่อ
-            - generic [ref=e153]:
-              - generic [ref=e154]:
-                - generic [ref=e155]:
-                  - img [ref=e156]
-                  - text: พัสดุรอส่ง
-                - link "ดูทั้งหมด" [ref=e160] [cursor=pointer]:
-                  - /url: /security/parcels
-                  - button "ดูทั้งหมด" [ref=e161]:
-                    - text: ดูทั้งหมด
-                    - img
-              - generic [ref=e162]:
-                - generic [ref=e163]:
-                  - generic [ref=e164]:
-                    - paragraph [ref=e165]: Kerry Express
-                    - paragraph [ref=e166]: ห้อง A101 • รับเมื่อ 22:26
-                  - button "แจ้งลูกบ้าน" [ref=e167]
-                - generic [ref=e168]:
-                  - generic [ref=e169]:
-                    - paragraph [ref=e170]: Flash Express
-                    - paragraph [ref=e171]: ห้อง A101 • รับเมื่อ 22:26
-                  - button "แจ้งลูกบ้าน" [ref=e172]
+                - text: Check-in ผู้มาติดต่อ
+          - generic [ref=e78]:
+            - img [ref=e79]
+            - textbox "ค้นหาชื่อ, ทะเบียนรถ, ห้อง..." [ref=e83]
+          - table [ref=e86]:
+            - rowgroup [ref=e87]:
+              - row "ผู้มาติดต่อ ทะเบียนรถ ติดต่อห้อง เวลาเข้า เวลาออก สถานะ จัดการ" [ref=e88]:
+                - columnheader "ผู้มาติดต่อ" [ref=e89]
+                - columnheader "ทะเบียนรถ" [ref=e90]
+                - columnheader "ติดต่อห้อง" [ref=e91]
+                - columnheader "เวลาเข้า" [ref=e92]
+                - columnheader "เวลาออก" [ref=e93]
+                - columnheader "สถานะ" [ref=e94]
+                - columnheader "จัดการ" [ref=e95]
+            - rowgroup [ref=e96]:
+              - row "ไม่พบข้อมูลผู้มาติดต่อ" [ref=e97]:
+                - cell "ไม่พบข้อมูลผู้มาติดต่อ" [ref=e98]
   - region "Notifications alt+T"
-  - button "Open Next.js Dev Tools" [ref=e178] [cursor=pointer]:
-    - img [ref=e179]
-  - alert [ref=e182]
+  - button "Open Next.js Dev Tools" [ref=e104] [cursor=pointer]:
+    - img [ref=e105]
+  - alert [ref=e108]
 ```

@@ -14,8 +14,8 @@ test.describe('Visitor Management System', () => {
             await page.waitForURL(/\/resident\/visitors/, { timeout: 10000 })
             await expect(page.locator('h1')).toContainText('ผู้มาติดต่อ', { timeout: 10000 })
 
-            // Click Create QR Code button
-            await page.click('text=สร้าง QR Code')
+            // Click Create QR Code button (it's a link)
+            await page.click('a[href="/resident/visitors/new"]')
             await page.waitForURL(/\/resident\/visitors\/new/, { timeout: 10000 })
 
             // Fill form
