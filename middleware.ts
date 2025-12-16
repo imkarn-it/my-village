@@ -28,6 +28,13 @@ export default auth((req) => {
             const redirectUrl = getRedirectUrlForRole(session?.user?.role || "resident");
             return NextResponse.redirect(new URL(redirectUrl, nextUrl));
         }
+
+        // If logged in and accessing root, redirect to dashboard
+        if (isLoggedIn && pathname === "/") {
+            const redirectUrl = getRedirectUrlForRole(session?.user?.role || "resident");
+            return NextResponse.redirect(new URL(redirectUrl, nextUrl));
+        }
+
         return NextResponse.next();
     }
 

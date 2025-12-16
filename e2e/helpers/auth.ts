@@ -33,13 +33,10 @@ export async function login(page: Page, userType: keyof typeof TEST_USERS) {
     await page.fill('input[name="email"]', user.email)
     await page.fill('input[name="password"]', user.password)
 
-    // Submit form and wait for navigation
-    await Promise.all([
-        page.waitForNavigation({ timeout: 15000 }),
-        page.click('button[type="submit"]')
-    ])
+    // Click submit and wait for redirect to dashboard
+    await page.click('button[type="submit"]')
 
-    // Wait for role-specific dashboard URL
+    // Wait for redirect to role-specific dashboard
     await page.waitForURL(new RegExp(user.dashboardUrl), { timeout: 15000 })
 }
 

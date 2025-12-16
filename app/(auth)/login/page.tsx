@@ -47,26 +47,8 @@ export default function LoginPage(): React.JSX.Element {
             } else {
                 toast.success("เข้าสู่ระบบสำเร็จ")
 
-                // Fetch session to get user role
-                const response = await fetch('/api/auth/session')
-                const session = await response.json()
-
-                if (session?.user?.role) {
-                    const roleRedirects: Record<string, string> = {
-                        'admin': '/admin',
-                        'resident': '/resident',
-                        'security': '/security',
-                        'maintenance': '/resident',
-                        'super_admin': '/super-admin',
-                    }
-
-                    const redirectUrl = roleRedirects[session.user.role] || '/'
-                    router.push(redirectUrl)
-                } else {
-                    router.push("/")
-                }
-
-                router.refresh()
+                // Use window.location to force reload and let middleware handle redirect
+                window.location.href = '/'
             }
         } catch {
             toast.error("เกิดข้อผิดพลาดในการเข้าสู่ระบบ")
