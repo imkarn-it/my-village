@@ -103,10 +103,10 @@ test.describe('Authentication', () => {
     const timestamp = Date.now()
     await page.fill('input[placeholder="สมชาย ใจดี"]', 'New Test User')
     await page.fill('input[placeholder="example@email.com"]', `newuser${timestamp}@test.com`)
-    await page.fill('input[placeholder="••••••••"]', 'TestPass123!').first()
 
-    // Fill confirm password
+    // Fill password
     const passwordInputs = page.locator('input[placeholder="••••••••"]')
+    await passwordInputs.first().fill('TestPass123!')
     await passwordInputs.nth(1).fill('TestPass123!')
 
     // Submit form
