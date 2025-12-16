@@ -365,3 +365,8 @@ MIT License - feel free to use this project for your own purposes.
 **Version:** 1.1.0  
 **Last Updated:** December 2025  
 Built with ❤️ using Next.js 16, Bun, Elysia, and Supabase
+# Bun Migration  
+  
+This project now uses **Bun** as the package manager for faster performance.  
+  
+See `.claude/docs/bun-migration.md` for details. 
