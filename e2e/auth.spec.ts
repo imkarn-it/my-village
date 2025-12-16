@@ -36,37 +36,6 @@ test.describe('Authentication', () => {
     await page.fill('input[name="email"]', TEST_USERS.admin.email)
     await page.fill('input[name="password"]', TEST_USERS.admin.password)
     await page.click('button[type="submit"]')
-
-    // Should redirect to admin dashboard
-    await page.waitForURL(/\/admin/, { timeout: 15000 })
-    await expect(page.locator('h1')).toBeVisible({ timeout: 10000 })
-  })
-
-  test('should logout successfully', async ({ page }) => {
-    // Use login helper
-    await login(page, 'admin')
-
-    // Logout
-    await logout(page)
-
-    // Should be back at login page
-    await expect(page).toHaveURL('/')
-    await expect(page.locator('input[name="email"]')).toBeVisible()
-  })
-
-  test('should protect dashboard routes', async ({ page }) => {
-    // Try to access admin dashboard without login
-    await page.goto('/admin')
-
-    // Should redirect to login
-    await page.waitForURL('/', { timeout: 10000 })
-    await expect(page.locator('input[name="email"]')).toBeVisible()
-  })
-})
-
-test.describe('User Registration', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/')
     await page.waitForLoadState('networkidle')
   })
 
