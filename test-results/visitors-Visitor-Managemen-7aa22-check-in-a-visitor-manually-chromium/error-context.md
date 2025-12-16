@@ -1,86 +1,150 @@
 # Page snapshot
 
 ```yaml
-- generic [ref=e1]:
-  - generic [ref=e2]:
-    - complementary [ref=e3]:
-      - link "Security" [ref=e5] [cursor=pointer]:
-        - /url: /security
-        - img [ref=e7]
-        - generic [ref=e9]: Security
-      - navigation [ref=e10]:
-        - link "Dashboard" [ref=e11] [cursor=pointer]:
+- generic:
+  - generic:
+    - complementary:
+      - generic:
+        - link:
           - /url: /security
-          - img [ref=e12]
-          - generic [ref=e17]: Dashboard
-        - link "ผู้มาติดต่อ" [active] [ref=e18] [cursor=pointer]:
+          - generic:
+            - img
+          - generic: Security
+      - navigation:
+        - link:
+          - /url: /security
+          - img
+          - generic: Dashboard
+        - link:
           - /url: /security/visitors
-          - img [ref=e19]
-          - generic [ref=e24]: ผู้มาติดต่อ
-        - link "รับพัสดุ" [ref=e25] [cursor=pointer]:
+          - img
+          - generic: ผู้มาติดต่อ
+        - link:
           - /url: /security/parcels
-          - img [ref=e26]
-          - generic [ref=e30]: รับพัสดุ
-        - link "ยานพาหนะ" [ref=e31] [cursor=pointer]:
+          - img
+          - generic: รับพัสดุ
+        - link:
           - /url: /security/vehicles
-          - img [ref=e32]
-          - generic [ref=e36]: ยานพาหนะ
-        - link "สแกน QR" [ref=e37] [cursor=pointer]:
+          - img
+          - generic: ยานพาหนะ
+        - link:
           - /url: /security/scan
-          - img [ref=e38]
-          - generic [ref=e44]: สแกน QR
-        - link "กล้องวงจรปิด" [ref=e45] [cursor=pointer]:
+          - img
+          - generic: สแกน QR
+        - link:
           - /url: /security/cctv
-          - img [ref=e46]
-          - generic [ref=e49]: กล้องวงจรปิด
-      - button "ฉุกเฉิน SOS" [ref=e51]:
-        - img
-        - text: ฉุกเฉิน SOS
-      - link "ตั้งค่า" [ref=e53] [cursor=pointer]:
-        - /url: /security/settings
-        - img [ref=e54]
-        - generic [ref=e57]: ตั้งค่า
-    - generic [ref=e58]:
-      - banner [ref=e59]:
-        - generic [ref=e60]:
-          - button "Toggle theme" [ref=e61]:
+          - img
+          - generic: กล้องวงจรปิด
+      - generic:
+        - button:
+          - img
+          - text: ฉุกเฉิน SOS
+      - generic:
+        - link:
+          - /url: /security/settings
+          - img
+          - generic: ตั้งค่า
+    - generic:
+      - banner:
+        - generic:
+          - button:
             - img
-            - generic [ref=e62]: Toggle theme
-          - button [ref=e63]:
+            - generic: Toggle theme
+          - button:
             - img
-          - button "TS Test Security" [ref=e64]:
-            - generic [ref=e66]: TS
-            - generic [ref=e67]: Test Security
+          - button:
+            - generic:
+              - generic: TS
+            - generic: Test Security
             - img
-      - main [ref=e68]:
-        - generic [ref=e70]:
-          - generic [ref=e71]:
-            - generic [ref=e72]:
-              - heading "ผู้มาติดต่อ (Visitors)" [level=1] [ref=e73]
-              - paragraph [ref=e74]: รายการผู้มาติดต่อทั้งหมด 0 รายการ
-            - link "Check-in ผู้มาติดต่อ" [ref=e75] [cursor=pointer]:
-              - /url: /security/visitors/new
-              - button "Check-in ผู้มาติดต่อ" [ref=e76]:
-                - img
-                - text: Check-in ผู้มาติดต่อ
-          - generic [ref=e78]:
-            - img [ref=e79]
-            - textbox "ค้นหาชื่อ, ทะเบียนรถ, ห้อง..." [ref=e83]
-          - table [ref=e86]:
-            - rowgroup [ref=e87]:
-              - row "ผู้มาติดต่อ ทะเบียนรถ ติดต่อห้อง เวลาเข้า เวลาออก สถานะ จัดการ" [ref=e88]:
-                - columnheader "ผู้มาติดต่อ" [ref=e89]
-                - columnheader "ทะเบียนรถ" [ref=e90]
-                - columnheader "ติดต่อห้อง" [ref=e91]
-                - columnheader "เวลาเข้า" [ref=e92]
-                - columnheader "เวลาออก" [ref=e93]
-                - columnheader "สถานะ" [ref=e94]
-                - columnheader "จัดการ" [ref=e95]
-            - rowgroup [ref=e96]:
-              - row "ไม่พบข้อมูลผู้มาติดต่อ" [ref=e97]:
-                - cell "ไม่พบข้อมูลผู้มาติดต่อ" [ref=e98]
+      - main:
+        - generic:
+          - generic:
+            - generic:
+              - link:
+                - /url: /security/visitors
+                - button:
+                  - img
+              - generic:
+                - heading [level=1]: Check-in ผู้มาติดต่อ
+                - paragraph: บันทึกข้อมูลผู้มาติดต่อเข้าโครงการ
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - text: ชื่อ-นามสกุล
+                        - generic: "*"
+                      - generic:
+                        - img
+                        - textbox:
+                          - /placeholder: ระบุชื่อผู้มาติดต่อ
+                          - text: Walk-in VisitorWALK-123
+                    - generic:
+                      - generic:
+                        - text: ติดต่อห้อง
+                        - generic: "*"
+                      - generic:
+                        - img
+                        - combobox [expanded]:
+                          - generic: เลือกห้อง
+                          - img
+                        - combobox
+                    - generic:
+                      - generic: ทะเบียนรถ
+                      - generic:
+                        - img
+                        - textbox:
+                          - /placeholder: เช่น กข 1234
+                    - generic:
+                      - generic:
+                        - text: วัตถุประสงค์
+                        - generic: "*"
+                      - generic:
+                        - img
+                        - combobox:
+                          - generic: เลือกวัตถุประสงค์
+                          - img
+                        - combobox
+                    - generic:
+                      - generic: ถ่ายรูปบัตรประชาชน/ใบขับขี่
+                      - generic:
+                        - img
+                        - generic: คลิกเพื่อถ่ายรูป หรืออัปโหลดรูปภาพ
+                  - generic:
+                    - button:
+                      - img
+                      - text: บันทึก Check-in
   - region "Notifications alt+T"
-  - button "Open Next.js Dev Tools" [ref=e104] [cursor=pointer]:
-    - img [ref=e105]
-  - alert [ref=e108]
+  - button "Open Next.js Dev Tools" [ref=e6] [cursor=pointer]:
+    - img [ref=e7]
+  - alert
+  - listbox [ref=e10]:
+    - option "C301" [active] [ref=e11]:
+      - generic [ref=e13]: C301
+    - option "C301" [ref=e14]:
+      - generic [ref=e16]: C301
+    - option "B201" [ref=e17]:
+      - generic [ref=e19]: B201
+    - option "B201" [ref=e20]:
+      - generic [ref=e22]: B201
+    - option "A5" [ref=e23]:
+      - generic [ref=e25]: A5
+    - option "A4" [ref=e26]:
+      - generic [ref=e28]: A4
+    - option "A3" [ref=e29]:
+      - generic [ref=e31]: A3
+    - option "A2" [ref=e32]:
+      - generic [ref=e34]: A2
+    - option "A102" [ref=e35]:
+      - generic [ref=e37]: A102
+    - option "A102" [ref=e38]:
+      - generic [ref=e40]: A102
+    - option "A101" [ref=e41]:
+      - generic [ref=e43]: A101
+    - option "A101" [ref=e44]:
+      - generic [ref=e46]: A101
+    - option "A1" [ref=e47]:
+      - generic [ref=e49]: A1
 ```
