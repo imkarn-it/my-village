@@ -1,7 +1,7 @@
 # Page snapshot
 
 ```yaml
-- generic [active] [ref=e1]:
+- generic [ref=e1]:
   - generic [ref=e7]:
     - generic [ref=e8]:
       - img [ref=e10]
@@ -15,14 +15,14 @@
             - img [ref=e21]
             - textbox "ชื่อ-นามสกุล" [ref=e24]:
               - /placeholder: สมชาย ใจดี
-              - text: Test User
+              - text: New Test User
         - generic [ref=e25]:
           - generic [ref=e26]: อีเมล
           - generic [ref=e27]:
             - img [ref=e28]
             - textbox "อีเมล" [ref=e31]:
               - /placeholder: example@email.com
-              - text: testuser1765851715441@example.com
+              - text: newuser1765854312284@test.com
         - generic [ref=e32]:
           - generic [ref=e33]: รหัสผ่าน
           - generic [ref=e34]:
@@ -36,9 +36,8 @@
           - generic [ref=e44]: ยืนยันรหัสผ่าน
           - generic [ref=e45]:
             - img [ref=e46]
-            - textbox "ยืนยันรหัสผ่าน" [ref=e49]:
+            - textbox "ยืนยันรหัสผ่าน" [active] [ref=e49]:
               - /placeholder: ••••••••
-              - text: TestPass123!
             - button [ref=e50]:
               - img [ref=e51]
         - button "สมัครสมาชิก" [ref=e54]
