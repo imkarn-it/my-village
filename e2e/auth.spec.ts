@@ -51,9 +51,8 @@ test.describe('Authentication', () => {
     await page.waitForURL(/\/register/, { timeout: 10000 })
     await page.waitForLoadState('networkidle')
 
-    // Verify we're on register page
-    const heading = page.locator('h1:has-text("สมัครสมาชิก")')
-    await expect(heading).toBeVisible({ timeout: 10000 })
+    // Verify we're on register page - check for register button
+    await expect(page.locator('button:has-text("สมัครสมาชิก")')).toBeVisible({ timeout: 10000 })
   })
 
   test('should validate registration form', async ({ page }) => {
@@ -62,7 +61,7 @@ test.describe('Authentication', () => {
     await page.waitForLoadState('networkidle')
 
     // Submit empty form
-    const submitButton = page.locator('button[type="submit"]')
+    const submitButton = page.locator('button:has-text("สมัครสมาชิก")')
     await submitButton.click()
     await page.waitForTimeout(1000)
 
@@ -74,9 +73,9 @@ test.describe('Authentication', () => {
     await page.goto('/register')
     await page.waitForLoadState('networkidle')
 
-    const emailInput = page.locator('input[name="email"]')
+    const emailInput = page.locator('input[placeholder="example@email.com"]')
     await emailInput.fill('invalid-email')
-    await page.click('button[type="submit"]')
+    await page.click('button:has-text("สมัครสมาชิก")')
     await page.waitForTimeout(1000)
 
     // Should still be on register page
@@ -87,9 +86,9 @@ test.describe('Authentication', () => {
     await page.goto('/register')
     await page.waitForLoadState('networkidle')
 
-    const passwordInput = page.locator('input[name="password"]')
+    const passwordInput = page.locator('input[placeholder="••••••••"]').first()
     await passwordInput.fill('weak')
-    await page.click('button[type="submit"]')
+    await page.click('button:has-text("สมัครสมาชิก")')
     await page.waitForTimeout(1000)
 
     // Should still be on register page
@@ -102,12 +101,16 @@ test.describe('Authentication', () => {
 
     // Fill form with valid data
     const timestamp = Date.now()
-    await page.fill('input[name="email"]', `newuser${timestamp}@test.com`)
-    await page.fill('input[name="password"]', 'TestPass123!')
-    await page.fill('input[name="name"]', 'New Test User')
+    await page.fill('input[placeholder="สมชาย ใจดี"]', 'New Test User')
+    await page.fill('input[placeholder="example@email.com"]', `newuser${timestamp}@test.com`)
+    await page.fill('input[placeholder="••••••••"]', 'TestPass123!').first()
+
+    // Fill confirm password
+    const passwordInputs = page.locator('input[placeholder="••••••••"]')
+    await passwordInputs.nth(1).fill('TestPass123!')
 
     // Submit form
-    await page.click('button[type="submit"]')
+    await page.click('button:has-text("สมัครสมาชิก")')
     await page.waitForTimeout(3000)
 
     // Should either redirect or show success message
