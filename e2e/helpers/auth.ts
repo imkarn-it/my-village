@@ -19,7 +19,7 @@ export const TEST_USERS = {
     maintenance: {
         email: 'maintenance@test.com',
         password: 'TestPass123!',
-        dashboardUrl: '/maintenance',
+        dashboardUrl: '/resident',  // Maintenance staff use resident dashboard
     },
 }
 

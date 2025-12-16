@@ -40,14 +40,20 @@ test.describe('Maintenance System', () => {
             await login(page, 'maintenance')
         })
 
-        test('should display maintenance dashboard', async ({ page }) => {
-            // Navigate to Pending Jobs
-            await page.click('a[href="/maintenance/pending"]', { timeout: 15000 })
-            await page.waitForURL(/\/maintenance\/pending/, { timeout: 15000 })
+        test('should display maintenance staff dashboard', async ({ page }) => {
+            // Maintenance staff land on resident dashboard
             await page.waitForLoadState('networkidle')
 
-            // Verify page loaded
-            const heading = page.locator('h1:has-text("งานที่รอดำเนินการ")')
+            // Verify logged in as maintenance staff
+            const userButton = page.locator('button:has-text("Test Maintenance")')
+            await expect(userButton).toBeVisible({ timeout: 15000 })
+
+            // Can access maintenance page
+            await page.click('a[href="/resident/maintenance"]', { timeout: 15000 })
+            await page.waitForURL(/\/resident\/maintenance/, { timeout: 15000 })
+            await page.waitForLoadState('networkidle')
+
+            const heading = page.locator('h1:has-text("แจ้งซ่อม")')
             await expect(heading).toBeVisible({ timeout: 15000 })
         })
     })
