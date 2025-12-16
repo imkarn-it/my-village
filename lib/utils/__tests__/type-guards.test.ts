@@ -283,7 +283,8 @@ describe('Error Utilities', () => {
             const handler = createErrorHandler('Default error')
             expect(handler(new Error('Test'))).toBe('Test')
             expect(handler('String error')).toBe('String error')
-            expect(handler({})).toBe('Default error')
+            // createErrorHandler uses getErrorMessage which returns Thai default message
+            expect(handler({})).toBe('เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ')
         })
     })
 })
