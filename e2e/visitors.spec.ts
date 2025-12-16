@@ -9,12 +9,14 @@ test.describe('Visitor Management System', () => {
         })
 
         test('should allow resident to pre-register a visitor', async ({ page }) => {
-            await page.click('text=ผู้มาติดต่อ', { timeout: 10000 })
+            // Navigate to Visitors page using the sidebar link
+            await page.click('a[href="/resident/visitors"]', { timeout: 10000 })
+            await page.waitForURL(/\/resident\/visitors/, { timeout: 10000 })
             await expect(page.locator('h1')).toContainText('ผู้มาติดต่อ', { timeout: 10000 })
 
             // Click Create QR Code button
             await page.click('text=สร้าง QR Code')
-            await expect(page).toHaveURL(/\/resident\/visitors\/new/, { timeout: 10000 })
+            await page.waitForURL(/\/resident\/visitors\/new/, { timeout: 10000 })
 
             // Fill form
             await page.fill('input[name="visitorName"]', 'John Doe Visitor')
@@ -26,7 +28,7 @@ test.describe('Visitor Management System', () => {
 
             // Verify success and redirect
             await expect(page.locator('text=สร้างนัดหมายสำเร็จ')).toBeVisible({ timeout: 10000 })
-            await expect(page).toHaveURL(/\/resident\/visitors/, { timeout: 10000 })
+            await page.waitForURL(/\/resident\/visitors/, { timeout: 10000 })
 
             // Verify visitor appears in list (Pending tab by default)
             await expect(page.locator('text=John Doe Visitor')).toBeVisible({ timeout: 10000 })
@@ -39,10 +41,13 @@ test.describe('Visitor Management System', () => {
         })
 
         test('should allow security to check-in a visitor manually', async ({ page }) => {
-            await page.click('text=ผู้มาติดต่อ', { timeout: 10000 })
+            // Navigate to Visitors page
+            await page.click('a[href="/security/visitors"]', { timeout: 10000 })
+            await page.waitForURL(/\/security\/visitors/, { timeout: 10000 })
 
             // Navigate to check-in page
             await page.click('text=ลงทะเบียนเข้า')
+            await page.waitForURL(/\/security\/visitors\/new/, { timeout: 10000 })
 
             // Fill form
             await page.fill('input[name="visitorName"]', 'Walk-in Visitor')
@@ -64,7 +69,7 @@ test.describe('Visitor Management System', () => {
 
             // Verify success
             await expect(page.locator('text=บันทึกข้อมูลสำเร็จ')).toBeVisible({ timeout: 10000 })
-            await expect(page).toHaveURL(/\/security\/visitors/, { timeout: 10000 })
+            await page.waitForURL(/\/security\/visitors/, { timeout: 10000 })
         })
     })
 })

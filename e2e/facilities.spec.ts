@@ -7,7 +7,8 @@ test.describe('Facilities Booking', () => {
   })
 
   test('should display facilities list', async ({ page }) => {
-    await page.click('text=สิ่งอำนวยความสะดวก', { timeout: 10000 })
+    await page.click('a[href="/resident/facilities"]', { timeout: 10000 })
+    await page.waitForURL(/\/resident\/facilities/, { timeout: 10000 })
 
     await expect(page.locator('h1')).toContainText('สิ่งอำนวยความสะดวก', { timeout: 10000 })
 
@@ -22,7 +23,8 @@ test.describe('Facilities Booking', () => {
   })
 
   test('should show facility details', async ({ page }) => {
-    await page.click('text=สิ่งอำนวยความสะดวก', { timeout: 10000 })
+    await page.click('a[href="/resident/facilities"]', { timeout: 10000 })
+    await page.waitForURL(/\/resident\/facilities/, { timeout: 10000 })
 
     // Check if there are facilities first
     const facilityCard = page.locator('[data-testid="facility-card"]').first()
@@ -37,7 +39,8 @@ test.describe('Facilities Booking', () => {
   })
 
   test('should create a new booking', async ({ page }) => {
-    await page.click('text=สิ่งอำนวยความสะดวก', { timeout: 10000 })
+    await page.click('a[href="/resident/facilities"]', { timeout: 10000 })
+    await page.waitForURL(/\/resident\/facilities/, { timeout: 10000 })
 
     // Check if there are facilities first
     const facilityCard = page.locator('[data-testid="facility-card"]').first()
@@ -69,7 +72,8 @@ test.describe('Facilities Booking', () => {
   })
 
   test('should show user bookings', async ({ page }) => {
-    await page.click('text=การจองของฉัน', { timeout: 10000 })
+    await page.click('a[href="/resident/bookings"]', { timeout: 10000 })
+    await page.waitForURL(/\/resident\/bookings/, { timeout: 10000 })
 
     await expect(page.locator('h1')).toContainText('การจองของฉัน', { timeout: 10000 })
 
@@ -84,7 +88,8 @@ test.describe('Facilities Booking', () => {
   })
 
   test('should cancel a booking', async ({ page }) => {
-    await page.click('text=การจองของฉัน', { timeout: 10000 })
+    await page.click('a[href="/resident/bookings"]', { timeout: 10000 })
+    await page.waitForURL(/\/resident\/bookings/, { timeout: 10000 })
 
     // Check if there are bookings first
     const bookingCard = page.locator('[data-testid="booking-card"]').first()
@@ -110,13 +115,15 @@ test.describe('Admin Facility Management', () => {
   })
 
   test('should display facilities management page', async ({ page }) => {
-    await page.click('text=สิ่งอำนวยความสะดวก', { timeout: 10000 })
+    await page.click('a[href="/admin/facilities"]', { timeout: 10000 })
+    await page.waitForURL(/\/admin\/facilities/, { timeout: 10000 })
 
     await expect(page.locator('h1')).toContainText('จัดการสิ่งอำนวยความสะดวก', { timeout: 10000 })
   })
 
   test('should create a new facility', async ({ page }) => {
-    await page.click('text=สิ่งอำนวยความสะดวก', { timeout: 10000 })
+    await page.click('a[href="/admin/facilities"]', { timeout: 10000 })
+    await page.waitForURL(/\/admin\/facilities/, { timeout: 10000 })
 
     // Click create button
     await page.click('text=เพิ่มสิ่งอำนวยความสะดวก')
@@ -134,7 +141,8 @@ test.describe('Admin Facility Management', () => {
   })
 
   test('should manage bookings', async ({ page }) => {
-    await page.click('text=การจอง', { timeout: 10000 })
+    await page.click('a[href="/admin/bookings"]', { timeout: 10000 })
+    await page.waitForURL(/\/admin\/bookings/, { timeout: 10000 })
 
     await expect(page.locator('h1')).toContainText('จัดการการจอง', { timeout: 10000 })
 

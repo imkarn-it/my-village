@@ -9,12 +9,13 @@ test.describe('Support Ticket System', () => {
         })
 
         test('should allow resident to create a support ticket', async ({ page }) => {
-            await page.click('text=แจ้งปัญหา', { timeout: 10000 })
+            await page.click('a[href="/resident/support"]', { timeout: 10000 })
+            await page.waitForURL(/\/resident\/support/, { timeout: 10000 })
             await expect(page.locator('h1')).toContainText('แจ้งปัญหาและร้องเรียน', { timeout: 10000 })
 
             // Click New Ticket
             await page.click('text=สร้างตั๋วงความใหม่')
-            await expect(page).toHaveURL(/\/resident\/support\/new/, { timeout: 10000 })
+            await page.waitForURL(/\/resident\/support\/new/, { timeout: 10000 })
 
             // Fill form
             // Select Unit
@@ -43,7 +44,8 @@ test.describe('Support Ticket System', () => {
         })
 
         test('should allow admin to view and update tickets', async ({ page }) => {
-            await page.click('text=แจ้งปัญหา', { timeout: 10000 })
+            await page.click('a[href="/admin/support"]', { timeout: 10000 })
+            await page.waitForURL(/\/admin\/support/, { timeout: 10000 })
             await expect(page.locator('h1')).toContainText('จัดการแจ้งปัญหา', { timeout: 10000 })
 
             // Check status cards

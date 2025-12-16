@@ -9,12 +9,13 @@ test.describe('Maintenance System', () => {
         })
 
         test('should allow resident to create a maintenance request', async ({ page }) => {
-            await page.click('text=แจ้งซ่อม', { timeout: 10000 })
+            await page.click('a[href="/resident/maintenance"]', { timeout: 10000 })
+            await page.waitForURL(/\/resident\/maintenance/, { timeout: 10000 })
             await expect(page.locator('h1')).toContainText('แจ้งซ่อม', { timeout: 10000 })
 
             // Click New Request
             await page.click('text=แจ้งซ่อมใหม่')
-            await expect(page).toHaveURL(/\/resident\/maintenance\/new/, { timeout: 10000 })
+            await page.waitForURL(/\/resident\/maintenance\/new/, { timeout: 10000 })
 
             // Fill form
             await page.fill('input[name="title"]', 'Broken AC Test')
@@ -39,7 +40,7 @@ test.describe('Maintenance System', () => {
 
             // Verify success
             await expect(page.locator('text=แจ้งซ่อมสำเร็จ')).toBeVisible({ timeout: 10000 })
-            await expect(page).toHaveURL(/\/resident\/maintenance/, { timeout: 10000 })
+            await page.waitForURL(/\/resident\/maintenance/, { timeout: 10000 })
         })
     })
 
@@ -50,7 +51,8 @@ test.describe('Maintenance System', () => {
 
         test('should display pending jobs (mock data)', async ({ page }) => {
             // Navigate to Pending Jobs
-            await page.click('text=งานที่รอดำเนินการ', { timeout: 10000 })
+            await page.click('a[href="/maintenance/pending"]', { timeout: 10000 })
+            await page.waitForURL(/\/maintenance\/pending/, { timeout: 10000 })
 
             await expect(page.locator('h1')).toContainText('งานที่รอดำเนินการ', { timeout: 10000 })
 

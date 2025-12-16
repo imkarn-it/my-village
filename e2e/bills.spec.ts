@@ -9,7 +9,8 @@ test.describe('Bills and Payments System', () => {
     })
 
     test('should allow resident to view bills', async ({ page }) => {
-      await page.click('text=บิล/ชำระเงิน', { timeout: 10000 })
+      await page.click('a[href="/resident/bills"]', { timeout: 10000 })
+      await page.waitForURL(/\/resident\/bills/, { timeout: 10000 })
       await expect(page.locator('h1')).toContainText('บิล/ชำระเงิน', { timeout: 10000 })
 
       // Check tabs exist
@@ -31,21 +32,21 @@ test.describe('Bills and Payments System', () => {
     })
 
     test('should allow admin to create a new bill', async ({ page }) => {
-      await page.click('text=บิล/ค่าใช้จ่าย', { timeout: 10000 })
+      await page.click('a[href="/admin/bills"]', { timeout: 10000 })
+      await page.waitForURL(/\/admin\/bills/, { timeout: 10000 })
       await expect(page.locator('h1')).toContainText('จัดการบิล/ค่าใช้จ่าย', { timeout: 10000 })
 
       // Click Create Bill
       await page.click('text=สร้างบิลใหม่')
-      await expect(page).toHaveURL(/\/admin\/bills\/new/, { timeout: 10000 })
+      await page.waitForURL(/\/admin\/bills\/new/, { timeout: 10000 })
 
-      // Fill form (assuming form structure based on standard patterns)
-      // Note: We need to check the actual form fields in admin/bills/new/page.tsx
-      // For now, we'll just verify we reached the page
+      // Verify we reached the page
       await expect(page.locator('h1')).toContainText('สร้างบิลใหม่', { timeout: 10000 })
     })
 
     test('should allow admin to verify payments', async ({ page }) => {
-      await page.click('text=บิล/ค่าใช้จ่าย', { timeout: 10000 })
+      await page.click('a[href="/admin/bills"]', { timeout: 10000 })
+      await page.waitForURL(/\/admin\/bills/, { timeout: 10000 })
 
       // Look for "Verify" button (ตรวจสอบ)
       const verifyButton = page.locator('button:has-text("ตรวจสอบ")').first()
