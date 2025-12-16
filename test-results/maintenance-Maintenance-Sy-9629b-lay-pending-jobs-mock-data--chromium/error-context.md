@@ -1,0 +1,205 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - link "My Village ลูกบ้าน" [ref=e8] [cursor=pointer]:
+        - /url: /resident
+        - img [ref=e10]
+        - generic [ref=e14]:
+          - heading "My Village" [level=1] [ref=e15]
+          - paragraph [ref=e16]: ลูกบ้าน
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: เมนูหลัก
+          - list [ref=e21]:
+            - listitem [ref=e22]:
+              - link "หน้าหลัก" [ref=e23] [cursor=pointer]:
+                - /url: /resident
+                - img [ref=e24]
+                - generic [ref=e29]: หน้าหลัก
+            - listitem [ref=e30]:
+              - link "ประกาศ" [ref=e31] [cursor=pointer]:
+                - /url: /resident/announcements
+                - img [ref=e32]
+                - generic [ref=e35]: ประกาศ
+            - listitem [ref=e36]:
+              - link "ผู้มาติดต่อ" [ref=e37] [cursor=pointer]:
+                - /url: /resident/visitors
+                - img [ref=e38]
+                - generic [ref=e43]: ผู้มาติดต่อ
+            - listitem [ref=e44]:
+              - link "พัสดุ" [ref=e45] [cursor=pointer]:
+                - /url: /resident/parcels
+                - img [ref=e46]
+                - generic [ref=e50]: พัสดุ
+            - listitem [ref=e51]:
+              - link "แจ้งซ่อม" [ref=e52] [cursor=pointer]:
+                - /url: /resident/maintenance
+                - img [ref=e53]
+                - generic [ref=e55]: แจ้งซ่อม
+            - listitem [ref=e56]:
+              - link "บิล/ชำระเงิน" [ref=e57] [cursor=pointer]:
+                - /url: /resident/bills
+                - img [ref=e58]
+                - generic [ref=e60]: บิล/ชำระเงิน
+            - listitem [ref=e61]:
+              - link "รถเรียก" [ref=e62] [cursor=pointer]:
+                - /url: /resident/transport
+                - img [ref=e63]
+                - generic [ref=e67]: รถเรียก
+            - listitem [ref=e68]:
+              - link "สิ่งอำนวยความสะดวก" [ref=e69] [cursor=pointer]:
+                - /url: /resident/facilities
+                - img [ref=e70]
+                - generic [ref=e76]: สิ่งอำนวยความสะดวก
+            - listitem [ref=e77]:
+              - link "การจองของฉัน" [ref=e78] [cursor=pointer]:
+                - /url: /resident/bookings
+                - img [ref=e79]
+                - generic [ref=e81]: การจองของฉัน
+            - listitem [ref=e82]:
+              - link "ติดต่อนิติบุคคล" [ref=e83] [cursor=pointer]:
+                - /url: /resident/support
+                - img [ref=e84]
+                - generic [ref=e86]: ติดต่อนิติบุคคล
+        - button "SOS ฉุกเฉิน" [ref=e88]:
+          - img
+          - text: SOS ฉุกเฉิน
+      - button "TM Test Maintenance maintenance@test.com" [ref=e90]:
+        - generic [ref=e92]: TM
+        - generic [ref=e93]:
+          - paragraph [ref=e94]: Test Maintenance
+          - paragraph [ref=e95]: maintenance@test.com
+        - img
+    - main [ref=e96]:
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - button "Toggle Sidebar" [ref=e99]:
+            - img
+            - generic [ref=e100]: Toggle Sidebar
+          - heading "หน้าหลัก" [level=2] [ref=e101]
+        - generic [ref=e102]:
+          - button "Toggle theme" [ref=e103]:
+            - img
+            - generic [ref=e104]: Toggle theme
+          - button [ref=e105]:
+            - img
+      - generic [ref=e108]:
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - heading "สวัสดี, Test Maintenance" [level=1] [ref=e112]
+              - img [ref=e113]
+            - paragraph [ref=e116]: ยินดีต้อนรับเข้าสู่ระบบ My Village
+          - button "SOS ฉุกเฉิน" [ref=e117]:
+            - img
+            - text: SOS ฉุกเฉิน
+        - generic [ref=e118]:
+          - link "พัสดุรอรับ 0 รายการ" [ref=e119] [cursor=pointer]:
+            - /url: /resident/parcels
+            - generic [ref=e120]:
+              - generic [ref=e121]:
+                - generic [ref=e122]: พัสดุรอรับ
+                - img [ref=e124]
+              - generic [ref=e129]:
+                - generic [ref=e130]:
+                  - generic [ref=e131]: "0"
+                  - paragraph [ref=e132]: รายการ
+                - img [ref=e133]
+          - link "บิลค้างชำระ ฿0 0 รายการ" [ref=e136] [cursor=pointer]:
+            - /url: /resident/bills
+            - generic [ref=e137]:
+              - generic [ref=e138]:
+                - generic [ref=e139]: บิลค้างชำระ
+                - img [ref=e141]
+              - generic [ref=e144]:
+                - generic [ref=e145]:
+                  - generic [ref=e146]: ฿0
+                  - paragraph [ref=e147]: 0 รายการ
+                - img [ref=e148]
+          - link "การจองที่จะถึง 0 รายการ" [ref=e151] [cursor=pointer]:
+            - /url: /resident/facilities
+            - generic [ref=e152]:
+              - generic [ref=e153]:
+                - generic [ref=e154]: การจองที่จะถึง
+                - img [ref=e156]
+              - generic [ref=e159]:
+                - generic [ref=e160]:
+                  - generic [ref=e161]: "0"
+                  - paragraph [ref=e162]: รายการ
+                - img [ref=e163]
+          - link "ประกาศใหม่ 2 รายการ" [ref=e166] [cursor=pointer]:
+            - /url: /resident/announcements
+            - generic [ref=e167]:
+              - generic [ref=e168]:
+                - generic [ref=e169]: ประกาศใหม่
+                - img [ref=e171]
+              - generic [ref=e175]:
+                - generic [ref=e176]:
+                  - generic [ref=e177]: "2"
+                  - paragraph [ref=e178]: รายการ
+                - img [ref=e179]
+        - generic [ref=e182]:
+          - generic [ref=e183]:
+            - generic [ref=e184]:
+              - generic [ref=e185]:
+                - img [ref=e187]
+                - text: ประกาศล่าสุด
+              - link "ดูทั้งหมด" [ref=e190] [cursor=pointer]:
+                - /url: /resident/announcements
+                - button "ดูทั้งหมด" [ref=e191]:
+                  - text: ดูทั้งหมด
+                  - img
+            - generic [ref=e192]:
+              - generic [ref=e193] [cursor=pointer]:
+                - generic [ref=e194]:
+                  - generic [ref=e195]:
+                    - generic [ref=e196]: ปักหมุด
+                    - generic [ref=e197]: แจ้งปิดปรับปรุงสระว่ายน้ำ
+                  - paragraph [ref=e198]: 9 ธ.ค. 2025
+                - img [ref=e199]
+              - generic [ref=e201] [cursor=pointer]:
+                - generic [ref=e202]:
+                  - generic [ref=e204]: กำหนดการประชุมใหญ่สามัญประจำปี
+                  - paragraph [ref=e205]: 9 ธ.ค. 2025
+                - img [ref=e206]
+          - generic [ref=e208]:
+            - generic [ref=e209]:
+              - generic [ref=e210]:
+                - img [ref=e212]
+                - text: พัสดุรอรับ
+              - link "ดูทั้งหมด" [ref=e216] [cursor=pointer]:
+                - /url: /resident/parcels
+                - button "ดูทั้งหมด" [ref=e217]:
+                  - text: ดูทั้งหมด
+                  - img
+            - generic [ref=e219]: ไม่มีพัสดุค้างรับ
+          - generic [ref=e220]:
+            - generic [ref=e221]:
+              - generic [ref=e222]:
+                - img [ref=e224]
+                - text: บิลค้างชำระ
+              - link "ดูทั้งหมด" [ref=e226] [cursor=pointer]:
+                - /url: /resident/bills
+                - button "ดูทั้งหมด" [ref=e227]:
+                  - text: ดูทั้งหมด
+                  - img
+            - generic [ref=e229]: ไม่มียอดค้างชำระ
+          - generic [ref=e230]:
+            - generic [ref=e231]:
+              - generic [ref=e232]:
+                - img [ref=e234]
+                - text: การจองที่จะถึง
+              - link "ดูทั้งหมด" [ref=e236] [cursor=pointer]:
+                - /url: /resident/facilities
+                - button "ดูทั้งหมด" [ref=e237]:
+                  - text: ดูทั้งหมด
+                  - img
+            - generic [ref=e239]: ไม่มีการจองที่จะถึง
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e245] [cursor=pointer]:
+    - img [ref=e246]
+  - alert [ref=e249]
+```

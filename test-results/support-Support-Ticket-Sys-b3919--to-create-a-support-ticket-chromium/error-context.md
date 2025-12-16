@@ -1,0 +1,109 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - link "My Village ลูกบ้าน" [ref=e8] [cursor=pointer]:
+        - /url: /resident
+        - img [ref=e10]
+        - generic [ref=e14]:
+          - heading "My Village" [level=1] [ref=e15]
+          - paragraph [ref=e16]: ลูกบ้าน
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: เมนูหลัก
+          - list [ref=e21]:
+            - listitem [ref=e22]:
+              - link "หน้าหลัก" [ref=e23] [cursor=pointer]:
+                - /url: /resident
+                - img [ref=e24]
+                - generic [ref=e29]: หน้าหลัก
+            - listitem [ref=e30]:
+              - link "ประกาศ" [ref=e31] [cursor=pointer]:
+                - /url: /resident/announcements
+                - img [ref=e32]
+                - generic [ref=e35]: ประกาศ
+            - listitem [ref=e36]:
+              - link "ผู้มาติดต่อ" [ref=e37] [cursor=pointer]:
+                - /url: /resident/visitors
+                - img [ref=e38]
+                - generic [ref=e43]: ผู้มาติดต่อ
+            - listitem [ref=e44]:
+              - link "พัสดุ" [ref=e45] [cursor=pointer]:
+                - /url: /resident/parcels
+                - img [ref=e46]
+                - generic [ref=e50]: พัสดุ
+            - listitem [ref=e51]:
+              - link "แจ้งซ่อม" [ref=e52] [cursor=pointer]:
+                - /url: /resident/maintenance
+                - img [ref=e53]
+                - generic [ref=e55]: แจ้งซ่อม
+            - listitem [ref=e56]:
+              - link "บิล/ชำระเงิน" [ref=e57] [cursor=pointer]:
+                - /url: /resident/bills
+                - img [ref=e58]
+                - generic [ref=e60]: บิล/ชำระเงิน
+            - listitem [ref=e61]:
+              - link "รถเรียก" [ref=e62] [cursor=pointer]:
+                - /url: /resident/transport
+                - img [ref=e63]
+                - generic [ref=e67]: รถเรียก
+            - listitem [ref=e68]:
+              - link "สิ่งอำนวยความสะดวก" [ref=e69] [cursor=pointer]:
+                - /url: /resident/facilities
+                - img [ref=e70]
+                - generic [ref=e76]: สิ่งอำนวยความสะดวก
+            - listitem [ref=e77]:
+              - link "การจองของฉัน" [ref=e78] [cursor=pointer]:
+                - /url: /resident/bookings
+                - img [ref=e79]
+                - generic [ref=e81]: การจองของฉัน
+            - listitem [ref=e82]:
+              - link "ติดต่อนิติบุคคล" [active] [ref=e83] [cursor=pointer]:
+                - /url: /resident/support
+                - img [ref=e84]
+                - generic [ref=e86]: ติดต่อนิติบุคคล
+        - button "SOS ฉุกเฉิน" [ref=e88]:
+          - img
+          - text: SOS ฉุกเฉิน
+      - button "TR Test Resident resident@test.com" [ref=e90]:
+        - generic [ref=e92]: TR
+        - generic [ref=e93]:
+          - paragraph [ref=e94]: Test Resident
+          - paragraph [ref=e95]: resident@test.com
+        - img
+    - main [ref=e96]:
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - button "Toggle Sidebar" [ref=e99]:
+            - img
+            - generic [ref=e100]: Toggle Sidebar
+          - heading "หน้าหลัก" [level=2] [ref=e101]
+        - generic [ref=e102]:
+          - button "Toggle theme" [ref=e103]:
+            - img
+            - generic [ref=e104]: Toggle theme
+          - button [ref=e105]:
+            - img
+      - generic [ref=e106]:
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - heading "ตั๋วงความ" [level=1] [ref=e111]
+            - paragraph [ref=e112]: ติดต่อนิติบุคคลเพื่อขอความช่วยเหลือ
+          - link "สร้างตั๋วงความ" [ref=e113] [cursor=pointer]:
+            - /url: /resident/support/new
+            - button "สร้างตั๋วงความ" [ref=e114]:
+              - img
+              - text: สร้างตั๋วงความ
+        - button [ref=e140]:
+          - img
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=e141]:
+        - img [ref=e143]
+        - generic [ref=e147]: เข้าสู่ระบบสำเร็จ
+  - button "Open Next.js Dev Tools" [ref=e153] [cursor=pointer]:
+    - img [ref=e154]
+  - alert [ref=e157]
+```
