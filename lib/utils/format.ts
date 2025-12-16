@@ -127,11 +127,12 @@ export function formatPhoneNumber(phone: string): string {
 }
 
 export function formatIdCard(id: string): string {
-  // Format Thai ID card (XXXX-XXXXXX-XX-XX)
+  // Format Thai ID card (XXXX-XXXXXX-XX-X)
   const cleaned = id.replace(/\D/g, '')
 
   if (cleaned.length === 13) {
-    return cleaned.replace(/(\d{4})(\d{6})(\d{2})(\d{2})/, '$1-$2-$3-$4')
+    // Use string slicing instead of regex for reliability
+    return `${cleaned.slice(0, 4)}-${cleaned.slice(4, 10)}-${cleaned.slice(10, 12)}-${cleaned.slice(12)}`
   }
 
   return id
