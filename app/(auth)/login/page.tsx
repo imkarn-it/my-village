@@ -46,7 +46,26 @@ export default function LoginPage(): React.JSX.Element {
                 toast.error("อีเมลหรือรหัสผ่านไม่ถูกต้อง")
             } else {
                 toast.success("เข้าสู่ระบบสำเร็จ")
-                router.push("/")
+
+                // Fetch session to get user role
+                const response = await fetch('/api/auth/session')
+                const session = await response.json()
+
+                if (session?.user?.role) {
+                    const roleRedirects: Record<string, string> = {
+                        'admin': '/admin',
+                        'resident': '/resident',
+                        'security': '/security',
+                        'maintenance': '/resident',
+                        'super_admin': '/super-admin',
+                    }
+
+                    const redirectUrl = roleRedirects[session.user.role] || '/'
+                    router.push(redirectUrl)
+                } else {
+                    router.push("/")
+                }
+
                 router.refresh()
             }
         } catch {
