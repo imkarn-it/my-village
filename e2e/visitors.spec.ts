@@ -45,8 +45,8 @@ test.describe('Visitor Management System', () => {
             await page.click('a[href="/security/visitors"]', { timeout: 10000 })
             await page.waitForURL(/\/security\/visitors/, { timeout: 10000 })
 
-            // Navigate to check-in page
-            await page.click('text=ลงทะเบียนเข้า')
+            // Navigate to check-in page using the link
+            await page.click('a[href="/security/visitors/new"]')
             await page.waitForURL(/\/security\/visitors\/new/, { timeout: 10000 })
 
             // Fill form
