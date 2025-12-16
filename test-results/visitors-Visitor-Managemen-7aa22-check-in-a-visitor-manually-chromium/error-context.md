@@ -1,5 +1,73 @@
 # Page snapshot
 
 ```yaml
-- generic [ref=e2]: Internal Server Error
+- generic:
+  - generic [active]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - navigation [ref=e6]:
+            - button "previous" [disabled] [ref=e7]:
+              - img "previous" [ref=e8]
+            - generic [ref=e10]:
+              - generic [ref=e11]: 1/
+              - text: "1"
+            - button "next" [disabled] [ref=e12]:
+              - img "next" [ref=e13]
+          - img
+        - generic [ref=e15]:
+          - link "Next.js 15.5.9 (outdated) Webpack" [ref=e16] [cursor=pointer]:
+            - /url: https://nextjs.org/docs/messages/version-staleness
+            - img [ref=e17]
+            - generic "An outdated version detected (latest is 16.0.10), upgrade is highly recommended!" [ref=e19]: Next.js 15.5.9 (outdated)
+            - generic [ref=e20]: Webpack
+          - img
+      - dialog "Build Error" [ref=e22]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [ref=e29]: Build Error
+              - generic [ref=e30]:
+                - button "Copy Error Info" [ref=e31] [cursor=pointer]:
+                  - img [ref=e32]
+                - link "Go to related documentation" [ref=e34] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/messages/module-not-found
+                  - img [ref=e35]
+                - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools" [ref=e37] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+                  - img [ref=e38]
+            - paragraph [ref=e47]: "Module not found: Can't resolve 'file-type'"
+          - generic [ref=e49]:
+            - generic [ref=e51]:
+              - img [ref=e53]
+              - generic [ref=e55]: ./node_modules/elysia/dist/type-system/utils.mjs (68:2)
+              - button "Open in editor" [ref=e56] [cursor=pointer]:
+                - img [ref=e58]
+            - generic [ref=e61]:
+              - generic [ref=e62]: Module not found
+              - generic [ref=e63]: ": Can't resolve '"
+              - text: file-type
+              - generic [ref=e64]:
+                - text: "' 66 | \"[Elysia] Attempt to validate file type without 'file-type'. This may lead to security risks. We recommend installing 'file-type' to properly validate file extension.\" 67 | ), _fileTypeFromBlobWarn = !0); > 68 | }, loadFileType = async () => import(\"file-type\").then((x) => (_fileTypeFromBlob = x.fileTypeFromBlob, _fileTypeFromBlob)).catch(warnIfFileTypeIsNotInstalled); | ^ 69 | let _fileTypeFromBlob; 70 | const fileTypeFromBlob = (file) => _fileTypeFromBlob ? _fileTypeFromBlob(file) : loadFileType().then((mod) => { 71 | if (mod) return mod(file);"
+                - link "https://nextjs.org/docs/messages/module-not-found" [ref=e65] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/messages/module-not-found
+                - text: "Import trace for requested module:"
+              - link "./node_modules/elysia/dist/index.mjs" [ref=e66] [cursor=pointer]:
+                - text: ./node_modules/elysia/dist/index.mjs
+                - img [ref=e67]
+              - link "./app/api/[[...slugs]]/route.ts" [ref=e71] [cursor=pointer]:
+                - text: ./app/api/[[...slugs]]/route.ts
+                - img [ref=e72]
+        - generic [ref=e76]:
+          - generic [ref=e77]: "1"
+          - generic [ref=e78]: "2"
+    - generic [ref=e83] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e84]:
+        - img [ref=e85]
+      - button "Open issues overlay" [ref=e89]:
+        - generic [ref=e90]:
+          - generic [ref=e91]: "0"
+          - generic [ref=e92]: "1"
+        - generic [ref=e93]: Issue
+  - alert [ref=e94]
 ```
