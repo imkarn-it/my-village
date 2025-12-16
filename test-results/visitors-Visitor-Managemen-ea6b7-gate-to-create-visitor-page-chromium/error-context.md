@@ -1,0 +1,150 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - link "My Village ลูกบ้าน" [ref=e8] [cursor=pointer]:
+        - /url: /resident
+        - img [ref=e10]
+        - generic [ref=e14]:
+          - heading "My Village" [level=1] [ref=e15]
+          - paragraph [ref=e16]: ลูกบ้าน
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: เมนูหลัก
+          - list [ref=e21]:
+            - listitem [ref=e22]:
+              - link "หน้าหลัก" [ref=e23] [cursor=pointer]:
+                - /url: /resident
+                - img [ref=e24]
+                - generic [ref=e29]: หน้าหลัก
+            - listitem [ref=e30]:
+              - link "ประกาศ" [ref=e31] [cursor=pointer]:
+                - /url: /resident/announcements
+                - img [ref=e32]
+                - generic [ref=e35]: ประกาศ
+            - listitem [ref=e36]:
+              - link "ผู้มาติดต่อ" [ref=e37] [cursor=pointer]:
+                - /url: /resident/visitors
+                - img [ref=e38]
+                - generic [ref=e43]: ผู้มาติดต่อ
+            - listitem [ref=e44]:
+              - link "พัสดุ" [ref=e45] [cursor=pointer]:
+                - /url: /resident/parcels
+                - img [ref=e46]
+                - generic [ref=e50]: พัสดุ
+            - listitem [ref=e51]:
+              - link "แจ้งซ่อม" [ref=e52] [cursor=pointer]:
+                - /url: /resident/maintenance
+                - img [ref=e53]
+                - generic [ref=e55]: แจ้งซ่อม
+            - listitem [ref=e56]:
+              - link "บิล/ชำระเงิน" [ref=e57] [cursor=pointer]:
+                - /url: /resident/bills
+                - img [ref=e58]
+                - generic [ref=e60]: บิล/ชำระเงิน
+            - listitem [ref=e61]:
+              - link "รถเรียก" [ref=e62] [cursor=pointer]:
+                - /url: /resident/transport
+                - img [ref=e63]
+                - generic [ref=e67]: รถเรียก
+            - listitem [ref=e68]:
+              - link "สิ่งอำนวยความสะดวก" [ref=e69] [cursor=pointer]:
+                - /url: /resident/facilities
+                - img [ref=e70]
+                - generic [ref=e76]: สิ่งอำนวยความสะดวก
+            - listitem [ref=e77]:
+              - link "การจองของฉัน" [ref=e78] [cursor=pointer]:
+                - /url: /resident/bookings
+                - img [ref=e79]
+                - generic [ref=e81]: การจองของฉัน
+            - listitem [ref=e82]:
+              - link "ติดต่อนิติบุคคล" [ref=e83] [cursor=pointer]:
+                - /url: /resident/support
+                - img [ref=e84]
+                - generic [ref=e86]: ติดต่อนิติบุคคล
+        - button "SOS ฉุกเฉิน" [ref=e88]:
+          - img
+          - text: SOS ฉุกเฉิน
+      - button "TR Test Resident resident@test.com" [ref=e90]:
+        - generic [ref=e92]: TR
+        - generic [ref=e93]:
+          - paragraph [ref=e94]: Test Resident
+          - paragraph [ref=e95]: resident@test.com
+        - img
+    - main [ref=e96]:
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - button "Toggle Sidebar" [ref=e99]:
+            - img
+            - generic [ref=e100]: Toggle Sidebar
+          - heading "หน้าหลัก" [level=2] [ref=e101]
+        - generic [ref=e102]:
+          - button "Toggle theme" [ref=e103]:
+            - img
+            - generic [ref=e104]: Toggle theme
+          - button [ref=e105]:
+            - img
+      - generic [ref=e106]:
+        - generic [ref=e108]:
+          - generic [ref=e109]:
+            - link [ref=e110] [cursor=pointer]:
+              - /url: /resident/visitors
+              - button [ref=e111]:
+                - img
+            - generic [ref=e112]:
+              - heading "สร้าง QR Code ผู้มาติดต่อ" [level=1] [ref=e113]:
+                - img [ref=e115]
+                - text: สร้าง QR Code ผู้มาติดต่อ
+              - paragraph [ref=e121]: ลงทะเบียนล่วงหน้าสำหรับผู้มาติดต่อ
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - text: ยูนิต
+                - generic [ref=e127]: "*"
+              - combobox [ref=e128]:
+                - generic: เลือกยูนิต
+                - img
+              - combobox [ref=e129]
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - text: ชื่อผู้มาติดต่อ
+                - generic [ref=e132]: "*"
+              - generic [ref=e133]:
+                - img [ref=e134]
+                - textbox "ชื่อผู้มาติดต่อ *" [ref=e137]:
+                  - /placeholder: ระบุชื่อ-นามสกุล
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - generic [ref=e140]: เบอร์โทรศัพท์
+                - generic [ref=e141]:
+                  - img [ref=e142]
+                  - textbox "เบอร์โทรศัพท์" [ref=e144]:
+                    - /placeholder: 08x-xxx-xxxx
+              - generic [ref=e145]:
+                - generic [ref=e146]: ทะเบียนรถ
+                - generic [ref=e147]:
+                  - img [ref=e148]
+                  - textbox "ทะเบียนรถ" [ref=e152]:
+                    - /placeholder: กข 1234
+            - generic [ref=e153]:
+              - generic [ref=e154]:
+                - text: วัตถุประสงค์
+                - generic [ref=e155]: "*"
+              - textbox "วัตถุประสงค์ *" [ref=e156]:
+                - /placeholder: เช่น มาหาเพื่อน, ส่งของ
+            - button "สร้าง QR Code" [ref=e158]:
+              - img
+              - text: สร้าง QR Code
+        - button [ref=e159]:
+          - img
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=e160]:
+        - img [ref=e162]
+        - generic [ref=e166]: เข้าสู่ระบบสำเร็จ
+  - button "Open Next.js Dev Tools" [ref=e172] [cursor=pointer]:
+    - img [ref=e173]
+  - alert [ref=e176]
+```
