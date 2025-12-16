@@ -4,18 +4,22 @@ export const TEST_USERS = {
     resident: {
         email: 'resident@test.com',
         password: 'TestPass123!',
+        dashboardUrl: '/resident',
     },
     admin: {
         email: 'admin@test.com',
         password: 'TestPass123!',
+        dashboardUrl: '/admin',
     },
     security: {
         email: 'security@test.com',
         password: 'TestPass123!',
+        dashboardUrl: '/security',
     },
     maintenance: {
         email: 'maintenance@test.com',
         password: 'TestPass123!',
+        dashboardUrl: '/maintenance',
     },
 }
 
@@ -28,8 +32,8 @@ export async function login(page: Page, userType: keyof typeof TEST_USERS) {
     await page.fill('input[name="password"]', user.password)
     await page.click('button[type="submit"]')
 
-    // Wait for navigation with increased timeout
-    await page.waitForURL(/\/dashboard/, { timeout: 15000 })
+    // Wait for navigation to role-specific dashboard
+    await page.waitForURL(new RegExp(user.dashboardUrl), { timeout: 15000 })
 }
 
 export async function logout(page: Page) {
