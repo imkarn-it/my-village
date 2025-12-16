@@ -58,9 +58,13 @@ bun run db:generate
 ## 🧪 Testing
 
 ```bash
-# Unit tests (Vitest)
-bun test
-bun run test:ui
+# Unit tests (Bun's built-in test runner)
+bun test                    # Run all tests
+bun test --watch            # Watch mode
+bun test --coverage         # With coverage
+
+# Run specific test file
+bun test lib/utils/__tests__/validation.test.ts
 
 # E2E tests (Playwright) - use npm/npx
 npm run test:e2e
@@ -70,7 +74,10 @@ npm run test:e2e:ui
 bun run test:e2e:setup
 ```
 
-**Note**: Playwright tests use `npx` for compatibility
+**Note**: 
+- Unit tests now use **Bun's built-in test runner** (faster than Vitest!)
+- E2E tests still use Playwright with `npx` for compatibility
+- Bun test is **Jest-compatible** - same API (`describe`, `test`, `expect`)
 
 ---
 
