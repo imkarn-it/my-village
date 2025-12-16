@@ -1,0 +1,137 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Admin Panel" [ref=e5] [cursor=pointer]:
+        - /url: /admin
+        - img [ref=e7]
+        - generic [ref=e9]: Admin Panel
+      - navigation [ref=e10]:
+        - link "Dashboard" [ref=e11] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e12]
+          - generic [ref=e17]: Dashboard
+        - link "ประกาศ" [ref=e18] [cursor=pointer]:
+          - /url: /admin/announcements
+          - img [ref=e19]
+          - generic [ref=e22]: ประกาศ
+        - link "ลูกบ้าน" [ref=e23] [cursor=pointer]:
+          - /url: /admin/residents
+          - img [ref=e24]
+          - generic [ref=e29]: ลูกบ้าน
+        - link "พัสดุ" [ref=e30] [cursor=pointer]:
+          - /url: /admin/parcels
+          - img [ref=e31]
+          - generic [ref=e35]: พัสดุ
+        - link "บิล/ชำระเงิน" [ref=e36] [cursor=pointer]:
+          - /url: /admin/bills
+          - img [ref=e37]
+          - generic [ref=e39]: บิล/ชำระเงิน
+        - link "แจ้งซ่อม" [ref=e40] [cursor=pointer]:
+          - /url: /admin/maintenance
+          - img [ref=e41]
+          - generic [ref=e43]: แจ้งซ่อม
+        - link "สิ่งอำนวยความสะดวก" [ref=e44] [cursor=pointer]:
+          - /url: /admin/facilities
+          - img [ref=e45]
+          - generic [ref=e51]: สิ่งอำนวยความสะดวก
+        - link "การจอง" [ref=e52] [cursor=pointer]:
+          - /url: /admin/bookings
+          - img [ref=e53]
+          - generic [ref=e55]: การจอง
+        - link "แจ้งปัญหา" [ref=e56] [cursor=pointer]:
+          - /url: /admin/support
+          - img [ref=e57]
+          - generic [ref=e59]: แจ้งปัญหา
+        - link "รายงาน" [ref=e60] [cursor=pointer]:
+          - /url: /admin/reports
+          - img [ref=e61]
+          - generic [ref=e63]: รายงาน
+        - link "ตั้งค่าการชำระเงิน" [ref=e64] [cursor=pointer]:
+          - /url: /admin/payment-settings
+          - img [ref=e65]
+          - generic [ref=e68]: ตั้งค่าการชำระเงิน
+      - link "ตั้งค่า" [ref=e70] [cursor=pointer]:
+        - /url: /admin/settings
+        - img [ref=e71]
+        - generic [ref=e74]: ตั้งค่า
+    - generic [ref=e75]:
+      - banner [ref=e76]:
+        - generic [ref=e77]:
+          - button "Toggle theme" [ref=e78]:
+            - img
+            - generic [ref=e79]: Toggle theme
+          - button [ref=e80]:
+            - img
+          - button "TA Test Admin" [ref=e81]:
+            - generic [ref=e83]: TA
+            - generic [ref=e84]: Test Admin
+            - img
+      - main [ref=e85]:
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - link "กลับ" [ref=e89] [cursor=pointer]:
+              - /url: /admin/facilities
+              - button "กลับ" [ref=e90]:
+                - img
+                - text: กลับ
+            - generic [ref=e91]:
+              - heading "เพิ่มสิ่งอำนวยความสะดวก" [level=1] [ref=e92]
+              - paragraph [ref=e93]: สร้างสิ่งอำนวยความสะดวกใหม่ในโครงการ
+          - generic [ref=e94]:
+            - generic [ref=e96]: ข้อมูลสิ่งอำนวยความสะดวก
+            - generic [ref=e98]:
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - generic [ref=e101]: ชื่อสิ่งอำนวยความสะดวก *
+                  - textbox "ชื่อสิ่งอำนวยความสะดวก *" [ref=e102]:
+                    - /placeholder: เช่น สระว่ายน้ำ ห้องออกกำลังกาย
+                - generic [ref=e103]:
+                  - generic [ref=e104]: ความจุ (คน)
+                  - spinbutton "ความจุ (คน)" [ref=e105]
+              - generic [ref=e106]:
+                - generic [ref=e107]: รายละเอียด
+                - textbox "รายละเอียด" [ref=e108]:
+                  - /placeholder: บรรยายรายละเอียดเกี่ยวกับสิ่งอำนวยความสะดวก
+              - generic [ref=e109]:
+                - generic [ref=e110]: รูปภาพ (URL)
+                - textbox "รูปภาพ (URL)" [ref=e111]:
+                  - /placeholder: https://example.com/image.jpg
+              - generic [ref=e112]:
+                - generic [ref=e113]: เวลาทำการ
+                - generic [ref=e114]:
+                  - generic [ref=e115]:
+                    - generic [ref=e116]: เวลาเปิด
+                    - textbox "เวลาเปิด" [ref=e117]
+                  - generic [ref=e118]:
+                    - generic [ref=e119]: เวลาปิด
+                    - textbox "เวลาปิด" [ref=e120]
+              - generic [ref=e121]:
+                - generic [ref=e122]: การตั้งค่า
+                - generic [ref=e123]:
+                  - generic [ref=e124]:
+                    - generic [ref=e125]:
+                      - generic [ref=e126]: ต้องการการอนุมัติ
+                      - paragraph [ref=e127]: การจองต้องได้รับการอนุมัติจาก admin
+                    - switch [ref=e128]
+                    - checkbox
+                  - generic [ref=e129]:
+                    - generic [ref=e130]:
+                      - generic [ref=e131]: เปิดใช้งาน
+                      - paragraph [ref=e132]: สิ่งอำนวยความสะดวกพร้อมให้จอง
+                    - switch [checked] [ref=e133]
+                    - checkbox [checked]
+              - generic [ref=e134]:
+                - button "บันทึก" [ref=e135]:
+                  - img
+                  - text: บันทึก
+                - link "ยกเลิก" [ref=e136] [cursor=pointer]:
+                  - /url: /admin/facilities
+                  - button "ยกเลิก" [ref=e137]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e143] [cursor=pointer]:
+    - img [ref=e144]
+  - alert [ref=e147]
+```
