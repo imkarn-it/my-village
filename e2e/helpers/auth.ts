@@ -37,7 +37,16 @@ export async function login(page: Page, userType: keyof typeof TEST_USERS) {
 }
 
 export async function logout(page: Page) {
-    await page.click('[data-testid="user-menu-button"]')
-    await page.click('text=ออกจากระบบ')
-    await page.waitForURL('/')
+    // Click user menu button (look for button with user name)
+    const userButton = page.locator('button:has-text("Test")')
+    await userButton.click({ timeout: 10000 })
+
+    // Wait a bit for menu to appear
+    await page.waitForTimeout(500)
+
+    // Click logout option
+    await page.click('text=ออกจากระบบ', { timeout: 10000 })
+
+    // Wait for redirect to login page
+    await page.waitForURL('/', { timeout: 10000 })
 }

@@ -22,7 +22,7 @@
             - img [ref=e28]
             - textbox "อีเมล" [ref=e31]:
               - /placeholder: example@email.com
-              - text: newuser1765855032799@test.com
+              - text: newuser1765856112061@test.com
         - generic [ref=e32]:
           - generic [ref=e33]: รหัสผ่าน
           - generic [ref=e34]:

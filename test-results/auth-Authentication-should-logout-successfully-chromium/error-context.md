@@ -123,17 +123,17 @@
                   - img [ref=e158]
                   - generic [ref=e160]:
                     - paragraph [ref=e161]: แจ้งซ่อมใหม่ - ก๊อกน้ำรั่ว
-                    - paragraph [ref=e162]: 6 วันที่ผ่านมา
+                    - paragraph [ref=e162]: 7 วันที่ผ่านมา
                 - generic [ref=e163] [cursor=pointer]:
                   - img [ref=e165]
                   - generic [ref=e169]:
                     - paragraph [ref=e170]: พัสดุใหม่ - Kerry Express (KER123456789)
-                    - paragraph [ref=e171]: 6 วันที่ผ่านมา
+                    - paragraph [ref=e171]: 7 วันที่ผ่านมา
                 - generic [ref=e172] [cursor=pointer]:
                   - img [ref=e174]
                   - generic [ref=e178]:
                     - paragraph [ref=e179]: พัสดุใหม่ - Flash Express (TH012345678)
-                    - paragraph [ref=e180]: 6 วันที่ผ่านมา
+                    - paragraph [ref=e180]: 7 วันที่ผ่านมา
             - generic [ref=e181]:
               - generic [ref=e182]:
                 - generic [ref=e183]:
