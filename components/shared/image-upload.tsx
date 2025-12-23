@@ -81,7 +81,20 @@ export function ImageUpload({
         }
     }
 
-    const handleRemove = () => {
+    const handleRemove = async () => {
+        if (value) {
+            try {
+                await fetch("/api/upload", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ url: value }),
+                })
+            } catch (error) {
+                console.error("Error deleting image:", error)
+            }
+        }
         onChange(null)
     }
 

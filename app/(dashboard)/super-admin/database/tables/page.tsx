@@ -656,7 +656,7 @@ export default function DatabaseTablesPage() {
                         <DialogTitle className="text-red-600">ตัดตอนข้อมูลตารางงาน</DialogTitle>
                     </DialogHeader>
                     <DialogDescription>
-                        คำเตือน: การลบข้อมูลในตารางงาน "<strong>{selectedTable}</strong>" จะลบข้อมูลทั้งหมดและไม่สามารับกู้คืน
+                        คำเตือน: การลบข้อมูลในตารางงาน &quot;<strong>{selectedTable}</strong>&quot; จะลบข้อมูลทั้งหมดและไม่สามารับกู้คืน
                     </DialogDescription>
                     <div className="mt-4 p-4 bg-red-50 rounded-lg">
                         <p className="font-medium">ยืนยันยืนอีก:</p>

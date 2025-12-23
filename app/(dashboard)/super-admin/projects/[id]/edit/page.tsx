@@ -573,7 +573,7 @@ export default function EditProjectPage() {
                                 <h3 className="text-lg font-semibold">ยืนยันการลบโครงการ</h3>
                             </div>
                             <p className="text-slate-600 dark:text-slate-400 mb-6">
-                                คุณแน่ใจหรือไม่ว่าต้องการลบโครงการ "{project.name}"?
+                                คุณแน่ใจหรือไม่ว่าต้องการลบโครงการ &quot;{project.name}&quot;?
                                 การกระทำนี้ไม่สามารถย้อนกลับได้
                             </p>
                         </div>

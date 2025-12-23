@@ -1,372 +1,432 @@
-# My Village - Village/Condominium Management System
+# 🏘️ My Village - ระบบจัดการหมู่บ้านอัจฉริยะ
 
-> A modern, beautiful village and condominium management application built with Next.js 16, featuring a stunning dark-mode-first design with glassmorphism and gradient effects.
+> ระบบจัดการหมู่บ้านและคอนโดมิเนียมแบบครบวงจร พัฒนาด้วย Next.js 16
 
-## 🚀 Tech Stack
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-159%20passing-brightgreen)]()
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.0-black)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)]()
 
-| Category | Technology |
-|----------|------------|
-| **Runtime** | Bun 1.3.4 |
-| **Framework** | Next.js 16 (Turbopack) |
-| **Language** | TypeScript |
-| **Styling** | TailwindCSS 4 |
-| **UI Components** | shadcn/ui |
-| **Database** | PostgreSQL (Supabase) |
-| **ORM** | Drizzle ORM |
+---
+
+## 📋 สารบัญ
+
+- [ภาพรวม](#-ภาพรวม)
+- [เทคโนโลยี](#-เทคโนโลยี)
+- [การติดตั้ง](#-การติดตั้ง)
+- [บทบาทผู้ใช้](#-บทบาทผู้ใช้)
+- [Flow ฟีเจอร์แต่ละ Role](#-flow-ฟีเจอร์แต่ละ-role)
+- [โครงสร้างโปรเจค](#-โครงสร้างโปรเจค)
+- [API Documentation](#-api-documentation)
+
+---
+
+## 🏠 ภาพรวม
+
+**My Village** คือระบบจัดการหมู่บ้านที่ครอบคลุมทุกความต้องการ:
+
+- 🏢 **จัดการลูกบ้าน** - ข้อมูลผู้พักอาศัยทั้งหมด
+- 📢 **ประกาศข่าวสาร** - แจ้งข่าวถึงลูกบ้านแบบ Real-time
+- 📦 **จัดการพัสดุ** - รับ-ส่งพัสดุพร้อมแจ้งเตือน
+- 🔧 **ระบบแจ้งซ่อม** - แจ้งปัญหาและติดตามสถานะ
+- 👥 **ผู้มาติดต่อ** - ลงทะเบียน + QR Code
+- 💰 **ชำระค่าบริการ** - PromptPay/โอนเงิน + อัพโหลดสลิป
+- 🏊 **จองสิ่งอำนวยความสะดวก** - ห้องประชุม สระว่ายน้ำ ฟิตเนส
+- 🎫 **ติดต่อนิติบุคคล** - ระบบ Ticket Support
+- 🚨 **แจ้งเหตุฉุกเฉิน** - ปุ่ม SOS พร้อม GPS
+
+---
+
+## ⚙️ เทคโนโลยี
+
+| หมวด | เทคโนโลยี |
+|------|-----------|
+| **Framework** | Next.js 16.1.0 (Turbopack) |
+| **Frontend** | React 19 + TypeScript 5.7 |
+| **Styling** | TailwindCSS 4 + shadcn/ui |
+| **Database** | PostgreSQL (Neon) + Drizzle ORM |
+| **API** | Elysia.js + Eden Treaty |
 | **Authentication** | Auth.js v5 |
+| **File Upload** | Cloudinary |
+| **QR Code** | qrcode + html5-qrcode |
+| **Export** | xlsx + jspdf |
+| **Testing** | Vitest (159 tests) + Playwright |
 
-### API Layer
-- **Elysia.js** - Fast and type-safe API framework
-- **Eden Treaty** - Type-safe API client (end-to-end type safety)
-- **@elysiajs/cors** - CORS middleware
+---
 
-## 🎨 Design Features
+## 🚀 การติดตั้ง
 
-- ✨ **Glassmorphism Effects** - Beautiful blur and transparency
-- 🌈 **Gradient Accents** - Vibrant color gradients throughout
-- 🌙 **Dark Mode First** - Optimized for dark theme with light mode support
-- 🎯 **Micro-animations** - Smooth hover effects and transitions
-- 📱 **Mobile-first** - Responsive design for all devices
+### ความต้องการ
+- Bun 1.3.4+
+- PostgreSQL (Neon)
 
-## ✨ Features & Status
+### ขั้นตอน
 
-### Completed Features (v1.1)
-- ✅ **Authentication** - NextAuth v5 with credentials and role-based access
-- ✅ **Admin Dashboard** - Statistics and analytics
-- ✅ **Resident Dashboard** - Personal dashboard with quick actions
-- ✅ **Announcements** - Create and view announcements (with creator info)
-- ✅ **Parcel Management** - Track parcels with delivery status
-- ✅ **Visitor Management** - Approve/reject visitors, QR code pre-registration
-- ✅ **Bill Management** - Create bills, view payment status
-- ✅ **Maintenance Requests** - Submit and track repair requests
-- ✅ **User Profile** - Update personal information
-- ✅ **Role-based Access Control** - Granular permissions per role
-- ✅ **QR Code System** - Visitor generation & Security scanning
-- ✅ **SOS Emergency** - Real-time alerts with GPS location
-- ✅ **Notifications** - Real-time updates for all major actions
+```bash
+# Clone โปรเจค
+git clone https://github.com/your-repo/village-app.git
+cd village-app
 
-### In Progress
-- 🔄 **Facilities Booking** - Booking system for common areas (Next)
-- 🔄 **Image Upload** - File upload for maintenance and parcels (postponed)
+# ติดตั้ง dependencies
+bun install
 
-### Migration Status
-**Frontend-API Integration: 80% Complete**
-- ✅ Migrated from Server Actions to Elysia API + Eden Treaty
-- ✅ All pages now use Client Components with direct API calls
-- ✅ Type-safe end-to-end communication
+# ตั้งค่า environment
+cp .env.example .env.local
+# แก้ไข DATABASE_URL และ AUTH_SECRET
 
-## 👥 User Roles
+# สร้างฐานข้อมูล
+bun db:push
 
-1. **Resident (ลูกบ้าน)** - View announcements, parcels, bills, manage visitors
-2. **Admin (นิติบุคคล)** - Manage village operations, create bills, manage residents
-3. **Security Guard (รปภ.)** - Handle visitor check-ins and parcel deliveries
-4. **Maintenance Staff (ช่างซ่อม)** - Manage repair requests *(coming soon)*
-5. **Super Admin (ผู้ดูแลระบบ)** - System administration *(coming soon)*
+# รันโปรเจค
+bun dev
+```
 
-## 🏗️ Project Structure
+### Scripts ที่มี
+
+```bash
+bun dev           # รัน development server
+bun build         # Build production
+bun test          # Run tests (159 tests)
+bun e2e           # Run E2E tests
+bun db:studio     # เปิด Drizzle Studio
+```
+
+---
+
+## 👥 บทบาทผู้ใช้
+
+### 🏠 ลูกบ้าน (Resident)
+ผู้พักอาศัยในหมู่บ้าน สามารถใช้บริการต่างๆ ได้
+
+| ฟีเจอร์ | คำอธิบาย | หน้า |
+|--------|---------|------|
+| แดชบอร์ด | ภาพรวมข้อมูลส่วนตัว | `/resident` |
+| ดูประกาศ | อ่านข่าวสารจากนิติ | `/resident/announcements` |
+| ดู/ชำระบิล | ชำระค่าส่วนกลาง | `/resident/bills` |
+| แจ้งซ่อม | แจ้งปัญหาในห้อง | `/resident/maintenance` |
+| ดูพัสดุ | ตรวจสอบพัสดุที่มาถึง | `/resident/parcels` |
+| จัดการผู้เยี่ยม | ลงทะเบียนแขก + QR | `/resident/visitors` |
+| จองสิ่งอำนวยความสะดวก | จองห้อง/สระ/ฟิตเนส | `/resident/facilities` |
+| ติดต่อนิติ | ส่ง Ticket | `/resident/support` |
+| ตั้งค่า | การแจ้งเตือน/ความเป็นส่วนตัว | `/resident/settings` |
+
+---
+
+### 🏢 ผู้ดูแลระบบ (Admin)
+เจ้าหน้าที่นิติบุคคล ดูแลจัดการระบบทั้งหมด
+
+| ฟีเจอร์ | คำอธิบาย | หน้า |
+|--------|---------|------|
+| แดชบอร์ด | สถิติภาพรวม | `/admin` |
+| จัดการประกาศ | CRUD ประกาศ | `/admin/announcements` |
+| จัดการลูกบ้าน | CRUD ผู้พักอาศัย | `/admin/residents` |
+| จัดการบิล | สร้าง/ตรวจสอบบิล | `/admin/bills` |
+| ตั้งค่าการชำระ | PromptPay/บัญชีธนาคาร | `/admin/payment-settings` |
+| แจ้งซ่อม | ดูและมอบหมายงาน | `/admin/maintenance` |
+| จัดการสิ่งอำนวยความสะดวก | CRUD + ตารางจอง | `/admin/facilities` |
+| ดู SOS | รับแจ้งเหตุฉุกเฉิน | `/admin/sos` |
+| รายงาน | ดู/ส่งออก Excel/PDF | `/admin/reports` |
+
+---
+
+### 👮 รปภ. (Security)
+เจ้าหน้าที่รักษาความปลอดภัย ดูแลประตูทางเข้า
+
+| ฟีเจอร์ | คำอธิบาย | หน้า |
+|--------|---------|------|
+| แดชบอร์ด | สถิติวันนี้ | `/security` |
+| ลงทะเบียนผู้เยี่ยม | บันทึกแขกเข้าหมู่บ้าน | `/security/visitors/new` |
+| สแกน QR | ตรวจสอบ QR ผู้เยี่ยม | `/security/scan` |
+| รับพัสดุ | บันทึกพัสดุที่มาถึง | `/security/parcels` |
+| ดู SOS | รับแจ้งเหตุฉุกเฉิน | `/security/sos` |
+| แจ้งเตือนฉุกเฉิน | กดแจ้งเหตุด่วน | `/security/emergency` |
+
+---
+
+### 🔧 ช่างซ่อมบำรุง (Maintenance)
+เจ้าหน้าที่ซ่อมบำรุงประจำหมู่บ้าน
+
+| ฟีเจอร์ | คำอธิบาย | หน้า |
+|--------|---------|------|
+| แดชบอร์ด | งานที่ได้รับมอบหมาย | `/maintenance` |
+| งานรอดำเนินการ | งานใหม่ที่ยังไม่รับ | `/maintenance/pending` |
+| งานกำลังทำ | งานที่กำลังดำเนินการ | `/maintenance/in-progress` |
+| งานเสร็จแล้ว | ประวัติงานที่ทำเสร็จ | `/maintenance/completed` |
+| อุปกรณ์ | จัดการอุปกรณ์ซ่อม | `/maintenance/equipment` |
+| สถิติ | ผลงานและประสิทธิภาพ | `/maintenance/analytics` |
+
+---
+
+### 👨‍💼 Super Admin
+ผู้ดูแลระบบระดับสูง ดูแลหลายโปรเจค
+
+| ฟีเจอร์ | คำอธิบาย | หน้า |
+|--------|---------|------|
+| แดชบอร์ด | ภาพรวมทุกโปรเจค | `/super-admin` |
+| จัดการโปรเจค | CRUD หมู่บ้าน/คอนโด | `/super-admin/projects` |
+| จัดการผู้ใช้ | Admin ทุกโปรเจค | `/super-admin/users` |
+| สิทธิ์การเข้าถึง | RBAC | `/super-admin/permissions` |
+| ฐานข้อมูล | จัดการ DB | `/super-admin/database` |
+| Audit Logs | ประวัติการเปลี่ยนแปลง | `/super-admin/audit` |
+
+---
+
+## 🔄 Flow ฟีเจอร์แต่ละ Role
+
+### 🏠 ลูกบ้าน - ชำระค่าส่วนกลาง
+
+```mermaid
+flowchart TD
+    A[ลูกบ้านเข้าสู่ระบบ] --> B[ไปหน้าบิล]
+    B --> C{มีบิลค้างชำระ?}
+    C -->|ใช่| D[เลือกบิลที่ต้องการชำระ]
+    C -->|ไม่| E[แสดงข้อความ ไม่มีบิลค้าง]
+    D --> F[เลือกวิธีชำระ]
+    F --> G[PromptPay QR]
+    F --> H[โอนเงินธนาคาร]
+    G --> I[สแกน QR และโอนเงิน]
+    H --> I
+    I --> J[อัพโหลดสลิป]
+    J --> K[ระบบส่งให้ Admin ตรวจสอบ]
+    K --> L{Admin ตรวจสอบ}
+    L -->|อนุมัติ| M[สถานะเป็น ชำระแล้ว]
+    L -->|ปฏิเสธ| N[แจ้งลูกบ้านให้ชำระใหม่]
+    M --> O[ส่งแจ้งเตือนลูกบ้าน]
+```
+
+---
+
+### 🏠 ลูกบ้าน - แจ้งซ่อม
+
+```mermaid
+flowchart TD
+    A[ลูกบ้านเข้าสู่ระบบ] --> B[ไปหน้าแจ้งซ่อม]
+    B --> C[กดสร้างใบแจ้งซ่อมใหม่]
+    C --> D[กรอกรายละเอียด<br/>- หัวข้อ<br/>- รายละเอียด<br/>- ประเภท<br/>- ระดับความเร่งด่วน]
+    D --> E[แนบรูปภาพ ถ้ามี]
+    E --> F[ส่งใบแจ้งซ่อม]
+    F --> G[สถานะ: รอดำเนินการ]
+    G --> H[Admin เห็นใบแจ้งซ่อม]
+    H --> I[Admin มอบหมายช่าง]
+    I --> J[สถานะ: กำลังดำเนินการ]
+    J --> K[ช่างเข้าซ่อม]
+    K --> L[ช่างอัพเดทสถานะ]
+    L --> M[สถานะ: เสร็จสิ้น]
+    M --> N[ลูกบ้านได้รับแจ้งเตือน]
+```
+
+---
+
+### 🏠 ลูกบ้าน - ลงทะเบียนผู้มาเยี่ยม
+
+```mermaid
+flowchart TD
+    A[ลูกบ้านเข้าสู่ระบบ] --> B[ไปหน้าผู้มาเยี่ยม]
+    B --> C[กดลงทะเบียนผู้เยี่ยมใหม่]
+    C --> D[กรอกข้อมูลผู้เยี่ยม<br/>- ชื่อ-นามสกุล<br/>- เบอร์โทร<br/>- ทะเบียนรถ<br/>- วัตถุประสงค์<br/>- วันที่มา]
+    D --> E[ระบบสร้าง QR Code]
+    E --> F[ลูกบ้านส่ง QR ให้ผู้เยี่ยม]
+    F --> G[ผู้เยี่ยมมาถึงหน้าด่าน]
+    G --> H[รปภ. สแกน QR]
+    H --> I{QR ถูกต้อง?}
+    I -->|ใช่| J[บันทึกเวลาเข้า]
+    I -->|ไม่| K[แจ้งลูกบ้านยืนยัน]
+    J --> L[อนุญาตให้เข้า]
+    K --> L
+```
+
+---
+
+### 🏠 ลูกบ้าน - จองสิ่งอำนวยความสะดวก
+
+```mermaid
+flowchart TD
+    A[ลูกบ้านเข้าสู่ระบบ] --> B[ไปหน้าสิ่งอำนวยความสะดวก]
+    B --> C[เลือกสิ่งอำนวยความสะดวก<br/>เช่น สระว่ายน้ำ ฟิตเนส ห้องประชุม]
+    C --> D[ดูปฏิทินว่าง]
+    D --> E[เลือกวันและเวลา]
+    E --> F{ช่วงเวลาว่าง?}
+    F -->|ใช่| G[กรอกวัตถุประสงค์]
+    F -->|ไม่| H[เลือกเวลาอื่น]
+    H --> E
+    G --> I[ยืนยันการจอง]
+    I --> J[สถานะ: รออนุมัติ]
+    J --> K[Admin ตรวจสอบ]
+    K --> L{อนุมัติ?}
+    L -->|ใช่| M[สถานะ: อนุมัติแล้ว]
+    L -->|ไม่| N[สถานะ: ถูกปฏิเสธ]
+    M --> O[ลูกบ้านได้รับแจ้งเตือน]
+```
+
+---
+
+### 🏢 Admin - ตรวจสอบการชำระเงิน
+
+```mermaid
+flowchart TD
+    A[Admin เข้าสู่ระบบ] --> B[ไปหน้าตรวจสอบบิล]
+    B --> C[ดูรายการบิลที่รอตรวจสอบ]
+    C --> D[เลือกบิลที่ต้องการตรวจ]
+    D --> E[ดูสลิปที่อัพโหลด]
+    E --> F{ตรวจสอบสลิป}
+    F --> G[เปรียบเทียบยอดเงิน]
+    G --> H[ตรวจสอบวันที่โอน]
+    H --> I{ถูกต้อง?}
+    I -->|ใช่| J[กดอนุมัติ]
+    I -->|ไม่| K[กดปฏิเสธ + ใส่เหตุผล]
+    J --> L[สถานะบิล: ชำระแล้ว]
+    K --> M[สถานะบิล: รอชำระใหม่]
+    L --> N[ส่งแจ้งเตือนลูกบ้าน]
+    M --> N
+```
+
+---
+
+### 👮 รปภ. - รับพัสดุ
+
+```mermaid
+flowchart TD
+    A[พัสดุมาถึงหน้าด่าน] --> B[รปภ. เข้าระบบ]
+    B --> C[ไปหน้าลงทะเบียนพัสดุ]
+    C --> D[กรอกข้อมูลพัสดุ<br/>- ผู้รับ<br/>- บริษัทขนส่ง<br/>- หมายเลขติดตาม<br/>- ประเภท]
+    D --> E[ถ่ายรูปพัสดุ ถ้ามี]
+    E --> F[บันทึกพัสดุ]
+    F --> G[ระบบแจ้งเตือนลูกบ้าน]
+    G --> H[ลูกบ้านมารับพัสดุ]
+    H --> I[รปภ. ยืนยันการรับ]
+    I --> J[สถานะ: รับแล้ว]
+```
+
+---
+
+### 👮 รปภ. - รับแจ้ง SOS
+
+```mermaid
+flowchart TD
+    A[ลูกบ้านกดปุ่ม SOS] --> B[ระบบบันทึกพิกัด GPS]
+    B --> C[ส่งแจ้งเตือน รปภ. + Admin]
+    C --> D[รปภ. ได้รับแจ้งเตือนเสียง]
+    D --> E[รปภ. ดูตำแหน่งบนแผนที่]
+    E --> F[รปภ. ไปยังจุดเกิดเหตุ]
+    F --> G[รปภ. ช่วยเหลือ]
+    G --> H[รปภ. อัพเดทสถานะ]
+    H --> I[สถานะ: แก้ไขแล้ว]
+    I --> J[ลูกบ้านได้รับแจ้งเตือน]
+```
+
+---
+
+### 🔧 ช่าง - รับงานซ่อม
+
+```mermaid
+flowchart TD
+    A[ช่างเข้าสู่ระบบ] --> B[ดูงานรอดำเนินการ]
+    B --> C[เลือกงานที่ต้องการรับ]
+    C --> D[ดูรายละเอียดงาน<br/>- ปัญหา<br/>- ตำแหน่ง<br/>- รูปภาพ]
+    D --> E[กดรับงาน]
+    E --> F[สถานะ: กำลังดำเนินการ]
+    F --> G[ช่างไปซ่อม]
+    G --> H[ช่างอัพเดทความคืบหน้า]
+    H --> I{ซ่อมเสร็จ?}
+    I -->|ใช่| J[ถ่ายรูปหลังซ่อม]
+    I -->|ไม่| K[บันทึกหมายเหตุ]
+    K --> H
+    J --> L[กดเสร็จสิ้น]
+    L --> M[สถานะ: เสร็จสิ้น]
+    M --> N[แจ้งเตือนลูกบ้าน]
+```
+
+---
+
+## 📁 โครงสร้างโปรเจค
 
 ```
 village-app/
 ├── app/
-│   ├── (auth)/
-│   │   ├── login/page.tsx        # Login page
-│   │   └── register/page.tsx     # Registration page
-│   ├── (dashboard)/
-│   │   ├── admin/                # Admin pages
-│   │   │   ├── page.tsx          # Dashboard
-│   │   │   ├── announcements/
-│   │   │   ├── bills/
-│   │   │   │   └── new/          # Create bill
-│   │   │   ├── maintenance/
-│   │   │   ├── parcels/
-│   │   │   │   └── new/          # Register parcel
-│   │   │   └── residents/
-│   │   │       └── new/          # Add resident
-│   │   ├── resident/             # Resident pages
-│   │   │   ├── page.tsx          # Dashboard
-│   │   │   ├── announcements/
-│   │   │   ├── parcels/
-│   │   │   ├── bills/
-│   │   │   ├── maintenance/
-│   │   │   │   └── new/          # Create request
-│   │   │   ├── visitors/
-│   │   │   │   └── new/          # Pre-register visitor
-│   │   │   ├── facilities/
-│   │   │   └── support/
-│   │   └── security/             # Security pages
-│   │       ├── parcels/          # Manage deliveries
-│   │       └── visitors/
-│   │           └── new/          # Check-in visitor
-│   └── api/
-│       └── [[...slugs]]/route.ts # Elysia API endpoints
+│   ├── (auth)/                 # หน้า Authentication
+│   │   ├── login/              # เข้าสู่ระบบ
+│   │   ├── register/           # ลงทะเบียน
+│   │   ├── forgot-password/    # ลืมรหัสผ่าน
+│   │   ├── reset-password/     # รีเซ็ตรหัสผ่าน
+│   │   └── verify-email/       # ยืนยันอีเมล
+│   │
+│   ├── (dashboard)/            # หน้าหลังเข้าสู่ระบบ
+│   │   ├── admin/              # 🏢 หน้า Admin (10 หน้า)
+│   │   ├── resident/           # 🏠 หน้าลูกบ้าน (10 หน้า)
+│   │   ├── security/           # 👮 หน้า รปภ. (7 หน้า)
+│   │   ├── maintenance/        # 🔧 หน้าช่าง (16 หน้า)
+│   │   └── super-admin/        # 👨‍💼 หน้า Super Admin (8 หน้า)
+│   │
+│   └── api/                    # Elysia API
+│       ├── [[...slugs]]/       # API Routes (46+ endpoints)
+│       ├── auth/               # NextAuth
+│       ├── health/             # Health Check
+│       └── upload/             # File Upload
+│
 ├── components/
-│   ├── layouts/
-│   │   └── dashboard-layout.tsx  # Main dashboard layout
-│   ├── theme-provider.tsx        # Dark/Light mode provider
-│   ├── theme-toggle.tsx          # Theme switcher
-│   ├── profile-form.tsx          # Profile editor
-│   └── ui/                       # shadcn/ui components
+│   ├── ui/                     # shadcn/ui (อย่าแก้ไข!)
+│   ├── shared/                 # Components ที่ใช้ร่วมกัน
+│   ├── dashboard/              # Components เฉพาะ Dashboard
+│   └── layouts/                # Layout Components
+│
 ├── lib/
-│   ├── actions/                  # Server actions (deprecated)
-│   ├── api/
-│   │   └── client.ts             # Eden Treaty API client
-│   ├── db/
-│   │   ├── schema.ts             # Drizzle schema (14 tables)
-│   │   ├── index.ts              # DB connection
-│   │   └── seed.ts               # Database seeder
-│   ├── auth.ts                   # Auth.js instance
-│   ├── auth.config.ts            # Auth configuration
-│   ├── constants.ts              # App constants
-│   └── utils.ts                  # Utility functions
-├── types/                        # TypeScript type definitions
-└── public/
-    └── grid.svg                  # Background pattern
+│   ├── db/                     # Drizzle ORM
+│   │   ├── index.ts            # Database connection
+│   │   └── schema.ts           # Database schema (14 tables)
+│   ├── services/               # Business Logic
+│   ├── middleware/             # Audit + Soft Delete
+│   └── utils/                  # Utilities
+│       └── export.ts           # Export Excel/PDF
+│
+├── __tests__/                  # Unit Tests
+├── e2e/                        # E2E Tests (Playwright)
+└── docs/                       # Documentation
 ```
-
-## 🔌 API Architecture
-
-This project uses **Elysia.js** for the API layer with **Eden Treaty** for type-safe client calls.
-
-### Available Endpoints
-
-#### Authentication
-- `POST /api/auth/register` - Register new user
-
-#### Users
-- `GET /api/users` - Get all users
-- `GET /api/users?role={role}` - Filter by role
-- `PATCH /api/users/:id` - Update user profile
-
-#### Announcements
-- `GET /api/announcements` - Get announcements (includes author info)
-- `POST /api/announcements` - Create announcement (admin only)
-
-#### Visitors
-- `GET /api/visitors?unitId={unitId}` - Get visitors by unit
-- `POST /api/visitors` - Check-in visitor or pre-register (security/admin/resident)
-- `PATCH /api/visitors/:id` - Update visitor status (approve/reject)
-
-#### Parcels
-- `GET /api/parcels?unitId={unitId}` - Get parcels by unit
-- `POST /api/parcels` - Register parcel (admin/security)
-- `PATCH /api/parcels/:id` - Mark as picked up
-
-#### Bills
-- `GET /api/bills?unitId={unitId}` - Get bills by unit
-- `POST /api/bills` - Create bill (admin only)
-
-#### Maintenance
-- `GET /api/maintenance?unitId={unitId}` - Get maintenance requests
-- `POST /api/maintenance` - Create request (resident)
-- `PATCH /api/maintenance/:id` - Update status (admin)
-
-#### Units
-- `GET /api/units` - Get all units
-- `GET /api/units/:id` - Get unit by ID
-
-### Usage Example
-
-```typescript
-import { api } from "@/lib/api/client"
-
-// GET request with query params
-const { data, error } = await api.visitors.get({
-  query: { unitId: 'uuid', limit: '50' }
-})
-
-// POST request
-const { data, error } = await api.visitors.post({
-  unitId: 'uuid',
-  visitorName: 'John Doe',
-  purpose: 'Meeting'
-})
-
-// PATCH request with params
-const { data, error } = await api.visitors({ id: 'uuid' }).patch({
-  status: 'approved'
-})
-
-// Error handling
-if (error) {
-  toast.error(error.value?.error || 'เกิดข้อผิดพลาด')
-  return
-}
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- [Bun](https://bun.sh/) 1.3.4+
-- [Supabase](https://supabase.com/) account (or PostgreSQL database)
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/my-village.git
-cd my-village
-
-# Install dependencies
-bun install
-
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your database credentials
-```
-
-### Environment Variables
-
-```env
-# App
-NEXT_PUBLIC_APP_NAME=My Village
-NEXT_PUBLIC_APP_VERSION=1.1.0
-
-# Database
-DATABASE_URL=postgresql://user:password@host:port/database
-DIRECT_URL=postgresql://user:password@host:port/database
-
-# Auth.js
-AUTH_SECRET=your-secret-key-here
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your-secret-key-here
-```
-
-### Database Setup
-
-```bash
-# Generate migrations
-bunx drizzle-kit generate
-
-# Push schema to database
-bunx drizzle-kit push
-
-# (Optional) Open Drizzle Studio to view/edit data
-bunx drizzle-kit studio
-```
-
-### Seed Database (Optional)
-
-```bash
-bun run db:seed
-```
-
-This will create:
-- Sample project (My Village)
-- Sample units (A101, A102, B201, etc.)
-- Test users for each role:
-  - Admin: `admin@village.com` / `password123`
-  - Resident: `resident@village.com` / `password123`
-  - Security: `security@village.com` / `password123`
-- Sample announcements and data
-
-### Run Development Server
-
-```bash
-bun run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## 📱 Available Pages
-
-### Authentication
-- `/login` - User login
-- `/register` - User registration
-
-### Resident Dashboard
-- `/resident` - Dashboard with statistics
-- `/resident/announcements` - View announcements
-- `/resident/parcels` - Track parcels
-- `/resident/bills` - View and pay bills
-- `/resident/maintenance` - View repair requests
-- `/resident/maintenance/new` - Create repair request
-- `/resident/visitors` - Manage visitors (approve/reject)
-- `/resident/visitors/new` - Pre-register visitor (QR code)
-- `/resident/facilities` - Book facilities
-- `/resident/support` - Contact support
-- `/resident/profile` - Edit profile
-
-### Admin Dashboard
-- `/admin` - Admin dashboard with analytics
-- `/admin/announcements` - Manage announcements
-- `/admin/bills` - View all bills
-- `/admin/bills/new` - Create new bill
-- `/admin/maintenance` - Manage repair requests
-- `/admin/parcels/new` - Register new parcel
-- `/admin/residents` - Manage residents
-- `/admin/residents/new` - Add new resident
-- `/admin/sos` - SOS Emergency Dashboard
-- `/admin/profile` - Edit profile
-
-### Security Dashboard
-- `/security/parcels` - Manage parcels (mark as delivered)
-- `/security/visitors/new` - Check-in visitor
-- `/security/scan` - QR Code Scanner
-- `/security/sos` - SOS Emergency Dashboard
-
-## 🛠️ Development
-
-### Database Commands
-
-```bash
-# Generate migration files
-bun run db:generate
-
-# Push schema changes to database
-bun run db:push
-
-# Open Drizzle Studio
-bun run db:studio
-
-# Run database migrations
-bun run db:migrate
-
-# Seed database with sample data
-bun run db:seed
-```
-
-### Build Commands
-
-```bash
-# Development
-bun run dev
-
-# Build for production
-bun run build
-
-# Start production server
-bun run start
-
-# Lint code
-bun run lint
-```
-
-## 📚 Documentation
-
-- **CLAUDE.md** - Comprehensive project documentation for AI context
-- **TASKS.md** - Development tasks and progress tracking
-- **typescript-guideline.md** - TypeScript coding standards
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-MIT License - feel free to use this project for your own purposes.
 
 ---
 
-**Version:** 1.1.0  
-**Last Updated:** December 2025  
-Built with ❤️ using Next.js 16, Bun, Elysia, and Supabase
-# Bun Migration  
-  
-This project now uses **Bun** as the package manager for faster performance.  
-  
-See `.claude/docs/bun-migration.md` for details. 
+## 📚 API Documentation
+
+เปิด `/api/swagger` เพื่อดู Swagger Documentation
+
+### Endpoints หลัก
+
+| Endpoint | Method | คำอธิบาย |
+|----------|--------|---------|
+| `/api/announcements` | GET/POST | จัดการประกาศ |
+| `/api/users` | GET/POST | จัดการผู้ใช้ |
+| `/api/bills` | GET/POST | จัดการบิล |
+| `/api/visitors` | GET/POST | จัดการผู้เยี่ยม |
+| `/api/parcels` | GET/POST | จัดการพัสดุ |
+| `/api/maintenance` | GET/POST | จัดการแจ้งซ่อม |
+| `/api/facilities` | GET/POST | จัดการสิ่งอำนวยความสะดวก |
+| `/api/bookings` | GET/POST | จัดการการจอง |
+| `/api/sos` | GET/POST | จัดการ SOS |
+| `/api/notifications` | GET/POST | จัดการแจ้งเตือน |
+
+---
+
+## 🧪 Testing
+
+```bash
+# รัน Unit Tests (159 tests)
+bun test
+
+# รัน E2E Tests
+bun e2e
+
+# ดู Coverage
+bun test:coverage
+```
+
+---
+
+## 📝 License
+
+MIT License - ดู [LICENSE](LICENSE) สำหรับรายละเอียด
+
+---
+
+## 👨‍💻 ผู้พัฒนา
+
+พัฒนาด้วย ❤️ by My Village Team

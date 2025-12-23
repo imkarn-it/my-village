@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-// Link used for potential future navigation to detailed reports
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-// Input reserved for search functionality
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
     BarChart3,
     TrendingUp,
@@ -16,13 +20,13 @@ import {
     FileText,
     Download,
     Calendar,
-    // Filter - reserved for filter functionality
     Eye,
-    // MoreHorizontal - reserved for dropdown actions
+    FileSpreadsheet,
 } from "lucide-react";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
-// api reserved for future real API implementation
+import { exportToExcel, exportToPdf } from "@/lib/utils/export";
+import { toast } from "sonner";
 
 type ReportData = {
     financial?: {
@@ -124,6 +128,74 @@ export default function ReportsPage() {
     useEffect(() => {
         fetchReportData();
     }, [fetchReportData, dateRange]);
+
+    // Export handlers
+    function handleExportFinancial(format: 'excel' | 'pdf') {
+        if (!reportData.financial) return;
+        const exportData = reportData.financial.monthlyData.map(m => ({
+            month: m.month, revenue: m.revenue, expenses: m.expenses,
+            profit: m.revenue - m.expenses,
+            profitMargin: `${((m.revenue - m.expenses) / m.revenue * 100).toFixed(1)}%`
+        }));
+        if (format === 'excel') {
+            exportToExcel(exportData, {
+                filename: `financial-report-${new Date().toISOString().split('T')[0]}`,
+                sheetName: 'รายงานการเงิน',
+                columns: [{ key: 'month', header: 'เดือน' }, { key: 'revenue', header: 'รายได้' }, { key: 'expenses', header: 'ค่าใช้จ่าย' }, { key: 'profit', header: 'กำไร' }]
+            });
+        } else {
+            exportToPdf(exportData, {
+                filename: `financial-report-${new Date().toISOString().split('T')[0]}`,
+                title: 'รายงานการเงิน',
+                subtitle: `รายได้รวม: ฿${reportData.financial.totalRevenue.toLocaleString()}`,
+                columns: [{ key: 'month', header: 'เดือน' }, { key: 'revenue', header: 'รายได้' }, { key: 'expenses', header: 'ค่าใช้จ่าย' }, { key: 'profit', header: 'กำไร' }]
+            });
+        }
+        toast.success(`ส่งออกรายงานเป็น ${format.toUpperCase()} เรียบร้อย`);
+    }
+
+    function handleExportVisitor(format: 'excel' | 'pdf') {
+        if (!reportData.visitors) return;
+        const exportData = reportData.visitors.dailyData.map(d => ({ date: d.date, count: d.count }));
+        if (format === 'excel') {
+            exportToExcel(exportData, {
+                filename: `visitor-report-${new Date().toISOString().split('T')[0]}`,
+                sheetName: 'รายงานผู้มาติดต่อ',
+                columns: [{ key: 'date', header: 'วันที่' }, { key: 'count', header: 'จำนวน' }]
+            });
+        } else {
+            exportToPdf(exportData, {
+                filename: `visitor-report-${new Date().toISOString().split('T')[0]}`,
+                title: 'รายงานผู้มาติดต่อ',
+                subtitle: `ผู้มาติดต่อทั้งหมด: ${reportData.visitors.totalVisitors} คน`,
+                columns: [{ key: 'date', header: 'วันที่' }, { key: 'count', header: 'จำนวน' }]
+            });
+        }
+        toast.success(`ส่งออกรายงานเป็น ${format.toUpperCase()} เรียบร้อย`);
+    }
+
+    function handleExportMaintenance(format: 'excel' | 'pdf') {
+        if (!reportData.maintenance) return;
+        const exportData = reportData.maintenance.ticketsByCategory.map(c => ({
+            category: c.category, count: c.count,
+            percentage: `${(c.count / reportData.maintenance!.totalTickets * 100).toFixed(1)}%`
+        }));
+        if (format === 'excel') {
+            exportToExcel(exportData, {
+                filename: `maintenance-report-${new Date().toISOString().split('T')[0]}`,
+                sheetName: 'รายงานการแจ้งซ่อม',
+                columns: [{ key: 'category', header: 'ประเภท' }, { key: 'count', header: 'จำนวน' }]
+            });
+        } else {
+            exportToPdf(exportData, {
+                filename: `maintenance-report-${new Date().toISOString().split('T')[0]}`,
+                title: 'รายงานการแจ้งซ่อม',
+                subtitle: `แจ้งซ่อมทั้งหมด: ${reportData.maintenance.totalTickets} รายการ`,
+                columns: [{ key: 'category', header: 'ประเภท' }, { key: 'count', header: 'จำนวน' }]
+            });
+        }
+        toast.success(`ส่งออกรายงานเป็น ${format.toUpperCase()} เรียบร้อย`);
+    }
 
     const fetchFinancialReport = async () => {
         try {
@@ -275,10 +347,24 @@ export default function ReportsPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                             รายงานรายเดือน
-                            <Button variant="outline" size="sm">
-                                <Download className="w-4 h-4 mr-2" />
-                                ดาวน์โหลด
-                            </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                        <Download className="w-4 h-4 mr-2" />
+                                        ส่งออก
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => handleExportFinancial('excel')}>
+                                        <FileSpreadsheet className="w-4 h-4 mr-2" />
+                                        Excel (.xlsx)
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleExportFinancial('pdf')}>
+                                        <FileText className="w-4 h-4 mr-2" />
+                                        PDF
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>

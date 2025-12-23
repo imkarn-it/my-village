@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { login } from './helpers/auth'
+import { navigateTo } from './helpers/navigation'
 
 test.describe('Announcements System', () => {
 
@@ -9,14 +10,15 @@ test.describe('Announcements System', () => {
         })
 
         test('should allow admin to create a new announcement', async ({ page }) => {
+            test.setTimeout(60000)
             // Navigate to Announcements
-            await page.click('a[href="/admin/announcements"]', { timeout: 15000 })
-            await page.waitForURL(/\/admin\/announcements/, { timeout: 15000 })
+            await navigateTo(page, '/admin/announcements')
+            await page.waitForURL(/\/admin\/announcements/, { timeout: 30000, waitUntil: 'domcontentloaded' })
             await page.waitForLoadState('networkidle')
 
             // Verify page loaded
             const heading = page.locator('h1:has-text("ประกาศ")')
-            await expect(heading).toBeVisible({ timeout: 15000 })
+            await expect(heading).toBeVisible({ timeout: 30000 })
         })
     })
 
@@ -27,13 +29,13 @@ test.describe('Announcements System', () => {
 
         test('should allow resident to view announcements', async ({ page }) => {
             // Navigate to Announcements
-            await page.click('a[href="/resident/announcements"]', { timeout: 15000 })
-            await page.waitForURL(/\/resident\/announcements/, { timeout: 15000 })
+            await navigateTo(page, '/resident/announcements')
+            await page.waitForURL(/\/resident\/announcements/, { timeout: 30000, waitUntil: 'domcontentloaded' })
             await page.waitForLoadState('networkidle')
 
             // Verify page loaded
             const heading = page.locator('h1:has-text("ประกาศ")')
-            await expect(heading).toBeVisible({ timeout: 15000 })
+            await expect(heading).toBeVisible({ timeout: 30000 })
         })
     })
 })

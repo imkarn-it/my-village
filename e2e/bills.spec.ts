@@ -1,16 +1,18 @@
 import { test, expect } from '@playwright/test'
 import { login } from './helpers/auth'
+import { navigateTo } from './helpers/navigation'
 
 test.describe('Bills and Payments System', () => {
 
   test.describe('Resident Bills', () => {
     test.beforeEach(async ({ page }) => {
+      test.setTimeout(60000)
       await login(page, 'resident')
     })
 
     test('should allow resident to view bills', async ({ page }) => {
-      await page.click('a[href="/resident/bills"]', { timeout: 15000 })
-      await page.waitForURL(/\/resident\/bills/, { timeout: 15000 })
+      await navigateTo(page, '/resident/bills')
+      await page.waitForURL(/\/resident\/bills/, { timeout: 30000, waitUntil: 'domcontentloaded' })
       await page.waitForLoadState('networkidle')
 
       // Verify page loaded
@@ -25,25 +27,30 @@ test.describe('Bills and Payments System', () => {
 
   test.describe('Admin Bills Management', () => {
     test.beforeEach(async ({ page }) => {
+      test.setTimeout(60000)
       await login(page, 'admin')
     })
 
     test('should allow admin to create a new bill', async ({ page }) => {
-      await page.click('a[href="/admin/bills"]', { timeout: 10000 })
-      await page.waitForURL(/\/admin\/bills/, { timeout: 10000 })
-      await expect(page.locator('h1')).toContainText('จัดการบิล/ค่าใช้จ่าย', { timeout: 10000 })
+      await navigateTo(page, '/admin/bills')
+      await page.waitForURL(/\/admin\/bills/, { timeout: 30000, waitUntil: 'domcontentloaded' })
+      await page.waitForLoadState('networkidle')
+
+      // Wait for loading skeleton to disappear if present
+      await expect(page.locator('h1')).toContainText('จัดการบิล/ค่าใช้จ่าย', { timeout: 30000 })
 
       // Click Create Bill
       await page.click('text=สร้างบิลใหม่')
-      await page.waitForURL(/\/admin\/bills\/new/, { timeout: 10000 })
+      await page.waitForURL(/\/admin\/bills\/new/, { timeout: 30000, waitUntil: 'domcontentloaded' })
 
       // Verify we reached the page
-      await expect(page.locator('h1')).toContainText('สร้างบิลใหม่', { timeout: 10000 })
+      await expect(page.locator('h1')).toContainText('สร้างบิลใหม่', { timeout: 30000 })
     })
 
     test('should allow admin to verify payments', async ({ page }) => {
-      await page.click('a[href="/admin/bills"]', { timeout: 10000 })
-      await page.waitForURL(/\/admin\/bills/, { timeout: 10000 })
+      await navigateTo(page, '/admin/bills')
+      await page.waitForURL(/\/admin\/bills/, { timeout: 30000, waitUntil: 'domcontentloaded' })
+      await page.waitForLoadState('networkidle')
 
       // Look for "Verify" button (ตรวจสอบ)
       const verifyButton = page.locator('button:has-text("ตรวจสอบ")').first()

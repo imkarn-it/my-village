@@ -104,6 +104,10 @@ const facilities: Record<string, Facility> = {
       currentOccupancy: 12,
       monthlyBookings: 180,
     },
+    // Soft delete fields
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    deletedAt: null,
+    deletedBy: null,
   },
   "2": {
     id: "2",
@@ -154,6 +158,10 @@ const facilities: Record<string, Facility> = {
       currentOccupancy: 18,
       monthlyBookings: 320,
     },
+    // Soft delete fields
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    deletedAt: null,
+    deletedBy: null,
   },
   "3": {
     id: "3",
@@ -200,6 +208,10 @@ const facilities: Record<string, Facility> = {
       currentOccupancy: 0,
       monthlyBookings: 8,
     },
+    // Soft delete fields
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    deletedAt: null,
+    deletedBy: null,
   },
 };
 
@@ -222,6 +234,9 @@ const upcomingBookings: Record<string, FacilityBooking[]> = {
       participants: 2,
       totalAmount: 0,
       qrCode: "BK20250115001",
+    // Soft delete fields
+    deletedAt: null,
+    deletedBy: null,
     },
     {
       id: "2",
@@ -240,6 +255,9 @@ const upcomingBookings: Record<string, FacilityBooking[]> = {
       participants: 3,
       totalAmount: 0,
       qrCode: "BK20250115002",
+    // Soft delete fields
+    deletedAt: null,
+    deletedBy: null,
     },
   ],
 };

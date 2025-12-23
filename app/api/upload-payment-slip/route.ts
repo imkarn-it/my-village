@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from "@/lib/services/cloudinary.service"
 
 export async function POST(req: Request) {
     try {
@@ -15,6 +15,7 @@ export async function POST(req: Request) {
         const formData = await req.formData()
         const file = formData.get("file") as File
         const billId = formData.get("billId") as string
+        const oldUrl = formData.get("oldUrl") as string
 
         if (!file || !billId) {
             return NextResponse.json(
@@ -39,38 +40,23 @@ export async function POST(req: Request) {
             )
         }
 
-        // Create Supabase Admin Client to bypass RLS
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        )
-
-        // Generate unique filename
-        const timestamp = Date.now()
-        const fileExt = file.name.split('.').pop()
-        const fileName = `slips/${billId}_${timestamp}.${fileExt}`
-
         const arrayBuffer = await file.arrayBuffer()
-        const buffer = new Uint8Array(arrayBuffer)
+        const buffer = Buffer.from(arrayBuffer)
 
-        const { error } = await supabase.storage
-            .from('payment-slips')
-            .upload(fileName, buffer, {
-                contentType: file.type,
-                upsert: false
-            })
+        // Upload to Cloudinary in payment-slips folder
+        const publicUrl = await uploadToCloudinary(buffer, 'payment-slips')
 
-        if (error) {
-            console.error("Supabase storage error:", error)
-            return NextResponse.json(
-                { success: false, error: error.message },
-                { status: 500 }
-            )
+        // Delete old file if provided
+        if (oldUrl) {
+            const oldPublicId = getPublicIdFromUrl(oldUrl)
+            if (oldPublicId) {
+                try {
+                    await deleteFromCloudinary(oldPublicId)
+                } catch (err) {
+                    console.error("Error deleting old payment slip from Cloudinary:", err)
+                }
+            }
         }
-
-        const { data: { publicUrl } } = supabase.storage
-            .from('payment-slips')
-            .getPublicUrl(fileName)
 
         return NextResponse.json({ success: true, url: publicUrl })
 

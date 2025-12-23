@@ -101,6 +101,8 @@ const project: ExtendedProject = {
     storageLimit: 20,
     monthlyCost: 15000,
     setupComplete: true,
+    deletedAt: null,
+    deletedBy: null,
 };
 
 const projectStats = {
@@ -167,6 +169,8 @@ const topUsers: (User & { unitNumber: string; lastActive: string; lastLogin?: st
         phone: null,
         avatar: null,
         unitId: null,
+        deletedAt: null,
+        deletedBy: null,
     },
     {
         id: "2",
@@ -184,6 +188,8 @@ const topUsers: (User & { unitNumber: string; lastActive: string; lastLogin?: st
         phone: null,
         avatar: null,
         unitId: "1",
+        deletedAt: null,
+        deletedBy: null,
     },
 ];
 
@@ -677,7 +683,7 @@ export default function ProjectDetailPage() {
                     <DialogHeader>
                         <DialogTitle>ลบโครงการ</DialogTitle>
                         <DialogDescription>
-                            คุณแน่ใจหรือไม่ว่าต้องการลบโครงการ "{project.name}"?
+                            คุณแน่ใจหรือไม่ว่าต้องการลบโครงการ &quot;{project.name}&quot;?
                             <br />
                             <strong>คำเตือน:</strong> การลบโครงการจะลบข้อมูลทั้งหมดและไม่สามารถกู้คืนได้
                         </DialogDescription>
@@ -699,7 +705,7 @@ export default function ProjectDetailPage() {
                     <DialogHeader>
                         <DialogTitle>เก็บโครงการไว้</DialogTitle>
                         <DialogDescription>
-                            คุณแน่ใจหรือไม่ว่าต้องการเก็บโครงการ "{project.name}" ไว้?
+                            คุณแน่ใจหรือไม่ว่าต้องการเก็บโครงการ &quot;{project.name}&quot; ไว้?
                             <br />
                             โครงการจะถูกระงับการใช้งานชั่วคราว แต่ข้อมูลจะยังคงอยู่
                         </DialogDescription>

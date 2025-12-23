@@ -1,220 +1,269 @@
 /**
- * Seed test data for development and testing
+ * Comprehensive Seed Data Script
+ * Creates 2 projects with all roles and related data for testing.
  */
 
 import { db } from '../lib/db'
 import {
-  users,
-  projects,
-  units,
-  facilities,
-  bookings,
-  announcements,
-  maintenanceRequests,
-  supportTickets,
-  parcels,
-  visitors
+  users, units, projects, announcements, facilities,
+  bills, maintenanceRequests, parcels, visitors,
+  paymentSettings, guardCheckpoints
 } from '../lib/db/schema'
 import { eq } from 'drizzle-orm'
-import bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs'
+import { ROLES, STATUS, PRIORITY, BILL_TYPES, MAINTENANCE_CATEGORIES } from '../lib/constants'
 
-async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10)
-}
+const PASSWORD = 'TestPass123!'
 
-async function seedTestData() {
-  console.log('🌱 Seeding test data...')
+async function seed() {
+  console.log('🚀 Starting comprehensive database seeding...')
+  const hashedPassword = await bcrypt.hash(PASSWORD, 10)
 
   try {
-    // Create test project
-    const [project] = await db.insert(projects).values({
-      name: 'Test Village Condo',
-      address: '123 Test Street, Bangkok',
-    }).onConflictDoUpdate({
-      target: projects.name,
-      set: {
-        address: '123 Test Street, Bangkok',
-      },
-    }).returning()
-
-    console.log(`✅ Created project: ${project.name}`)
-
-    // Create test users
-    const testUsers = [
+    // 1. Create Projects
+    console.log('📦 Creating projects...')
+    const projectData = [
       {
-        email: 'admin@test.com',
-        name: 'Test Admin',
-        role: 'admin',
-        projectId: project.id,
+        name: 'Green Village',
+        address: '123 Nature Road, Bangkok',
+        type: 'village',
       },
       {
-        email: 'resident@test.com',
-        name: 'Test Resident',
-        role: 'resident',
-        projectId: project.id,
-      },
-      {
-        email: 'security@test.com',
-        name: 'Test Security',
-        role: 'security',
-        projectId: project.id,
-      },
-      {
-        email: 'maintenance@test.com',
-        name: 'Test Maintenance',
-        role: 'maintenance',
-        projectId: project.id,
-      },
+        name: 'Blue Sky Condo',
+        address: '456 City Center, Bangkok',
+        type: 'condo',
+      }
     ]
 
-    for (const userData of testUsers) {
-      const hashedPassword = await hashPassword('TestPass123!')
-
-      await db.insert(users).values({
-        ...userData,
-        password: hashedPassword,
-      }).onConflictDoUpdate({
-        target: users.email,
-        set: {
-          name: userData.name,
-          password: hashedPassword,
-        },
+    const createdProjects = []
+    for (const p of projectData) {
+      let project = await db.query.projects.findFirst({
+        where: eq(projects.name, p.name),
       })
-
-      console.log(`✅ Created user: ${userData.email}`)
+      if (!project) {
+        const [newProject] = await db.insert(projects).values(p).returning()
+        project = newProject
+      }
+      createdProjects.push(project)
     }
 
-    // Get the resident and admin users for creating test data
-    const [resident] = await db.select()
-      .from(users)
-      .where(eq(users.email, 'resident@test.com'))
+    // 2. Create Units for each project
+    console.log('🏠 Creating units...')
+    const projectUnits: Record<string, any[]> = {}
+    for (const project of createdProjects) {
+      const unitsInProject = []
+      const unitPrefix = project.type === 'village' ? 'V' : 'C'
+      for (let i = 1; i <= 5; i++) {
+        const unitNumber = `${unitPrefix}${100 + i}`
+        let unit = await db.query.units.findFirst({
+          where: eq(units.unitNumber, unitNumber),
+        })
+        if (!unit) {
+          const [newUnit] = await db.insert(units).values({
+            projectId: project.id,
+            unitNumber,
+            building: project.type === 'condo' ? 'A' : undefined,
+            floor: project.type === 'condo' ? 1 : undefined,
+            size: '120.50',
+          }).returning()
+          unit = newUnit
+        }
+        unitsInProject.push(unit)
+      }
+      projectUnits[project.id] = unitsInProject
+    }
 
-    const [admin] = await db.select()
-      .from(users)
-      .where(eq(users.email, 'admin@test.com'))
+    // 3. Create Users for all roles in both projects
+    console.log('👥 Creating users for all roles...')
+    for (const project of createdProjects) {
+      const projectNameSlug = project.name.toLowerCase().replace(' ', '-')
+      const projectUsers = [
+        {
+          email: `admin@${projectNameSlug}.com`,
+          name: `${project.name} Admin`,
+          role: ROLES.ADMIN,
+          projectId: project.id,
+        },
+        {
+          email: `security@${projectNameSlug}.com`,
+          name: `${project.name} Security`,
+          role: ROLES.SECURITY,
+          projectId: project.id,
+        },
+        {
+          email: `maintenance@${projectNameSlug}.com`,
+          name: `${project.name} Maintenance`,
+          role: ROLES.MAINTENANCE,
+          projectId: project.id,
+        },
+        {
+          email: `resident1@${projectNameSlug}.com`,
+          name: `${project.name} Resident 1`,
+          role: ROLES.RESIDENT,
+          projectId: project.id,
+          unitId: projectUnits[project.id][0].id,
+        },
+        {
+          email: `resident2@${projectNameSlug}.com`,
+          name: `${project.name} Resident 2`,
+          role: ROLES.RESIDENT,
+          projectId: project.id,
+          unitId: projectUnits[project.id][1].id,
+        }
+      ]
 
-    // Create test units
-    const [unit] = await db.insert(units).values({
-      projectId: project.id,
-      unitNumber: 'A-101',
-      size: '35',
-      building: 'A',
-      floor: 1,
-    }).onConflictDoUpdate({
-      target: units.unitNumber,
-      set: {
-        size: '35',
-      },
-    }).returning()
+      for (const u of projectUsers) {
+        const existing = await db.query.users.findFirst({
+          where: eq(users.email, u.email),
+        })
+        if (!existing) {
+          await db.insert(users).values({
+            ...u,
+            password: hashedPassword,
+          })
+        } else {
+          await db.update(users).set({ password: hashedPassword }).where(eq(users.id, existing.id))
+        }
+      }
+    }
 
-    console.log(`✅ Created unit: ${unit.unitNumber}`)
+    // Create Super Admin
+    const superAdminEmail = 'superadmin@village.com'
+    const existingSuper = await db.query.users.findFirst({
+      where: eq(users.email, superAdminEmail),
+    })
+    if (!existingSuper) {
+      await db.insert(users).values({
+        email: superAdminEmail,
+        name: 'Global Super Admin',
+        role: ROLES.SUPER_ADMIN,
+        password: hashedPassword,
+      })
+    }
 
-    // Create test facilities
-    const [facility] = await db.insert(facilities).values({
-      projectId: project.id,
-      name: 'สระว่ายน้ำ',
-      description: 'สระว่ายน้ำขนาด 25 เมตร',
-      maxCapacity: 20,
-      openTime: '06:00',
-      closeTime: '22:00',
-      requiresApproval: false,
-      isActive: true,
-    }).onConflictDoUpdate({
-      target: [facilities.projectId, facilities.name],
-      set: {
-        description: 'สระว่ายน้ำขนาด 25 เมตร',
-        maxCapacity: 20,
-      },
-    }).returning()
+    // 4. Create Mock Data for the first project (Green Village)
+    const greenProject = createdProjects[0]
+    const greenAdmin = await db.query.users.findFirst({ where: eq(users.email, 'admin@green-village.com') })
+    const greenResident = await db.query.users.findFirst({ where: eq(users.email, 'resident1@green-village.com') })
 
-    console.log(`✅ Created facility: ${facility.name}`)
+    if (greenAdmin && greenResident) {
+      console.log('📝 Creating mock data for Green Village...')
 
-    // Create test bookings
-    await db.insert(bookings).values({
-      userId: resident.id,
-      facilityId: facility.id,
-      unitId: unit.id,
-      bookingDate: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow as YYYY-MM-DD
-      startTime: '10:00',
-      endTime: '11:00',
-      status: 'approved',
-    }).onConflictDoNothing()
+      // Announcements
+      await db.insert(announcements).values([
+        {
+          projectId: greenProject.id,
+          title: 'Welcome to Green Village',
+          content: 'We are happy to have you here!',
+          createdBy: greenAdmin.id,
+          isPinned: true,
+        },
+        {
+          projectId: greenProject.id,
+          title: 'Monthly Meeting',
+          content: 'Join us for the monthly meeting this Saturday at 10 AM.',
+          createdBy: greenAdmin.id,
+        }
+      ])
 
-    console.log('✅ Created test booking')
+      // Facilities
+      const [gym] = await db.insert(facilities).values({
+        projectId: greenProject.id,
+        name: 'Village Gym',
+        description: 'Open 24/7 for all residents.',
+        openTime: '00:00:00',
+        closeTime: '23:59:59',
+        maxCapacity: 10,
+      }).returning()
 
-    // Create test announcements
-    await db.insert(announcements).values({
-      title: 'ทดสอบประกาศ',
-      content: 'นี่คือประกาศทดสอบสำหรับระบบ',
-      projectId: project.id,
-      isPinned: false,
-    }).onConflictDoNothing()
+      // Bills
+      await db.insert(bills).values([
+        {
+          unitId: greenResident.unitId!,
+          billType: BILL_TYPES.COMMON_FEE,
+          amount: '2500.00',
+          dueDate: '2025-12-31',
+          status: STATUS.PENDING,
+        },
+        {
+          unitId: greenResident.unitId!,
+          billType: BILL_TYPES.WATER,
+          amount: '450.00',
+          dueDate: '2025-12-25',
+          status: STATUS.PENDING,
+        }
+      ])
 
-    console.log('✅ Created test announcement')
+      // Maintenance Request
+      await db.insert(maintenanceRequests).values({
+        unitId: greenResident.unitId!,
+        title: 'Leaking Pipe',
+        description: 'The pipe under the kitchen sink is leaking.',
+        category: MAINTENANCE_CATEGORIES.PLUMBING,
+        priority: PRIORITY.HIGH,
+        status: STATUS.PENDING,
+        createdBy: greenResident.id,
+      })
 
-    // Create test maintenance requests
-    await db.insert(maintenanceRequests).values({
-      createdBy: resident.id,
-      unitId: unit.id,
-      title: 'ทดสอบแจ้งซ่อม',
-      description: 'แอร์ไม่เย็น',
-      category: 'air_conditioning',
-      priority: 'normal',
-      status: 'pending',
-    }).onConflictDoNothing()
+      // Parcels
+      await db.insert(parcels).values({
+        unitId: greenResident.unitId!,
+        trackingNumber: 'KERRY12345678',
+        courier: 'Kerry',
+        receivedBy: greenAdmin.id,
+      })
 
-    console.log('✅ Created test maintenance request')
+      // Visitors
+      await db.insert(visitors).values({
+        unitId: greenResident.unitId!,
+        visitorName: 'John Doe',
+        purpose: 'Visiting friend',
+        status: STATUS.PENDING,
+      })
 
-    // Create test support tickets
-    await db.insert(supportTickets).values({
-      userId: resident.id,
-      unitId: unit.id,
-      subject: 'ทดสอบตั๋วสนับสนุน',
-      message: 'มีข้อสงสัยเกี่ยวกับการจองสิ่งอำนวยความสะดวก',
-      status: 'open',
-    }).onConflictDoNothing()
+      // Payment Settings
+      await db.insert(paymentSettings).values({
+        projectId: greenProject.id,
+        paymentMethod: 'self_qr',
+        promptpayId: '0812345678',
+        accountName: 'Green Village Management',
+        bankName: 'Kasikorn Bank',
+      })
 
-    console.log('✅ Created test support ticket')
+      // Guard Checkpoints
+      await db.insert(guardCheckpoints).values([
+        {
+          projectId: greenProject.id,
+          name: 'Main Gate',
+          location: 'Front Entrance',
+        },
+        {
+          projectId: greenProject.id,
+          name: 'Clubhouse',
+          location: 'Center of Village',
+        }
+      ])
+    }
 
-    // Create test parcel
-    await db.insert(parcels).values({
-      unitId: unit.id,
-      trackingNumber: 'TH123456789',
-      courier: ' Kerry Express',
-      receivedBy: admin.id,
-    }).onConflictDoNothing()
-
-    console.log('✅ Created test parcel')
-
-    // Create test visitor
-    await db.insert(visitors).values({
-      unitId: unit.id,
-      visitorName: 'Test Visitor',
-      purpose: 'เยี่ยมเพื่อน',
-      status: 'approved',
-      approvedBy: resident.id,
-    }).onConflictDoNothing()
-
-    console.log('✅ Created test visitor')
-
-    console.log('\n🎉 Test data seeding completed successfully!')
-    console.log('\nTest credentials:')
-    console.log('Admin: admin@test.com / TestPass123!')
-    console.log('Resident: resident@test.com / TestPass123!')
-    console.log('Security: security@test.com / TestPass123!')
-    console.log('Maintenance: maintenance@test.com / TestPass123!')
+    console.log('\n✨ Seeding completed successfully!')
+    console.log('\nLogin Credentials (Password: ' + PASSWORD + '):')
+    console.log('--------------------------------------------------')
+    console.log('Super Admin: superadmin@village.com')
+    console.log('Green Village:')
+    console.log('  - Admin: admin@green-village.com')
+    console.log('  - Security: security@green-village.com')
+    console.log('  - Maintenance: maintenance@green-village.com')
+    console.log('  - Resident: resident1@green-village.com')
+    console.log('Blue Sky Condo:')
+    console.log('  - Admin: admin@blue-sky-condo.com')
+    console.log('  - Resident: resident1@blue-sky-condo.com')
 
   } catch (error) {
-    console.error('❌ Error seeding test data:', error)
-    process.exit(1)
+    console.error('❌ Seeding failed:', error)
+    throw error
   }
 }
 
-// Run if called directly
-if (import.meta.main) {
-  seedTestData()
-    .then(() => process.exit(0))
-    .catch(() => process.exit(1))
-}
-
-export { seedTestData }
+seed()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1))

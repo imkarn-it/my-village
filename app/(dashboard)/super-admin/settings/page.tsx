@@ -424,7 +424,7 @@ export default function SuperAdminSettings() {
                                     <div className="text-sm text-blue-800">
                                         <p className="font-medium">คำแนะนำ:</p>
                                         <ul className="list-disc list-inside mt-1 space-y-1">
-                                            <li>ใช้ Gmail หรือ Google Workspace แนะนำให้เปิด "App Passwords"</li>
+                                            <li>ใช้ Gmail หรือ Google Workspace แนะนำให้เปิด &quot;App Passwords&quot;</li>
                                             <li>สำหรับ SMTP จำเป็นต้องมี SSL Certificate ที่ถูกต้อง</li>
                                             <li>ทดสอบส่งอีเมลก่อนบันทึกการตั้งค่า</li>
                                         </ul>
@@ -568,7 +568,7 @@ export default function SuperAdminSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <Label htmlFor="passwordRequireSpecialChars" className="text-base">ต้องมีอักขระพิเศษในรหัสผ่าน</Label>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">เช่น !@#$%^&*()</p>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">เช่น !@#$%^&amp;*()</p>
                                     </div>
                                     <Switch
                                         id="passwordRequireSpecialChars"

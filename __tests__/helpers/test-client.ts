@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
-import { db } from '../../../lib/db'
-import { users } from '../../../lib/db/schema'
+import { db } from '../../lib/db'
+import { users } from '../../lib/db/schema'
 
 export interface TestResponse {
   status: number
@@ -28,7 +28,7 @@ export class TestClient {
     }).returning()
 
     // Get admin token
-    const loginResponse = await this.request('POST', '/api/auth/login', {
+    const loginResponse = await this.request('POST', '/api/login', {
       body: {
         email: 'admin@test.com',
         password: 'TestAdmin123!',
@@ -61,6 +61,7 @@ export class TestClient {
     // Add authorization header
     if (options.auth) {
       const token = this.authTokens.get(options.auth) || options.auth
+      console.error('Using token:', token)
       headers['Authorization'] = `Bearer ${token}`
     }
 

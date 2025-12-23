@@ -65,6 +65,9 @@ const booking: FacilityBooking = {
     createdAt: new Date("2025-01-14T10:00:00Z"),
     notes: "ออกกำลังกายเช้า ต้องการใช้เก้าอี้อาบแดด 2 ตัว",
     qrCode: "BK20250115001",
+    // Soft delete fields
+    deletedAt: null,
+    deletedBy: null,
 };
 
 export default function BookingDetailPage() {

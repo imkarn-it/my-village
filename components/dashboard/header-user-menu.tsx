@@ -57,7 +57,7 @@ export function HeaderUserMenu({ role = "admin" }: HeaderUserMenuProps): React.J
 
     const user = userProfile || session?.user
     const initials = getInitials(user?.name || (role === "admin" ? "Admin" : "Security"))
-    const avatarUrl = userProfile?.avatar || user?.image || ""
+    const avatarUrl = userProfile?.avatar || session?.user?.image || ""
 
     const handleLogout = (): void => {
         void signOut({ callbackUrl: '/login' })

@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from "@/lib/services/cloudinary.service"
 
 export async function POST(req: Request) {
     try {
@@ -11,10 +11,9 @@ export async function POST(req: Request) {
 
         const formData = await req.formData()
         const file = formData.get("file") as File
-        const bucket = formData.get("bucket") as string
         const folder = formData.get("folder") as string || "uploads"
 
-        if (!file || !bucket) {
+        if (!file) {
             return new NextResponse("Missing required fields", { status: 400 })
         }
 
@@ -28,55 +27,55 @@ export async function POST(req: Request) {
             return new NextResponse("File too large", { status: 400 })
         }
 
-        // Create Supabase Admin Client to bypass RLS
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        )
-
-        const fileExt = file.name.split(".").pop()
-        const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-
         const arrayBuffer = await file.arrayBuffer()
-        const buffer = new Uint8Array(arrayBuffer)
+        const buffer = Buffer.from(arrayBuffer)
 
-        const { error } = await supabase.storage
-            .from(bucket)
-            .upload(fileName, buffer, {
-                contentType: file.type,
-                upsert: false
-            })
-
-        if (error) {
-            console.error("Supabase storage error:", error)
-            return new NextResponse("Upload failed", { status: 500 })
-        }
+        // Upload to Cloudinary
+        const publicUrl = await uploadToCloudinary(buffer, folder)
 
         // Delete old file if provided
         const oldUrl = formData.get("oldUrl") as string
         if (oldUrl) {
-            try {
-                // Extract path from URL
-                // URL format: https://.../storage/v1/object/public/bucket/folder/filename
-                const urlParts = oldUrl.split(`${bucket}/`)
-                if (urlParts.length > 1) {
-                    const oldPath = urlParts[1]
-                    await supabase.storage.from(bucket).remove([oldPath])
+            const oldPublicId = getPublicIdFromUrl(oldUrl)
+            if (oldPublicId) {
+                try {
+                    await deleteFromCloudinary(oldPublicId)
+                } catch (err) {
+                    console.error("Error deleting old file from Cloudinary:", err)
                 }
-            } catch (err) {
-                console.error("Error deleting old file:", err)
-                // Continue even if delete fails
             }
         }
-
-        const { data: { publicUrl } } = supabase.storage
-            .from(bucket)
-            .getPublicUrl(fileName)
 
         return NextResponse.json({ url: publicUrl })
 
     } catch (error) {
         console.error("Upload error:", error)
+        return new NextResponse("Internal Error", { status: 500 })
+    }
+}
+
+export async function DELETE(req: Request) {
+    try {
+        const session = await auth()
+        if (!session) {
+            return new NextResponse("Unauthorized", { status: 401 })
+        }
+
+        const { url } = await req.json()
+        if (!url) {
+            return new NextResponse("Missing URL", { status: 400 })
+        }
+
+        const publicId = getPublicIdFromUrl(url)
+        if (!publicId) {
+            return new NextResponse("Invalid URL", { status: 400 })
+        }
+
+        await deleteFromCloudinary(publicId)
+
+        return NextResponse.json({ success: true })
+    } catch (error) {
+        console.error("Delete error:", error)
         return new NextResponse("Internal Error", { status: 500 })
     }
 }

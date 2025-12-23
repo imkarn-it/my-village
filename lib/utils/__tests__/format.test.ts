@@ -107,7 +107,7 @@ describe('Format Utils', () => {
 
   describe('formatRelativeTime', () => {
     beforeEach(() => {
-      // Mock current time
+      // Mock current time using vitest
       vi.useFakeTimers()
       vi.setSystemTime(new Date('2024-12-16T12:00:00'))
     })

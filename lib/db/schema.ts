@@ -16,6 +16,37 @@ import {
 import { relations } from 'drizzle-orm'
 
 // ==========================================
+// 0. Audit Logs (บันทึกการเปลี่ยนแปลง)
+// ==========================================
+export const auditActionEnum = pgEnum('audit_action', ['CREATE', 'UPDATE', 'DELETE', 'RESTORE', 'LOGIN', 'LOGOUT', 'ACCESS', 'EXPORT'])
+
+export const auditLogs = pgTable('audit_logs', {
+    id: uuid('id').primaryKey().defaultRandom(),
+
+    // Who
+    userId: uuid('user_id'),
+    userEmail: varchar('user_email', { length: 255 }),
+    userRole: varchar('user_role', { length: 50 }),
+
+    // What
+    action: auditActionEnum('action').notNull(),
+    entityType: varchar('entity_type', { length: 100 }).notNull(),
+    entityId: uuid('entity_id').notNull(),
+
+    // Changes
+    oldValues: jsonb('old_values'),
+    newValues: jsonb('new_values'),
+    changedFields: text('changed_fields').array(),
+
+    // Context
+    ipAddress: varchar('ip_address', { length: 45 }),
+    userAgent: text('user_agent'),
+    requestId: varchar('request_id', { length: 100 }),
+
+    createdAt: timestamp('created_at').defaultNow(),
+})
+
+// ==========================================
 // 1. Projects (โครงการ)
 // ==========================================
 export const projects = pgTable('projects', {
@@ -27,6 +58,9 @@ export const projects = pgTable('projects', {
     settings: jsonb('settings'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -58,6 +92,9 @@ export const users = pgTable('users', {
     isActive: boolean('is_active').default(true),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -72,6 +109,9 @@ export const announcements = pgTable('announcements', {
     isPinned: boolean('is_pinned').default(false),
     createdBy: uuid('created_by').references(() => users.id),
     createdAt: timestamp('created_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -90,6 +130,9 @@ export const visitors = pgTable('visitors', {
     checkInAt: timestamp('check_in_at'),
     checkOutAt: timestamp('check_out_at'),
     createdAt: timestamp('created_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -105,6 +148,10 @@ export const parcels = pgTable('parcels', {
     receivedAt: timestamp('received_at').defaultNow(),
     pickedUpAt: timestamp('picked_up_at'),
     pickedUpBy: uuid('picked_up_by').references(() => users.id),
+    createdAt: timestamp('created_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -123,6 +170,9 @@ export const maintenanceRequests = pgTable('maintenance_requests', {
     createdBy: uuid('created_by').references(() => users.id),
     completedAt: timestamp('completed_at'),
     createdAt: timestamp('created_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -147,6 +197,9 @@ export const bills = pgTable('bills', {
     gatewayResponse: jsonb('gateway_response'),
 
     createdAt: timestamp('created_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -193,6 +246,10 @@ export const facilities = pgTable('facilities', {
     maxCapacity: integer('max_capacity'),
     requiresApproval: boolean('requires_approval').default(false),
     isActive: boolean('is_active').default(true),
+    createdAt: timestamp('created_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -213,6 +270,9 @@ export const bookings = pgTable('bookings', {
     endTime: time('end_time').notNull(),
     status: bookingStatusEnum('status').default('pending'),
     createdAt: timestamp('created_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -244,6 +304,9 @@ export const supportTickets = pgTable('support_tickets', {
     repliedAt: timestamp('replied_at'),
     repliedBy: uuid('replied_by').references(() => users.id),
     createdAt: timestamp('created_at').defaultNow(),
+    // Soft Delete
+    deletedAt: timestamp('deleted_at'),
+    deletedBy: uuid('deleted_by'),
 })
 
 // ==========================================
@@ -292,6 +355,8 @@ export const projectsRelations = relations(projects, ({ many }) => ({
     facilities: many(facilities),
     guardCheckpoints: many(guardCheckpoints),
     paymentSettings: many(paymentSettings),
+    equipment: many(equipment),
+    parts: many(parts),
 }))
 
 export const unitsRelations = relations(units, ({ one, many }) => ({
@@ -366,9 +431,119 @@ export const supportTicketResponsesRelations = relations(supportTicketResponses,
     }),
 }))
 
+export const visitorsRelations = relations(visitors, ({ one }) => ({
+    unit: one(units, {
+        fields: [visitors.unitId],
+        references: [units.id],
+    }),
+    approvedByUser: one(users, {
+        fields: [visitors.approvedBy],
+        references: [users.id],
+    }),
+}))
+
+export const parcelsRelations = relations(parcels, ({ one }) => ({
+    unit: one(units, {
+        fields: [parcels.unitId],
+        references: [units.id],
+    }),
+    receivedByUser: one(users, {
+        fields: [parcels.receivedBy],
+        references: [users.id],
+    }),
+    pickedUpByUser: one(users, {
+        fields: [parcels.pickedUpBy],
+        references: [users.id],
+    }),
+}))
+
+export const maintenanceRequestsRelations = relations(maintenanceRequests, ({ one, many }) => ({
+    unit: one(units, {
+        fields: [maintenanceRequests.unitId],
+        references: [units.id],
+    }),
+    assignedToUser: one(users, {
+        fields: [maintenanceRequests.assignedTo],
+        references: [users.id],
+    }),
+    createdByUser: one(users, {
+        fields: [maintenanceRequests.createdBy],
+        references: [users.id],
+    }),
+    logs: many(maintenanceLogs),
+    partsUsage: many(partsUsage),
+}))
+
+export const sosAlertsRelations = relations(sosAlerts, ({ one }) => ({
+    unit: one(units, {
+        fields: [sosAlerts.unitId],
+        references: [units.id],
+    }),
+    user: one(users, {
+        fields: [sosAlerts.userId],
+        references: [users.id],
+    }),
+    resolvedByUser: one(users, {
+        fields: [sosAlerts.resolvedBy],
+        references: [users.id],
+    }),
+}))
+
+export const facilitiesRelations = relations(facilities, ({ one, many }) => ({
+    project: one(projects, {
+        fields: [facilities.projectId],
+        references: [projects.id],
+    }),
+    bookings: many(bookings),
+}))
+
+export const bookingsRelations = relations(bookings, ({ one }) => ({
+    facility: one(facilities, {
+        fields: [bookings.facilityId],
+        references: [facilities.id],
+    }),
+    unit: one(units, {
+        fields: [bookings.unitId],
+        references: [units.id],
+    }),
+    user: one(users, {
+        fields: [bookings.userId],
+        references: [users.id],
+    }),
+}))
+
+export const guardCheckpointsRelations = relations(guardCheckpoints, ({ one, many }) => ({
+    project: one(projects, {
+        fields: [guardCheckpoints.projectId],
+        references: [projects.id],
+    }),
+    patrols: many(guardPatrols),
+}))
+
+export const guardPatrolsRelations = relations(guardPatrols, ({ one }) => ({
+    checkpoint: one(guardCheckpoints, {
+        fields: [guardPatrols.checkpointId],
+        references: [guardCheckpoints.id],
+    }),
+    guard: one(users, {
+        fields: [guardPatrols.guardId],
+        references: [users.id],
+    }),
+}))
+
+export const paymentSettingsRelations = relations(paymentSettings, ({ one }) => ({
+    project: one(projects, {
+        fields: [paymentSettings.projectId],
+        references: [projects.id],
+    }),
+}))
+
 // ==========================================
 // Type Exports
 // ==========================================
+export type AuditLog = typeof auditLogs.$inferSelect
+export type NewAuditLog = typeof auditLogs.$inferInsert
+
 export type Project = typeof projects.$inferSelect
 export type NewProject = typeof projects.$inferInsert
 
@@ -578,3 +753,18 @@ export type NewPartUsage = typeof partsUsage.$inferInsert
 
 export type MaintenanceLog = typeof maintenanceLogs.$inferSelect
 export type NewMaintenanceLog = typeof maintenanceLogs.$inferInsert
+
+// ==========================================
+// Password Reset Tokens
+// ==========================================
+export const passwordResetTokens = pgTable('password_reset_tokens', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    email: varchar('email', { length: 255 }).notNull(),
+    token: varchar('token', { length: 255 }).notNull().unique(),
+    expiresAt: timestamp('expires_at').notNull(),
+    usedAt: timestamp('used_at'),
+    createdAt: timestamp('created_at').defaultNow(),
+})
+
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect
+export type NewPasswordResetToken = typeof passwordResetTokens.$inferInsert

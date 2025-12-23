@@ -53,7 +53,7 @@ export function UserMenu(): React.JSX.Element {
 
     const user = userProfile || session?.user
     const initials = getInitials(user?.name || "User")
-    const avatarUrl = userProfile?.avatar || ""
+    const avatarUrl = userProfile?.avatar || session?.user?.image || ""
 
     const handleLogout = (): void => {
         void signOut({ callbackUrl: '/login' })

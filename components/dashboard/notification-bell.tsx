@@ -17,7 +17,6 @@ import { th } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { createClient } from "@/lib/supabase/client"
 
 type Notification = {
     id: string
@@ -90,34 +89,6 @@ export function NotificationBell() {
         const interval = setInterval(fetchUnreadCount, 60000)
         return () => clearInterval(interval)
     }, [])
-
-    useEffect(() => {
-        if (!userId) return
-
-        const supabase = createClient()
-        const channel = supabase
-            .channel(`notifications:${userId}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'notifications',
-                    filter: `user_id=eq.${userId}`
-                },
-                () => {
-                    setUnreadCount(prev => prev + 1)
-                    if (isOpen) {
-                        fetchNotifications()
-                    }
-                }
-            )
-            .subscribe()
-
-        return () => {
-            supabase.removeChannel(channel)
-        }
-    }, [userId, isOpen])
 
     useEffect(() => {
         if (isOpen) {

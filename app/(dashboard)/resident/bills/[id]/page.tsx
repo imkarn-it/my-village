@@ -32,6 +32,7 @@ interface Bill {
     dueDate: string;
     status: string;
     projectPaymentMethod: string;
+    paymentSlipUrl?: string; // Added paymentSlipUrl
     unit?: {
         unitNumber: string;
     };
@@ -139,6 +140,11 @@ export default function BillDetailPage() {
             const formData = new FormData()
             formData.append('file', slipFile)
             formData.append('billId', billId)
+
+            // Add oldUrl if exists to delete from Cloudinary
+            if (bill?.paymentSlipUrl) {
+                formData.append('oldUrl', bill.paymentSlipUrl)
+            }
 
             const uploadResponse = await fetch('/api/upload-payment-slip', {
                 method: 'POST',

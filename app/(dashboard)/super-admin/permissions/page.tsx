@@ -82,6 +82,8 @@ const users: (User & { projectName: string; lastActive: string; lastLogin?: stri
         phone: null,
         avatar: null,
         unitId: null,
+        deletedAt: null,
+        deletedBy: null,
     },
     {
         id: "2",
@@ -100,6 +102,8 @@ const users: (User & { projectName: string; lastActive: string; lastLogin?: stri
         phone: null,
         avatar: null,
         unitId: "1",
+        deletedAt: null,
+        deletedBy: null,
     },
     {
         id: "3",
@@ -118,6 +122,8 @@ const users: (User & { projectName: string; lastActive: string; lastLogin?: stri
         phone: null,
         avatar: null,
         unitId: null,
+        deletedAt: null,
+        deletedBy: null,
     },
     {
         id: "4",
@@ -136,6 +142,8 @@ const users: (User & { projectName: string; lastActive: string; lastLogin?: stri
         phone: null,
         avatar: null,
         unitId: null,
+        deletedAt: null,
+        deletedBy: null,
     },
 ];
 

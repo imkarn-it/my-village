@@ -1,6 +1,4 @@
 import { describe, expect, test, beforeEach, vi } from 'vitest'
-import { userService } from '../user.service'
-import { db } from '../../db'
 
 // Mock the database
 vi.mock('../../db', () => ({
@@ -11,6 +9,9 @@ vi.mock('../../db', () => ({
     delete: vi.fn(),
   },
 }))
+
+// Import after mock is set up
+import { db } from '../../db'
 
 describe('User Service', () => {
   beforeEach(() => {
@@ -26,13 +27,17 @@ describe('User Service', () => {
         role: 'resident',
       }
 
-      const mockSelect = vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue([mockUser])
+      const mockBuilder = {
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([mockUser])
+          })
         })
-      })
-      vi.mocked(db.select).mockReturnValue(mockSelect as any)
+      };
+      (db.select as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
+      // Import service after mock
+      const { userService } = await import('../user.service')
       const result = await userService.getUserById('user-1')
 
       expect(result).toEqual(mockUser)
@@ -40,27 +45,39 @@ describe('User Service', () => {
     })
 
     test('should return null when user not found', async () => {
-      const mockSelect = vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue([])
+      const mockBuilder = {
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([])
+          })
         })
-      })
-      vi.mocked(db.select).mockReturnValue(mockSelect as any)
+      };
+      (db.select as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
+      const { userService } = await import('../user.service')
       const result = await userService.getUserById('non-existent')
 
       expect(result).toBeNull()
     })
 
     test('should handle database errors', async () => {
-      const mockSelect = vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockRejectedValue(new Error('Database error'))
+      const mockBuilder = {
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockRejectedValue(new Error('Database error'))
+          })
         })
-      })
-      vi.mocked(db.select).mockReturnValue(mockSelect as any)
+      };
+      (db.select as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
-      await expect(userService.getUserById('user-1')).rejects.toThrow('Database error')
+      const { userService } = await import('../user.service')
+
+      try {
+        await userService.getUserById('user-1')
+        expect(true).toBe(false)
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('Database error')
+      }
     })
   })
 
@@ -73,26 +90,32 @@ describe('User Service', () => {
         role: 'resident',
       }
 
-      const mockSelect = vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue([mockUser])
+      const mockBuilder = {
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([mockUser])
+          })
         })
-      })
-      vi.mocked(db.select).mockReturnValue(mockSelect as any)
+      };
+      (db.select as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
+      const { userService } = await import('../user.service')
       const result = await userService.getUserByEmail('test@example.com')
 
       expect(result).toEqual(mockUser)
     })
 
     test('should return null when user not found', async () => {
-      const mockSelect = vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue([])
+      const mockBuilder = {
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([])
+          })
         })
-      })
-      vi.mocked(db.select).mockReturnValue(mockSelect as any)
+      };
+      (db.select as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
+      const { userService } = await import('../user.service')
       const result = await userService.getUserByEmail('nonexistent@example.com')
 
       expect(result).toBeNull()
@@ -114,14 +137,15 @@ describe('User Service', () => {
         createdAt: new Date(),
       }
 
-      const mockInsert = vi.fn().mockReturnValue({
+      const mockBuilder = {
         values: vi.fn().mockReturnValue({
           returning: vi.fn().mockResolvedValue([mockUser])
         })
-      })
-      vi.mocked(db.insert).mockReturnValue(mockInsert as any)
+      };
+      (db.insert as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
-      const result = await userService.createUser(newUser)
+      const { userService } = await import('../user.service')
+      const result = await userService.createUser(newUser as Parameters<typeof userService.createUser>[0])
 
       expect(result).toEqual(mockUser)
       expect(db.insert).toHaveBeenCalled()
@@ -144,15 +168,16 @@ describe('User Service', () => {
         role: 'resident',
       }
 
-      const mockUpdate = vi.fn().mockReturnValue({
+      const mockBuilder = {
         set: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
             returning: vi.fn().mockResolvedValue([mockUser])
           })
         })
-      })
-      vi.mocked(db.update).mockReturnValue(mockUpdate as any)
+      };
+      (db.update as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
+      const { userService } = await import('../user.service')
       const result = await userService.updateUser(userId, updates)
 
       expect(result).toEqual(mockUser)
@@ -160,15 +185,16 @@ describe('User Service', () => {
     })
 
     test('should return null when user not found', async () => {
-      const mockUpdate = vi.fn().mockReturnValue({
+      const mockBuilder = {
         set: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
             returning: vi.fn().mockResolvedValue([])
           })
         })
-      })
-      vi.mocked(db.update).mockReturnValue(mockUpdate as any)
+      };
+      (db.update as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
+      const { userService } = await import('../user.service')
       const result = await userService.updateUser('non-existent', { name: 'Test' })
 
       expect(result).toBeNull()
@@ -177,22 +203,24 @@ describe('User Service', () => {
 
   describe('deleteUser', () => {
     test('should delete user', async () => {
-      const mockDelete = vi.fn().mockReturnValue({
+      const mockBuilder = {
         where: vi.fn().mockResolvedValue(1)
-      })
-      vi.mocked(db.delete).mockReturnValue(mockDelete as any)
+      };
+      (db.delete as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
-      await expect(userService.deleteUser('user-1')).resolves.not.toThrow()
+      const { userService } = await import('../user.service')
+      await userService.deleteUser('user-1')
       expect(db.delete).toHaveBeenCalled()
     })
 
     test('should handle when user not found', async () => {
-      const mockDelete = vi.fn().mockReturnValue({
+      const mockBuilder = {
         where: vi.fn().mockResolvedValue(0)
-      })
-      vi.mocked(db.delete).mockReturnValue(mockDelete as any)
+      };
+      (db.delete as ReturnType<typeof vi.fn>).mockReturnValue(mockBuilder)
 
-      await expect(userService.deleteUser('non-existent')).resolves.not.toThrow()
+      const { userService } = await import('../user.service')
+      await userService.deleteUser('non-existent')
     })
   })
 })

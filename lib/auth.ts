@@ -1,5 +1,5 @@
 import NextAuth from "next-auth"
-import { SupabaseAdapter } from "@auth/supabase-adapter"
+import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
 import { z } from "zod"
@@ -59,10 +59,8 @@ async function authenticateUser(
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
-    adapter: SupabaseAdapter({
-        url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    }),
+    secret: process.env.AUTH_SECRET,
+    adapter: DrizzleAdapter(db),
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,

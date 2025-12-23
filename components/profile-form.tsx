@@ -85,7 +85,10 @@ export function ProfileForm({ user }: ProfileFormProps): React.JSX.Element {
             const { data, error } = await api.users({ id: user.id }).patch(updateData as any)
 
             if (error) {
-                throw new Error(String(error.value))
+                const errorMsg = error.value && typeof error.value === 'object' && 'error' in error.value
+                    ? (error.value as any).error
+                    : String(error.value || "Unknown error")
+                throw new Error(errorMsg)
             }
 
             if (data && data.success) {

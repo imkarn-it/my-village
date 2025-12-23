@@ -165,7 +165,7 @@ export function FinancialAnalytics({ data, period, onPeriodChange }: { data: any
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis tickFormatter={(value) => `฿${(value / 1000).toFixed(0)}K`} />
-                            <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                            <Tooltip formatter={(value) => formatCurrency(Number(value ?? 0))} />
                             <Legend />
                             <Area
                                 type="monotone"
@@ -205,7 +205,7 @@ export function FinancialAnalytics({ data, period, onPeriodChange }: { data: any
                                     cy="50%"
                                     labelLine={false}
                                     // @ts-ignore - Recharts type issue
-                                      label={({ name, percentage }) => `${name} ${percentage}%`}
+                                    label={({ name, percentage }) => `${name} ${percentage}%`}
                                     outerRadius={80}
                                     fill="#8884d8"
                                     dataKey="value"
@@ -214,7 +214,7 @@ export function FinancialAnalytics({ data, period, onPeriodChange }: { data: any
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                                <Tooltip formatter={(value) => formatCurrency(Number(value ?? 0))} />
                             </PieChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -230,7 +230,7 @@ export function FinancialAnalytics({ data, period, onPeriodChange }: { data: any
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="name" />
                                 <YAxis tickFormatter={(value) => `฿${(value / 1000).toFixed(0)}K`} />
-                                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                                <Tooltip formatter={(value) => formatCurrency(Number(value ?? 0))} />
                                 <Legend />
                                 <Bar dataKey="value" fill="#3b82f6" name="ปีนี้" />
                                 <Bar dataKey="value2" fill="#94a3b8" name="ปีที่แล้ว" />
