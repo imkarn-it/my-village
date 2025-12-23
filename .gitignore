@@ -11,18 +11,14 @@ build/
 
 # Environment Variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env.local
+.env.*
+!.env.example
 
 # Testing
 coverage/
 test-results/
 playwright-report/
 blob-report/
-test-results/
 
 # Debug logs
 npm-debug.log*
@@ -51,3 +47,10 @@ drizzle/migrations/schema.json
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude/AI
+.claude/
+
+# Documentation (except README)
+*.md
+!README.md
