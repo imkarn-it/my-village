@@ -1,7 +1,7 @@
 # My Village - Project Context
 
-> **Last Updated:** 2025-12-27  
-> **Version:** 0.1.0 | **Build:** 84 pages | **Tests:** 314 unit + 101 E2E
+> **Last Updated:** 2025-12-30  
+> **Version:** 0.1.0 | **Build:** 86 pages | **Tests:** 320 unit + 110 E2E
 
 ---
 

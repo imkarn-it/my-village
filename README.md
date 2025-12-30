@@ -3,8 +3,8 @@
 > ระบบจัดการหมู่บ้านและคอนโดมิเนียมแบบครบวงจร พัฒนาด้วย Next.js 16
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Tests](https://img.shields.io/badge/unit%20tests-314%20passing-brightgreen)]()
-[![E2E Tests](https://img.shields.io/badge/E2E%20tests-101%20passing-blue)]()
+[![Tests](https://img.shields.io/badge/unit%20tests-320%20passing-brightgreen)]()
+[![E2E Tests](https://img.shields.io/badge/E2E%20tests-110%20passing-blue)]()
 [![Next.js](https://img.shields.io/badge/Next.js-16.1.0-black)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)]()
 
@@ -51,9 +51,10 @@
 | **File Upload** | Cloudinary |
 | **QR Code** | qrcode + html5-qrcode |
 | **Export** | xlsx + jspdf |
-| **Testing** | Vitest (314 tests) + Playwright (17 E2E) |
+| **Testing** | Vitest (320 tests) + Playwright (110 E2E) |
 | **PWA** | Service Worker + Install Prompt |
 | **Security** | Rate Limiting + Security Headers |
+| **Monitoring** | Sentry + Google Analytics |
 
 ---
 
@@ -89,8 +90,8 @@ bun dev
 ```bash
 bun dev           # รัน development server
 bun build         # Build production
-bun test          # Run unit tests (314 tests)
-bun e2e           # Run E2E tests (101 tests)
+bun test          # Run unit tests (320 tests)
+bun e2e           # Run E2E tests (110 tests)
 bun e2e:seed      # Seed test users for E2E
 bun db:studio     # เปิด Drizzle Studio
 ```
