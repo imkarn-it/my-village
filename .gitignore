@@ -19,12 +19,14 @@ coverage/
 test-results/
 playwright-report/
 blob-report/
+.playwright/
 
 # Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 bun-debug.log*
+*.log
 
 # OS
 .DS_Store
@@ -51,6 +53,6 @@ next-env.d.ts
 # Claude/AI
 .claude/
 
-# Documentation (except README)
-*.md
-!README.md
+# Sentry
+.sentryclirc
+.sentry-cli.log
