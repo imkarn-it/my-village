@@ -2,7 +2,7 @@
 
 > **Last Updated:** 2025-12-30  
 > **Version:** 0.1.0  
-> **Build:** 86 pages | 320 unit + 110 E2E tests passing
+> **Build:** 86 pages | 345 unit + 110 E2E tests passing
 
 ---
 

@@ -3,7 +3,7 @@
 > ระบบจัดการหมู่บ้านและคอนโดมิเนียมแบบครบวงจร พัฒนาด้วย Next.js 16
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Tests](https://img.shields.io/badge/unit%20tests-320%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/unit%20tests-345%20passing-brightgreen)]() 
 [![E2E Tests](https://img.shields.io/badge/E2E%20tests-110%20passing-blue)]()
 [![Next.js](https://img.shields.io/badge/Next.js-16.1.0-black)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)]()

@@ -1,7 +1,7 @@
 # My Village - Project Context
 
 > **Last Updated:** 2025-12-30  
-> **Version:** 0.1.0 | **Build:** 86 pages | **Tests:** 320 unit + 110 E2E
+> **Version:** 0.1.0 | **Build:** 86 pages | **Tests:** 345 unit + 110 E2E
 
 ---
 
@@ -34,7 +34,10 @@ Without me having to explicitly ask.
 
 ### Command Execution Rules
 - **Executing Commands:** ALWAYS use `cmd /c [command]` when running shell commands on Windows.
-  - Example: `cmd /c dir`, `cmd /c npm install`
+  - Example: `cmd /c dir`, `cmd /c bun install`
+- **Package Manager:** ALWAYS use `bun` as the primary package manager.
+  - Use: `bun add`, `bun install`, `bun remove`
+  - Do NOT use `npm install` or `yarn add` unless bun fails
 - **Building Project:** ALWAYS use `bun` for building the project.
   - Command: `cmd /c bun run build`
   - Do NOT use `npm run build` or `yarn build`.
