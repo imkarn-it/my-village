@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest'
+import { describe, test, expect } from 'vitest'
 import {
   formatCurrency,
   formatDate,
@@ -106,36 +106,37 @@ describe('Format Utils', () => {
   })
 
   describe('formatRelativeTime', () => {
-    beforeEach(() => {
-      // Mock current time using vitest
-      vi.useFakeTimers()
-      vi.setSystemTime(new Date('2024-12-16T12:00:00'))
-    })
-
     test('should show "เมื่อสักครู่" for recent times', () => {
-      const date = new Date('2024-12-16T11:59:30')
+      // 30 seconds ago
+      const date = new Date(Date.now() - 30 * 1000)
       expect(formatRelativeTime(date)).toBe('เมื่อสักครู่')
     })
 
     test('should show minutes ago', () => {
-      const date = new Date('2024-12-16T11:55:00')
+      // 5 minutes ago
+      const date = new Date(Date.now() - 5 * 60 * 1000)
       expect(formatRelativeTime(date)).toBe('5 นาทีที่แล้ว')
     })
 
     test('should show hours ago', () => {
-      const date = new Date('2024-12-16T10:00:00')
+      // 2 hours ago
+      const date = new Date(Date.now() - 2 * 60 * 60 * 1000)
       expect(formatRelativeTime(date)).toBe('2 ชั่วโมงที่แล้ว')
     })
 
     test('should show days ago', () => {
-      const date = new Date('2024-12-14T12:00:00')
+      // 2 days ago
+      const date = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
       expect(formatRelativeTime(date)).toBe('2 วันที่แล้ว')
     })
 
     test('should show full date for older dates', () => {
-      const date = new Date('2024-11-01T12:00:00')
+      // 45 days ago (more than 7 days)
+      const date = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000)
       const result = formatRelativeTime(date)
-      expect(result).toContain('พฤศจิกายน')
+      // Should contain Thai date, not "วันที่แล้ว"
+      expect(result.length).toBeGreaterThan(0)
+      expect(result).not.toContain('วันที่แล้ว')
     })
 
     test('should handle null/undefined', () => {

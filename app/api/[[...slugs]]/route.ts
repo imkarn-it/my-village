@@ -4,7 +4,8 @@ import { swagger } from '@elysiajs/swagger'
 import { db } from '@/lib/db'
 import {
     users, announcements, units, parcels, visitors, projects, equipment,
-    bills, maintenanceRequests, facilities, bookings, sosAlerts, supportTickets, supportTicketResponses, paymentSettings, notifications, passwordResetTokens
+    bills, maintenanceRequests, facilities, bookings, sosAlerts, supportTickets, supportTicketResponses, paymentSettings, notifications, passwordResetTokens,
+    attendance, guardCheckpoints, guardPatrols
 } from '@/lib/db/schema'
 import { eq, desc, and, sql, asc, or, ilike, count, isNull, gt } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
@@ -12,6 +13,7 @@ import { encode, decode } from 'next-auth/jwt'
 import bcrypt from 'bcryptjs'
 import { randomUUID, randomBytes } from 'crypto'
 import { NotificationService } from '@/lib/services'
+import { emailService } from '@/lib/services/email.service'
 import { auditCreate, auditUpdate, auditDelete, auditLogin } from '@/lib/middleware/audit.middleware'
 import { softDelete, excludeDeleted } from '@/lib/middleware/soft-delete'
 
@@ -171,7 +173,14 @@ const app = new Elysia({ prefix: '/api' })
             expiresAt,
         })
 
-        console.log(`[Password Reset] Link: /reset-password?token=${token}`)
+        // Send password reset email
+        const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}`
+        await emailService.sendPasswordReset(email, {
+            name: user.name || email,
+            resetUrl,
+        })
+
+        console.log(`[Password Reset] Link sent to ${email}`)
 
         return {
             success: true,
@@ -1103,6 +1112,17 @@ const app = new Elysia({ prefix: '/api' })
                 type: 'info',
                 link: `/resident/bills/${result.id}`
             })
+
+            // Send email notification
+            if (resident.email) {
+                await emailService.sendBillCreated(resident.email, {
+                    name: resident.name || resident.email,
+                    billId: result.id,
+                    amount: Number(body.amount),
+                    dueDate: body.dueDate || 'ไม่ระบุ',
+                    description: body.billType,
+                })
+            }
         }
 
         return { success: true, data: result }
@@ -1195,6 +1215,16 @@ const app = new Elysia({ prefix: '/api' })
                         type: 'success',
                         link: `/resident/bills/${bill.id}`
                     })
+
+                    // Send email notification
+                    if (resident.email) {
+                        await emailService.sendPaymentVerified(resident.email, {
+                            name: resident.name || resident.email,
+                            billId: bill.id,
+                            amount: Number(bill.amount),
+                            verifiedAt: new Date(),
+                        })
+                    }
                 }
             }
         }
@@ -1660,6 +1690,17 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Booking not found' }
         }
 
+        // Send email if booking is approved
+        if (body.status === 'approved' && result.user?.email) {
+            await emailService.sendBookingApproved(result.user.email, {
+                name: result.user.name || result.user.email,
+                facilityName: result.facility?.name || 'สิ่งอำนวยความสะดวก',
+                date: result.bookingDate || '',
+                time: `${result.startTime} - ${result.endTime}`,
+                bookingId: result.id,
+            })
+        }
+
         return { success: true, data: result }
     }, {
         params: t.Object({
@@ -1924,6 +1965,23 @@ const app = new Elysia({ prefix: '/api' })
                     repliedBy: session.user.id!,
                 })
                 .where(eq(supportTickets.id, params.id))
+        }
+
+        // Send email notification to ticket owner if admin replied
+        if (isAdmin && ticket.userId) {
+            const ticketOwner = await db.query.users.findFirst({
+                where: eq(users.id, ticket.userId)
+            })
+
+            if (ticketOwner?.email) {
+                await emailService.sendSupportReply(ticketOwner.email, {
+                    name: ticketOwner.name || ticketOwner.email,
+                    ticketId: params.id.slice(0, 8),
+                    ticketTitle: ticket.subject || 'Support Ticket',
+                    reply: body.message,
+                    repliedBy: session.user.name || 'Admin',
+                })
+            }
         }
 
         return { success: true, data: response }
@@ -2204,6 +2262,221 @@ const app = new Elysia({ prefix: '/api' })
         return { success: true }
     }, {
         detail: { tags: ['notifications'], summary: 'Mark all notifications as read' }
+    })
+
+    // ==========================================
+    // Attendance Endpoints (P2 Feature)
+    // ==========================================
+    .get('/attendance', async ({ query }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        // Admin can see all, others see only their own
+        const isAdmin = session.user.role === 'admin' || session.user.role === 'super_admin'
+        const whereClause = isAdmin && query.userId
+            ? eq(attendance.userId, query.userId)
+            : isAdmin
+                ? undefined
+                : eq(attendance.userId, session.user.id as string)
+
+        const data = await db.query.attendance.findMany({
+            where: whereClause,
+            orderBy: desc(attendance.date),
+            limit: query.limit ? parseInt(query.limit) : 50,
+            with: {
+                user: {
+                    columns: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        role: true,
+                    }
+                }
+            }
+        })
+
+        return { success: true, data }
+    }, {
+        query: t.Object({
+            userId: t.Optional(t.String()),
+            limit: t.Optional(t.String()),
+        }),
+        detail: { tags: ['attendance'], summary: 'Get attendance records' }
+    })
+
+    .post('/attendance/clock-in', async ({ body }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        // Check if already clocked in today
+        const today = new Date().toISOString().split('T')[0]
+        const existing = await db.query.attendance.findFirst({
+            where: and(
+                eq(attendance.userId, session.user.id as string),
+                eq(attendance.date, today)
+            )
+        })
+
+        if (existing?.clockIn) {
+            return { success: false, error: 'คุณได้ลงเวลาเข้างานแล้ววันนี้' }
+        }
+
+        if (existing) {
+            // Update existing record
+            const [result] = await db.update(attendance)
+                .set({
+                    clockIn: new Date(),
+                    clockInLocation: body.location,
+                    status: 'present',
+                    updatedAt: new Date(),
+                })
+                .where(eq(attendance.id, existing.id))
+                .returning()
+            return { success: true, data: result }
+        }
+
+        // Create new attendance record
+        const [result] = await db.insert(attendance).values({
+            userId: session.user.id as string,
+            date: today,
+            clockIn: new Date(),
+            clockInLocation: body.location,
+            status: 'present',
+        }).returning()
+
+        return { success: true, data: result }
+    }, {
+        body: t.Object({
+            location: t.Optional(t.Object({
+                lat: t.Number(),
+                lng: t.Number(),
+            })),
+        }),
+        detail: { tags: ['attendance'], summary: 'Clock in for the day' }
+    })
+
+    .post('/attendance/clock-out', async ({ body }) => {
+        const session = await auth()
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const today = new Date().toISOString().split('T')[0]
+        const existing = await db.query.attendance.findFirst({
+            where: and(
+                eq(attendance.userId, session.user.id as string),
+                eq(attendance.date, today)
+            )
+        })
+
+        if (!existing?.clockIn) {
+            return { success: false, error: 'คุณยังไม่ได้ลงเวลาเข้างาน' }
+        }
+
+        if (existing.clockOut) {
+            return { success: false, error: 'คุณได้ลงเวลาออกงานแล้ววันนี้' }
+        }
+
+        // Calculate total hours
+        const clockIn = new Date(existing.clockIn)
+        const clockOut = new Date()
+        const totalHours = (clockOut.getTime() - clockIn.getTime()) / (1000 * 60 * 60)
+
+        const [result] = await db.update(attendance)
+            .set({
+                clockOut,
+                clockOutLocation: body.location,
+                totalHours: totalHours.toFixed(2),
+                updatedAt: new Date(),
+            })
+            .where(eq(attendance.id, existing.id))
+            .returning()
+
+        return { success: true, data: result }
+    }, {
+        body: t.Object({
+            location: t.Optional(t.Object({
+                lat: t.Number(),
+                lng: t.Number(),
+            })),
+        }),
+        detail: { tags: ['attendance'], summary: 'Clock out for the day' }
+    })
+
+    // ==========================================
+    // Guard Patrol Endpoints (P2 Feature)
+    // ==========================================
+    .get('/patrol/checkpoints', async () => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'security' && session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const data = await db.query.guardCheckpoints.findMany({
+            where: eq(guardCheckpoints.isActive, true),
+            orderBy: asc(guardCheckpoints.name),
+        })
+
+        return { success: true, data }
+    }, {
+        detail: { tags: ['patrol'], summary: 'Get all active checkpoints' }
+    })
+
+    .post('/patrol/log', async ({ body }) => {
+        const session = await auth()
+        if (!session?.user || session.user.role !== 'security') {
+            return { success: false, error: 'Forbidden - Security only' }
+        }
+
+        // Verify checkpoint exists
+        const checkpoint = await db.query.guardCheckpoints.findFirst({
+            where: eq(guardCheckpoints.id, body.checkpointId)
+        })
+
+        if (!checkpoint) {
+            return { success: false, error: 'Checkpoint not found' }
+        }
+
+        const [result] = await db.insert(guardPatrols).values({
+            checkpointId: body.checkpointId,
+            guardId: session.user.id as string,
+            note: body.note,
+            image: body.image,
+        }).returning()
+
+        return { success: true, data: result }
+    }, {
+        body: t.Object({
+            checkpointId: t.String(),
+            note: t.Optional(t.String()),
+            image: t.Optional(t.String()),
+        }),
+        detail: { tags: ['patrol'], summary: 'Log patrol checkpoint' }
+    })
+
+    .get('/patrol/logs', async ({ query }) => {
+        const session = await auth()
+        if (!session?.user || (session.user.role !== 'security' && session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const data = await db.query.guardPatrols.findMany({
+            where: query.guardId ? eq(guardPatrols.guardId, query.guardId) : undefined,
+            orderBy: desc(guardPatrols.checkedAt),
+            limit: query.limit ? parseInt(query.limit) : 50,
+        })
+
+        return { success: true, data }
+    }, {
+        query: t.Object({
+            guardId: t.Optional(t.String()),
+            limit: t.Optional(t.String()),
+        }),
+        detail: { tags: ['patrol'], summary: 'Get patrol logs' }
     })
 
 // Export type for Eden Treaty

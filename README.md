@@ -3,7 +3,8 @@
 > ระบบจัดการหมู่บ้านและคอนโดมิเนียมแบบครบวงจร พัฒนาด้วย Next.js 16
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Tests](https://img.shields.io/badge/tests-159%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/unit%20tests-314%20passing-brightgreen)]()
+[![E2E Tests](https://img.shields.io/badge/E2E%20tests-101%20passing-blue)]()
 [![Next.js](https://img.shields.io/badge/Next.js-16.1.0-black)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)]()
 
@@ -50,7 +51,9 @@
 | **File Upload** | Cloudinary |
 | **QR Code** | qrcode + html5-qrcode |
 | **Export** | xlsx + jspdf |
-| **Testing** | Vitest (159 tests) + Playwright |
+| **Testing** | Vitest (314 tests) + Playwright (17 E2E) |
+| **PWA** | Service Worker + Install Prompt |
+| **Security** | Rate Limiting + Security Headers |
 
 ---
 
@@ -86,8 +89,9 @@ bun dev
 ```bash
 bun dev           # รัน development server
 bun build         # Build production
-bun test          # Run tests (159 tests)
-bun e2e           # Run E2E tests
+bun test          # Run unit tests (314 tests)
+bun e2e           # Run E2E tests (101 tests)
+bun e2e:seed      # Seed test users for E2E
 bun db:studio     # เปิด Drizzle Studio
 ```
 
@@ -409,15 +413,36 @@ village-app/
 ## 🧪 Testing
 
 ```bash
-# รัน Unit Tests (159 tests)
+# รัน Unit Tests (314 tests)
 bun test
 
-# รัน E2E Tests
+# รัน E2E Tests (17 test files)
 bun e2e
 
 # ดู Coverage
 bun test:coverage
 ```
+
+### Unit Test Coverage
+| Category | Tests |
+|----------|-------|
+| Utilities | 171 |
+| Services | 100 |
+| Middleware | 25 |
+| API | 18 |
+
+### E2E Test Files
+| Test File | Coverage |
+|-----------|----------|
+| auth.spec.ts | Login/Register |
+| bills.spec.ts | Payments |
+| facilities.spec.ts | Bookings |
+| maintenance.spec.ts | Repairs |
+| visitors.spec.ts | Visitors |
+| admin.spec.ts | Admin flows |
+| security.spec.ts | Security guard |
+| super-admin.spec.ts | Super admin |
+| + 9 more... | Various |
 
 ---
 

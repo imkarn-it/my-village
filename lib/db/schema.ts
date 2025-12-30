@@ -768,3 +768,39 @@ export const passwordResetTokens = pgTable('password_reset_tokens', {
 
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect
 export type NewPasswordResetToken = typeof passwordResetTokens.$inferInsert
+
+// ==========================================
+// Time Attendance
+// ==========================================
+export const attendance = pgTable('attendance', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id').references(() => projects.id),
+    userId: uuid('user_id').references(() => users.id).notNull(),
+    date: date('date').notNull(),
+    clockIn: timestamp('clock_in'),
+    clockOut: timestamp('clock_out'),
+    clockInLocation: jsonb('clock_in_location'), // { lat, lng }
+    clockOutLocation: jsonb('clock_out_location'),
+    breakStart: timestamp('break_start'),
+    breakEnd: timestamp('break_end'),
+    totalHours: decimal('total_hours'),
+    overtimeHours: decimal('overtime_hours'),
+    notes: text('notes'),
+    status: varchar('status', { length: 50 }).default('present'), // present, absent, leave, late
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+export const attendanceRelations = relations(attendance, ({ one }) => ({
+    project: one(projects, {
+        fields: [attendance.projectId],
+        references: [projects.id],
+    }),
+    user: one(users, {
+        fields: [attendance.userId],
+        references: [users.id],
+    }),
+}))
+
+export type Attendance = typeof attendance.$inferSelect
+export type NewAttendance = typeof attendance.$inferInsert

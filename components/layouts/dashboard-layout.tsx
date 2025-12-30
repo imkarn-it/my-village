@@ -39,7 +39,8 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle"
 import type { ReactNode } from "react"
 import dynamic from "next/dynamic"
-import { NotificationBell } from "@/components/dashboard/notification-bell"
+import { NotificationBell } from "@/components/shared/notification-bell"
+import { PushPermission } from "@/components/shared/push-permission"
 
 // ==========================================
 // Types
@@ -238,6 +239,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps): React.JSX.E
                             <h2 className="font-semibold text-slate-900 dark:text-white">หน้าหลัก</h2>
                         </div>
                         <div className="flex items-center gap-2">
+                            <PushPermission />
                             <ThemeToggle />
                             <NotificationBell />
                         </div>

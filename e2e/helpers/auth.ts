@@ -1,4 +1,8 @@
-import { Page } from '@playwright/test'
+import { Page, BrowserContext } from '@playwright/test'
+import * as fs from 'fs'
+import * as path from 'path'
+
+const STORAGE_STATE_DIR = '.playwright'
 
 export const TEST_USERS = {
     resident: {
@@ -19,80 +23,217 @@ export const TEST_USERS = {
     maintenance: {
         email: 'maintenance@test.com',
         password: 'TestPass123!',
-        dashboardUrl: '/maintenance',  // Maintenance staff have their own dashboard
+        dashboardUrl: '/maintenance',
     },
 }
 
-export async function login(page: Page, userType: keyof typeof TEST_USERS) {
+export type UserType = keyof typeof TEST_USERS
+
+/**
+ * Get storage state path for a user type
+ */
+export function getStorageStatePath(userType: UserType): string {
+    return path.join(process.cwd(), STORAGE_STATE_DIR, `${userType}.json`)
+}
+
+/**
+ * Check if auth state exists for a user type
+ */
+export function hasAuthState(userType: UserType): boolean {
+    const storagePath = getStorageStatePath(userType)
+    return fs.existsSync(storagePath)
+}
+
+/**
+ * Load auth state into a context
+ */
+export async function loadAuthState(context: BrowserContext, userType: UserType): Promise<boolean> {
+    const storagePath = getStorageStatePath(userType)
+
+    if (!fs.existsSync(storagePath)) {
+        console.log(`[Auth] No stored auth for ${userType}`)
+        return false
+    }
+
+    try {
+        const storageState = JSON.parse(fs.readFileSync(storagePath, 'utf-8'))
+
+        // Add cookies to context
+        if (storageState.cookies && storageState.cookies.length > 0) {
+            await context.addCookies(storageState.cookies)
+            console.log(`[Auth] Loaded ${storageState.cookies.length} cookies for ${userType}`)
+            return true
+        }
+
+        return false
+    } catch (error) {
+        console.log(`[Auth] Failed to load auth for ${userType}:`, error)
+        return false
+    }
+}
+
+/**
+ * Login using stored auth state if available, otherwise login manually
+ */
+export async function login(page: Page, userType: UserType): Promise<boolean> {
     const user = TEST_USERS[userType]
 
     console.log(`[E2E] Logging in as ${userType} (${user.email})`)
 
-    // Navigate to login page
-    await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 })
+    // Try using stored auth first
+    if (hasAuthState(userType)) {
+        const loaded = await loadAuthState(page.context(), userType)
+        if (loaded) {
+            // Navigate to dashboard to test if auth works
+            await page.goto(user.dashboardUrl, { waitUntil: 'networkidle', timeout: 30000 })
 
-    // Wait for network idle to ensure hydration might be ready
-    await page.waitForLoadState('networkidle')
-    console.log(`[E2E] Login page loaded`)
-
-    // Wait for login form to be ready
-    await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 10000 })
-
-    // Fill login form
-    await page.fill('input[name="email"]', user.email)
-    await page.fill('input[name="password"]', user.password)
-    console.log(`[E2E] Form filled with credentials`)
-
-    // Wait for button to be enabled and visible
-    const loginButton = page.locator('button[type="submit"]').first()
-    await loginButton.waitFor({ state: 'visible', timeout: 5000 })
-
-    // Click the login button
-    await loginButton.click()
-    console.log(`[E2E] Login button clicked`)
-
-    // Wait for success toast (optional - may not always appear)
-    try {
-        await page.waitForSelector('text=เข้าสู่ระบบสำเร็จ', { timeout: 5000 })
-        console.log(`[E2E] Success toast appeared`)
-    } catch (e) {
-        console.log(`[E2E] No success toast (continuing...)`)
+            // Check if we're on the dashboard (not redirected to login)
+            const currentUrl = page.url()
+            if (!currentUrl.includes('/login')) {
+                console.log(`[E2E] ✅ Auth restored from storage -> ${currentUrl}`)
+                return true
+            }
+        }
     }
 
-    // Wait for navigation to complete - could be '/' first then redirected to dashboard
-    console.log(`[E2E] Waiting for redirect to dashboard...`)
-
-    // Wait for URL to change away from login page
-    await page.waitForURL((url) => {
-        const pathname = url.pathname
-        console.log(`[E2E] Current URL: ${pathname}`)
-
-        // Check if we're NOT on login page anymore
-        const notOnLoginPage = pathname !== '/' && pathname !== '/login' && pathname !== '/register'
-
-        if (notOnLoginPage) {
-            console.log(`[E2E] Redirected away from login to: ${pathname}`)
-        }
-
-        return notOnLoginPage
-    }, { timeout: 60000, waitUntil: 'domcontentloaded' })
-
-    // Wait for page to fully load
-    await page.waitForLoadState('networkidle')
-    console.log(`[E2E] Login complete - now at ${page.url()}`)
+    // Fallback to manual login
+    console.log(`[E2E] Manual login for ${userType}`)
+    return await manualLogin(page, userType)
 }
 
-export async function logout(page: Page) {
-    // Click user menu button (look for button with user name)
-    const userButton = page.locator('button:has-text("Test")')
-    await userButton.click({ timeout: 10000 })
+/**
+ * Perform manual login via form with proper waits
+ */
+async function manualLogin(page: Page, userType: UserType): Promise<boolean> {
+    const user = TEST_USERS[userType]
 
-    // Wait a bit for menu to appear
-    await page.waitForTimeout(500)
+    try {
+        // Step 1: Navigate to login page and wait for full load
+        console.log(`[E2E] Step 1: Navigating to login page`)
+        await page.goto('/login', { waitUntil: 'networkidle', timeout: 30000 })
 
-    // Click logout option
-    await page.click('text=ออกจากระบบ', { timeout: 10000 })
+        // Step 2: Wait for React hydration - form must be interactive
+        console.log(`[E2E] Step 2: Waiting for form hydration`)
+        const emailInput = page.locator('input[name="email"]')
+        await emailInput.waitFor({ state: 'visible', timeout: 10000 })
 
-    // Wait for redirect to login page
-    await page.waitForURL('/', { timeout: 10000 })
+        // Wait a bit for hydration to complete
+        await page.waitForTimeout(1000)
+
+        // Step 3: Fill email - clear first, then type slowly to ensure React picks it up
+        console.log(`[E2E] Step 3: Filling email`)
+        await emailInput.click()
+        await emailInput.fill('')
+        await emailInput.pressSequentially(user.email, { delay: 50 })
+
+        // Step 4: Fill password
+        console.log(`[E2E] Step 4: Filling password`)
+        const passwordInput = page.locator('input[name="password"]')
+        await passwordInput.click()
+        await passwordInput.fill('')
+        await passwordInput.pressSequentially(user.password, { delay: 50 })
+
+        // Step 5: Submit form and wait for response
+        console.log(`[E2E] Step 5: Submitting form`)
+        const submitButton = page.locator('button[type="submit"]')
+
+        // Click and wait for navigation or network response
+        await Promise.all([
+            submitButton.click(),
+            // Wait for the signIn API call to complete
+            page.waitForResponse(
+                (response) => response.url().includes('/api/auth/callback/credentials'),
+                { timeout: 15000 }
+            ).catch(() => null),
+        ])
+
+        // Step 6: Wait for toast or error message
+        console.log(`[E2E] Step 6: Waiting for result`)
+
+        // Try to detect success toast
+        const successToastPromise = page.waitForSelector('text=เข้าสู่ระบบสำเร็จ', { timeout: 5000 })
+            .then(() => 'success')
+            .catch(() => null)
+
+        // Try to detect error toast
+        const errorToastPromise = page.waitForSelector('text=อีเมลหรือรหัสผ่านไม่ถูกต้อง', { timeout: 5000 })
+            .then(() => 'error')
+            .catch(() => null)
+
+        const toastResult = await Promise.race([successToastPromise, errorToastPromise])
+
+        if (toastResult === 'error') {
+            console.log(`[E2E] ❌ Login failed: Invalid credentials toast appeared`)
+            return false
+        }
+
+        if (toastResult === 'success') {
+            console.log(`[E2E] ✅ Success toast appeared, waiting for redirect`)
+        }
+
+        // Step 7: Wait for window.location.href redirect
+        // The app uses window.location.href = '/' which triggers a full page load
+        console.log(`[E2E] Step 7: Waiting for redirect`)
+
+        try {
+            // Wait for navigation to root, then middleware will redirect to dashboard
+            await page.waitForURL('**/', { timeout: 10000 })
+
+            // Wait for middleware redirect to dashboard
+            await page.waitForURL(
+                (url) => {
+                    const pathname = url.pathname
+                    return pathname.startsWith('/resident') ||
+                        pathname.startsWith('/admin') ||
+                        pathname.startsWith('/security') ||
+                        pathname.startsWith('/maintenance') ||
+                        pathname.startsWith('/super-admin')
+                },
+                { timeout: 10000 }
+            )
+        } catch {
+            // Maybe already redirected, check current URL
+        }
+
+        // Step 8: Verify we're on a dashboard
+        await page.waitForLoadState('networkidle', { timeout: 10000 })
+
+        const finalUrl = page.url()
+        console.log(`[E2E] Step 8: Final URL = ${finalUrl}`)
+
+        if (finalUrl.includes('/login')) {
+            console.log(`[E2E] ⚠️ Still on login page after all steps`)
+            return false
+        }
+
+        console.log(`[E2E] ✅ Login successful -> ${finalUrl}`)
+        return true
+
+    } catch (error) {
+        console.log(`[E2E] ❌ Login failed:`, (error as Error).message)
+        return false
+    }
+}
+
+/**
+ * Logout current user
+ */
+export async function logout(page: Page): Promise<void> {
+    try {
+        // Navigate to signout endpoint
+        await page.goto('/api/auth/signout', { waitUntil: 'networkidle', timeout: 10000 })
+
+        // If there's a confirmation button, click it
+        const confirmButton = page.locator('button:has-text("Sign out")')
+        if (await confirmButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+            await confirmButton.click()
+            await page.waitForURL('/login', { timeout: 10000 })
+        }
+
+        console.log(`[E2E] Logged out successfully`)
+    } catch (error) {
+        console.log(`[E2E] Logout error (navigating to login):`, (error as Error).message)
+        // Force navigate to login
+        await page.goto('/login', { waitUntil: 'networkidle', timeout: 10000 })
+    }
 }
