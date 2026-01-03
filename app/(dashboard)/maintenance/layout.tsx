@@ -24,12 +24,13 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useSession } from "next-auth/react";
 // getInitials used for fallback initialization
 import { HeaderUserMenu } from "@/components/dashboard/header-user-menu";
+import { FeatureGatedMenuItem, MENU_COLORS, type MenuItem } from "@/components/shared/feature-gated-menu-item";
 
 interface MaintenanceLayoutProps {
     children: ReactNode;
 }
 
-const menuItems = [
+const menuItems: MenuItem[] = [
     {
         label: "Dashboard",
         href: "/maintenance",
@@ -39,34 +40,39 @@ const menuItems = [
         label: "งานที่รอดำเนินการ",
         href: "/maintenance/pending",
         icon: Clock,
-        count: 12, // Mock count
+        count: 12,
+        featureKey: "maintenance",
     },
     {
         label: "งานที่กำลังดำเนินการ",
         href: "/maintenance/in-progress",
         icon: Wrench,
-        count: 5, // Mock count
+        count: 5,
+        featureKey: "maintenance",
     },
     {
         label: "งานที่เสร็จแล้ว",
         href: "/maintenance/completed",
         icon: CheckCircle,
+        featureKey: "maintenance",
     },
     {
         label: "ประวัติการซ่อม",
         href: "/maintenance/history",
         icon: Users,
+        featureKey: "maintenance",
     },
     {
         label: "จัดการตั๋ว้",
         href: "/maintenance/tickets",
         icon: AlertTriangle,
+        featureKey: "support",
     },
     {
         label: "คงคลังอะไหล่",
         href: "/maintenance/parts",
         icon: Package,
-        count: 3, // Low stock count
+        count: 3,
     },
     {
         label: "วิเคราะห์ข้อมูล",
@@ -123,37 +129,17 @@ export default function MaintenanceLayout({ children }: MaintenanceLayoutProps):
                     </button>
                 </div>
 
-                {/* Navigation */}
                 <nav className="p-4 space-y-2">
                     {menuItems.map((item) => {
                         const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
                         return (
-                            <Link
+                            <FeatureGatedMenuItem
                                 key={item.href}
-                                href={item.href}
+                                item={item}
+                                isActive={isActive}
                                 onClick={() => setIsSidebarOpen(false)}
-                                className={cn(
-                                    "flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-all duration-300",
-                                    isActive
-                                        ? "bg-gradient-to-r from-orange-500/20 to-amber-500/20 text-orange-600 dark:text-white shadow-lg shadow-orange-500/10 border border-orange-500/20"
-                                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50"
-                                )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <item.icon
-                                        className={cn(
-                                            "w-5 h-5 transition-colors",
-                                            isActive ? "text-orange-500 dark:text-orange-400" : "text-slate-500"
-                                        )}
-                                    />
-                                    <span>{item.label}</span>
-                                </div>
-                                {item.count && item.count > 0 && (
-                                    <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                        {item.count}
-                                    </span>
-                                )}
-                            </Link>
+                                colorClass={MENU_COLORS.maintenance}
+                            />
                         );
                     })}
                 </nav>

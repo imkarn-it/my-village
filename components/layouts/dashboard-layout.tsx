@@ -41,6 +41,7 @@ import type { ReactNode } from "react"
 import dynamic from "next/dynamic"
 import { NotificationBell } from "@/components/shared/notification-bell"
 import { PushPermission } from "@/components/shared/push-permission"
+import { FeatureGate, type FeatureKey } from "@/lib/features"
 
 // ==========================================
 // Types
@@ -50,6 +51,7 @@ type MenuItem = {
     readonly title: string
     readonly icon: LucideIcon
     readonly href: string
+    readonly featureKey?: FeatureKey // Optional feature toggle key
 }
 
 type DashboardLayoutProps = {
@@ -60,7 +62,7 @@ type DashboardLayoutProps = {
 // Constants
 // ==========================================
 
-const RESIDENT_MENU_ITEMS = [
+const RESIDENT_MENU_ITEMS: MenuItem[] = [
     {
         title: "หน้าหลัก",
         icon: LayoutDashboard,
@@ -75,16 +77,19 @@ const RESIDENT_MENU_ITEMS = [
         title: "ผู้มาติดต่อ",
         icon: Users,
         href: "/resident/visitors",
+        featureKey: "visitors",
     },
     {
         title: "พัสดุ",
         icon: Package,
         href: "/resident/parcels",
+        featureKey: "parcels",
     },
     {
         title: "แจ้งซ่อม",
         icon: Wrench,
         href: "/resident/maintenance",
+        featureKey: "maintenance",
     },
     {
         title: "บิล/ชำระเงิน",
@@ -95,23 +100,27 @@ const RESIDENT_MENU_ITEMS = [
         title: "รถเรียก",
         icon: Car,
         href: "/resident/transport",
+        featureKey: "transport",
     },
     {
         title: "สิ่งอำนวยความสะดวก",
         icon: Dumbbell,
         href: "/resident/facilities",
+        featureKey: "facilities",
     },
     {
         title: "การจองของฉัน",
         icon: Calendar,
         href: "/resident/bookings",
+        featureKey: "facilities",
     },
     {
         title: "ติดต่อนิติบุคคล",
         icon: MessageSquare,
         href: "/resident/support",
+        featureKey: "support",
     },
-] as const satisfies readonly MenuItem[]
+]
 
 // ==========================================
 // Helper Functions
@@ -187,7 +196,7 @@ export function AppSidebar(): React.JSX.Element {
                                 const isActive = pathname === item.href
                                 const IconComponent = item.icon
 
-                                return (
+                                const menuItem = (
                                     <SidebarMenuItem key={item.href}>
                                         <SidebarMenuButton
                                             asChild
@@ -206,6 +215,17 @@ export function AppSidebar(): React.JSX.Element {
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 )
+
+                                // Wrap with FeatureGate if featureKey is defined
+                                if (item.featureKey) {
+                                    return (
+                                        <FeatureGate key={item.href} feature={item.featureKey}>
+                                            {menuItem}
+                                        </FeatureGate>
+                                    )
+                                }
+
+                                return menuItem
                             })}
                         </SidebarMenu>
                     </SidebarGroupContent>

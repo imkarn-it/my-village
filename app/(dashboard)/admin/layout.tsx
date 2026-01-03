@@ -40,12 +40,13 @@ import { useSession } from "next-auth/react";
 import { getInitials } from "@/lib/utils";
 import { HeaderUserMenu } from "@/components/dashboard/header-user-menu";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
+import { FeatureGatedMenuItem, MENU_COLORS, type MenuItem } from "@/components/shared/feature-gated-menu-item";
 
 interface AdminLayoutProps {
     children: ReactNode;
 }
 
-const menuItems = [
+const menuItems: MenuItem[] = [
     {
         label: "Dashboard",
         href: "/admin",
@@ -65,43 +66,37 @@ const menuItems = [
         label: "พัสดุ",
         href: "/admin/parcels",
         icon: Package,
+        featureKey: "parcels",
     },
     {
         label: "บิล/ชำระเงิน",
         href: "/admin/bills",
         icon: CreditCard,
-        submenu: [
-            {
-                label: "ทั้งหมด",
-                href: "/admin/bills",
-            },
-            {
-                label: "ตรวจสอบการชำระเงิน",
-                href: "/admin/bills/verify",
-            },
-        ],
     },
     {
         label: "แจ้งซ่อม",
         href: "/admin/maintenance",
         icon: Wrench,
+        featureKey: "maintenance",
     },
     {
         label: "สิ่งอำนวยความสะดวก",
         href: "/admin/facilities",
         icon: Dumbbell,
+        featureKey: "facilities",
     },
     {
         label: "การจอง",
         href: "/admin/bookings",
         icon: Calendar,
+        featureKey: "facilities",
     },
     {
         label: "แจ้งปัญหา",
         href: "/admin/support",
         icon: MessageSquare,
+        featureKey: "support",
     },
-
     {
         label: "รายงาน",
         href: "/admin/reports",
@@ -163,30 +158,17 @@ export default function AdminLayout({ children }: AdminLayoutProps): React.JSX.E
                     </button>
                 </div>
 
-                {/* Navigation */}
                 <nav className="p-4 space-y-2">
                     {menuItems.map((item) => {
                         const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
                         return (
-                            <Link
+                            <FeatureGatedMenuItem
                                 key={item.href}
-                                href={item.href}
+                                item={item}
+                                isActive={isActive}
                                 onClick={() => setIsSidebarOpen(false)}
-                                className={cn(
-                                    "flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-all duration-300",
-                                    isActive
-                                        ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-600 dark:text-white shadow-lg shadow-purple-500/10 border border-purple-500/20"
-                                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50"
-                                )}
-                            >
-                                <item.icon
-                                    className={cn(
-                                        "w-5 h-5 transition-colors",
-                                        isActive ? "text-purple-500 dark:text-purple-400" : "text-slate-500"
-                                    )}
-                                />
-                                <span>{item.label}</span>
-                            </Link>
+                                colorClass={MENU_COLORS.admin}
+                            />
                         );
                     })}
                 </nav>

@@ -323,8 +323,12 @@ const app = new Elysia({ prefix: '/api' })
             name: body.name,
             type: body.type,
             address: body.address,
-            settings: {}, // Default settings
+            settings: {},
         }).returning()
+
+        // Initialize feature toggles for the new project
+        const { initializeProjectFeatures } = await import('@/lib/services/feature.service')
+        await initializeProjectFeatures(project.id)
 
         return { success: true, data: project }
     }, {
@@ -876,6 +880,16 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Forbidden - Security or Admin access required' }
         }
 
+        // Check if parcels feature is enabled
+        const { isFeatureEnabled } = await import('@/lib/services/feature.service')
+        const projectId = (session.user as { projectId?: string }).projectId
+        if (projectId) {
+            const enabled = await isFeatureEnabled(projectId, 'parcels')
+            if (!enabled) {
+                return { success: false, error: 'Feature "parcels" is not enabled for this project' }
+            }
+        }
+
         const [result] = await db.insert(parcels).values({
             ...body,
             receivedBy: session.user.id,
@@ -971,6 +985,16 @@ const app = new Elysia({ prefix: '/api' })
         const session = await auth()
         if (!session?.user || (session.user.role !== 'security' && session.user.role !== 'admin' && session.user.role !== 'resident')) {
             return { success: false, error: 'Forbidden - Access required' }
+        }
+
+        // Check if visitors feature is enabled
+        const { isFeatureEnabled } = await import('@/lib/services/feature.service')
+        const projectId = (session.user as { projectId?: string }).projectId
+        if (projectId) {
+            const enabled = await isFeatureEnabled(projectId, 'visitors')
+            if (!enabled) {
+                return { success: false, error: 'Feature "visitors" is not enabled for this project' }
+            }
         }
 
         const [result] = await db.insert(visitors).values({
@@ -1394,6 +1418,16 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Unauthorized' }
         }
 
+        // Check if maintenance feature is enabled
+        const { isFeatureEnabled } = await import('@/lib/services/feature.service')
+        const projectId = (session.user as { projectId?: string }).projectId
+        if (projectId) {
+            const enabled = await isFeatureEnabled(projectId, 'maintenance')
+            if (!enabled) {
+                return { success: false, error: 'Feature "maintenance" is not enabled for this project' }
+            }
+        }
+
         const [result] = await db.insert(maintenanceRequests).values({
             ...body,
             createdBy: session.user.id,
@@ -1621,6 +1655,16 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Unauthorized' }
         }
 
+        // Check if facilities feature is enabled
+        const { isFeatureEnabled } = await import('@/lib/services/feature.service')
+        const projectId = (session.user as { projectId?: string }).projectId
+        if (projectId) {
+            const enabled = await isFeatureEnabled(projectId, 'facilities')
+            if (!enabled) {
+                return { success: false, error: 'Feature "facilities" is not enabled for this project' }
+            }
+        }
+
         const [booking] = await db.insert(bookings).values({
             ...body,
             userId: session.user.id as string,
@@ -1740,6 +1784,16 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Unauthorized' }
         }
 
+        // Check if sos feature is enabled
+        const { isFeatureEnabled } = await import('@/lib/services/feature.service')
+        const projectId = (session.user as { projectId?: string }).projectId
+        if (projectId) {
+            const enabled = await isFeatureEnabled(projectId, 'sos')
+            if (!enabled) {
+                return { success: false, error: 'Feature "sos" is not enabled for this project' }
+            }
+        }
+
         const [result] = await db.insert(sosAlerts).values({
             ...body,
             userId: session.user.id as string,
@@ -1833,6 +1887,16 @@ const app = new Elysia({ prefix: '/api' })
         const session = await auth()
         if (!session?.user) {
             return { success: false, error: 'Unauthorized' }
+        }
+
+        // Check if support feature is enabled
+        const { isFeatureEnabled } = await import('@/lib/services/feature.service')
+        const projectId = (session.user as { projectId?: string }).projectId
+        if (projectId) {
+            const enabled = await isFeatureEnabled(projectId, 'support')
+            if (!enabled) {
+                return { success: false, error: 'Feature "support" is not enabled for this project' }
+            }
         }
 
         const [result] = await db.insert(supportTickets).values({
@@ -2477,6 +2541,66 @@ const app = new Elysia({ prefix: '/api' })
             limit: t.Optional(t.String()),
         }),
         detail: { tags: ['patrol'], summary: 'Get patrol logs' }
+    })
+
+    // ==========================================
+    // Project Features (Feature Toggles)
+    // ==========================================
+    .get('/projects/:id/features', async ({ params, request }) => {
+        const session = await getAuthSession(request)
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        const projectId = params.id
+
+        // Import dynamically to avoid circular deps
+        const { getProjectFeatures } = await import('@/lib/services/feature.service')
+        const features = await getProjectFeatures(projectId)
+
+        return features
+    }, {
+        params: t.Object({
+            id: t.String(),
+        }),
+        detail: { tags: ['features'], summary: 'Get project features' }
+    })
+
+    .patch('/projects/:id/features', async ({ params, body, request }) => {
+        const session = await getAuthSession(request)
+        if (!session?.user) {
+            return { success: false, error: 'Unauthorized' }
+        }
+
+        // Only admin or super_admin can update features
+        const userRole = (session.user as { role?: string }).role
+        if (userRole !== 'admin' && userRole !== 'super_admin') {
+            return { success: false, error: 'Forbidden' }
+        }
+
+        const projectId = params.id
+        const userId = (session.user as { id?: string }).id
+
+        const { updateProjectFeatures } = await import('@/lib/services/feature.service')
+        const features = await updateProjectFeatures(projectId, body.features, userId)
+
+        return { success: true, data: features }
+    }, {
+        params: t.Object({
+            id: t.String(),
+        }),
+        body: t.Object({
+            features: t.Object({
+                maintenance: t.Optional(t.Boolean()),
+                facilities: t.Optional(t.Boolean()),
+                parcels: t.Optional(t.Boolean()),
+                transport: t.Optional(t.Boolean()),
+                sos: t.Optional(t.Boolean()),
+                visitors: t.Optional(t.Boolean()),
+                support: t.Optional(t.Boolean()),
+            }),
+        }),
+        detail: { tags: ['features'], summary: 'Update project features' }
     })
 
 // Export type for Eden Treaty

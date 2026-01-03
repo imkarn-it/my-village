@@ -804,3 +804,46 @@ export const attendanceRelations = relations(attendance, ({ one }) => ({
 
 export type Attendance = typeof attendance.$inferSelect
 export type NewAttendance = typeof attendance.$inferInsert
+
+// ==========================================
+// Project Features (Feature Toggles per Project)
+// ==========================================
+export const featureKeyEnum = pgEnum('feature_key', [
+    'maintenance',   // แจ้งซ่อม
+    'facilities',    // จองสิ่งอำนวยความสะดวก
+    'parcels',       // พัสดุ
+    'transport',     // รถเรียก
+    'sos',           // SOS
+    'visitors',      // ผู้มาติดต่อ
+    'support',       // ติดต่อนิติ
+])
+
+export const projectFeatures = pgTable('project_features', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id').references(() => projects.id).notNull(),
+    featureKey: featureKeyEnum('feature_key').notNull(),
+    enabled: boolean('enabled').notNull().default(true),
+
+    // Optional configuration per feature
+    config: jsonb('config'), // e.g., { maxBookingsPerDay: 2, requireApproval: true }
+
+    // Audit
+    updatedBy: uuid('updated_by').references(() => users.id),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+export const projectFeaturesRelations = relations(projectFeatures, ({ one }) => ({
+    project: one(projects, {
+        fields: [projectFeatures.projectId],
+        references: [projects.id],
+    }),
+    updatedByUser: one(users, {
+        fields: [projectFeatures.updatedBy],
+        references: [users.id],
+    }),
+}))
+
+export type ProjectFeature = typeof projectFeatures.$inferSelect
+export type NewProjectFeature = typeof projectFeatures.$inferInsert
+export type FeatureKey = 'maintenance' | 'facilities' | 'parcels' | 'transport' | 'sos' | 'visitors' | 'support'

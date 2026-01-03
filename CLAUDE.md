@@ -1,7 +1,7 @@
 # My Village - Project Context
 
-> **Last Updated:** 2025-12-30  
-> **Version:** 0.1.0 | **Build:** 86 pages | **Tests:** 345 unit + 110 E2E
+> **Last Updated:** 2026-01-02  
+> **Version:** 0.1.0 | **Build:** 86 pages | **Tests:** 370 unit + 118 E2E
 
 ---
 
@@ -89,7 +89,9 @@ Without me having to explicitly ask.
 | **Database** | PostgreSQL (Neon) + Drizzle ORM |
 | **API** | Elysia.js + Eden Treaty |
 | **Auth** | Auth.js v5 |
-| **Testing** | Vitest (314 unit) + Playwright (101 E2E) |
+| **State** | Zustand + React Query |
+| **Real-time** | WebSocket + Polling fallback |
+| **Testing** | Vitest (370 unit) + Playwright (118 E2E) |
 | **File Upload** | Cloudinary |
 | **Export** | xlsx + jspdf |
 | **OCR** | tesseract.js |
@@ -109,7 +111,7 @@ village-app/
 │   │   ├── security/     # Security (7 pages)
 │   │   ├── maintenance/  # Maintenance (16 pages)
 │   │   └── super-admin/  # Super Admin (8 pages)
-│   └── api/              # Elysia API (46+ endpoints)
+│   └── api/              # Elysia API (48+ endpoints)
 ├── components/
 │   ├── ui/               # shadcn/ui (DO NOT EDIT)
 │   ├── shared/           # Shared components
@@ -118,9 +120,13 @@ village-app/
 │   ├── db/               # Drizzle ORM + schema
 │   ├── services/         # Business logic + email
 │   ├── middleware/       # Audit + soft-delete
+│   ├── realtime/         # WebSocket + hooks
+│   ├── stores/           # Zustand global state
+│   ├── cache/            # React Query + server cache
+│   ├── features/         # Feature toggles
 │   └── utils/            # Utilities + export
-├── e2e/                  # Playwright E2E tests (101 tests)
-└── __tests__/            # Unit tests (314 tests)
+├── e2e/                  # Playwright E2E tests (126 tests)
+└── __tests__/            # Unit tests (404 tests)
 ```
 
 ---
@@ -135,12 +141,12 @@ village-app/
 
 ---
 
-## ✅ Recent Updates (2025-12-27)
+## ✅ Recent Updates (2026-01-04)
 
-- **E2E Tests** - 101 tests passing with Playwright
-- **Auth Seeding** - Test user seeding scripts
-- **Password Reset** - Forgot/reset password flow
-- **Email Service** - Gmail SMTP + 5 templates
-- **OCR License Plate** - Tesseract.js scanner
-- **Time Attendance** - Clock in/out + GPS (API + UI wired)
-- **Guard Patrol** - QR checkpoint system (API + UI wired)
+- **Feature Toggles** - เปิด/ปิดฟีเจอร์ต่อโปรเจค (maintenance, facilities, parcels) + 35 tests
+- **Push Notifications** - OneSignal integration fully configured
+- **Real-time Updates** - WebSocket + polling fallback for SOS/notifications
+- **Zustand Stores** - Global state for notifications, SOS, UI
+- **React Query** - Client-side caching with invalidation
+- **Server Cache** - unstable_cache for announcements/facilities
+
