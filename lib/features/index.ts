@@ -19,6 +19,7 @@ export {
 
 // Components
 export { FeatureGate, withFeatureGate } from './feature-gate'
+export { withFeaturePage, FeatureDisabledPage, useFeaturePageAccess } from './with-feature-page'
 
 // Feature metadata (will be imported from service when needed server-side)
 export const FEATURE_KEYS = [

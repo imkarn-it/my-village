@@ -29,6 +29,7 @@ import { api } from "@/lib/api/client"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { th } from "date-fns/locale"
+import { withFeaturePage } from "@/lib/features"
 
 interface MaintenanceRequest {
     id: string;
@@ -136,7 +137,7 @@ const getCategoryLabel = (category: string) => {
     return map[category] || category
 }
 
-export default function MaintenancePage(): React.JSX.Element {
+function MaintenancePage(): React.JSX.Element {
     const [requests, setRequests] = useState<MaintenanceRequest[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [units, setUnits] = useState<Unit[]>([])
@@ -435,3 +436,6 @@ export default function MaintenancePage(): React.JSX.Element {
         </div>
     );
 }
+
+// Wrap with feature protection
+export default withFeaturePage('maintenance')(MaintenancePage)
