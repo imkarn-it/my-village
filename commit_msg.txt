@@ -1,9 +1,13 @@
-fix: Mark database-dependent pages as force-dynamic to prevent static prerendering
+fix: Setup GitHub Actions for E2E testing and fix API validation
 
-Added export const dynamic = 'force-dynamic' to 9 pages that import db:
-- admin: page, parcels, profile
-- resident: page, profile
-- security: page, alerts, visitors, profile
-
-This prevents Next.js from attempting to statically generate these pages
-during build when DATABASE_URL is not available.
+- Updated .github/workflows/test.yml:
+  - Added PostgreSQL service for E2E tests.
+  - Added AUTH_SECRET and DATABASE_URL environment variables.
+  - Added database setup and e2e:seed steps.
+  - Restricted E2E tests to Chromium in CI for faster runs.
+- Fixed app/api/[[...slugs]]/route.ts:
+  - Updated bill creation validation to accept both string and number for 'amount'.
+  - Ensured 'amount' is converted to string before inserting into DB.
+- Refactored lib/db/index.ts:
+  - Used a Proxy for the db instance to provide clear error messages if accessed without DATABASE_URL.
+  - Maintained compatibility with Auth.js by conditionally using the DrizzleAdapter.

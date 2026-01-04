@@ -23,9 +23,21 @@ if (connectionString) {
     _db = drizzle(_pool, { schema })
 }
 
-// Export the db instance - may be null during build if no DATABASE_URL
-// Runtime code should handle null or use getDb() for safety
-export const db = _db as DbClient
+// Export the db instance - uses a Proxy to provide better error messages if accessed when DATABASE_URL is missing
+export const db = new Proxy({} as DbClient, {
+    get(target, prop) {
+        if (!_db) {
+            // Special case for some Drizzle internals or checks if needed
+            if (prop === 'then') return undefined
+
+            throw new Error(
+                `❌ Database connection failed: Cannot access 'db.${String(prop)}' because DATABASE_URL is not defined. ` +
+                `Check your environment variables.`
+            )
+        }
+        return (_db as any)[prop]
+    }
+})
 
 // Safe getter that throws a helpful error if db is not initialized
 export function getDb(): DbClient {

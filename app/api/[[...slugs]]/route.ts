@@ -1118,7 +1118,11 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Forbidden - Admin access required' }
         }
 
-        const [result] = await db.insert(bills).values(body).returning()
+        const { amount, ...billData } = body
+        const [result] = await db.insert(bills).values({
+            ...billData,
+            amount: amount.toString(),
+        }).returning()
 
         // Audit log
         await auditCreate(request, session.user.id || undefined, 'bills', result.id, result as Record<string, unknown>)
@@ -1154,7 +1158,7 @@ const app = new Elysia({ prefix: '/api' })
         body: t.Object({
             unitId: t.String(),
             billType: t.String(),
-            amount: t.String(),
+            amount: t.Union([t.String(), t.Number()]),
             dueDate: t.Optional(t.String()),
             status: t.Optional(t.String()),
         }),

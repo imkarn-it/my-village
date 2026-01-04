@@ -54,6 +54,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:test@localhost:5432/test_db
+      AUTH_SECRET: test-secret-key-for-ci-only-not-for-production-use
       NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
       NEXT_PUBLIC_SUPABASE_ANON_KEY: test-key
 
@@ -84,6 +85,28 @@ jobs:
     name: E2E Tests
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      DATABASE_URL: postgresql://postgres:test@localhost:5432/test_db
+      AUTH_SECRET: test-secret-key-for-ci-only-not-for-production-use
+      NEXTAUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: test-key
+      NODE_ENV: test
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -96,16 +119,22 @@ jobs:
     - name: Install dependencies
       run: bun install
 
+    - name: Setup database
+      run: |
+        bun run db:generate
+        bun run db:push
+
+    - name: Seed test data
+      run: bun run e2e:seed
+
     - name: Install Playwright browsers
-      run: bunx playwright install --with-deps
+      run: bunx playwright install --with-deps chromium
 
     - name: Build application
       run: bun run build
-      env:
-        NODE_ENV: test
 
-    - name: Run E2E tests
-      run: bun run e2e
+    - name: Run E2E tests (Chromium only in CI)
+      run: bunx playwright test --project=chromium
 
     - uses: actions/upload-artifact@v4
       if: ${{ failure() }}
