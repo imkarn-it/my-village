@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Building2, Loader2, CheckCircle2, XCircle, Mail } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
+import { api } from "@/lib/api/client"
 
 function VerifyEmailContent(): React.JSX.Element {
     const router = useRouter()
@@ -25,17 +26,18 @@ function VerifyEmailContent(): React.JSX.Element {
 
         async function verifyEmail() {
             try {
-                const response = await fetch(`/api/auth/verify-email?token=${token}`)
-                const data = await response.json()
+                const { data, error } = await api.user["verify-email"].get({
+                    query: { token: token! }
+                })
 
-                if (data.success) {
+                if (data?.success) {
                     setStatus('success')
                     setMessage('ยืนยันอีเมลสำเร็จ! คุณสามารถเข้าสู่ระบบได้แล้ว')
                     toast.success('ยืนยันอีเมลสำเร็จ')
                     setTimeout(() => router.push('/login'), 3000)
                 } else {
                     setStatus('error')
-                    setMessage(data.error || 'ไม่สามารถยืนยันอีเมลได้')
+                    setMessage(error?.value ? String(error.value) : 'ไม่สามารถยืนยันอีเมลได้')
                 }
             } catch {
                 setStatus('error')
@@ -55,10 +57,10 @@ function VerifyEmailContent(): React.JSX.Element {
             <Card className="w-full max-w-md bg-slate-900/50 border-slate-700/50 backdrop-blur-xl shadow-2xl relative z-10">
                 <CardHeader className="space-y-3 text-center pb-4">
                     <div className={`mx-auto w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg mb-2 ${status === 'verifying'
-                            ? 'bg-gradient-to-br from-blue-400 to-cyan-400'
-                            : status === 'success'
-                                ? 'bg-gradient-to-br from-emerald-400 to-cyan-400'
-                                : 'bg-gradient-to-br from-red-400 to-orange-400'
+                        ? 'bg-gradient-to-br from-blue-400 to-cyan-400'
+                        : status === 'success'
+                            ? 'bg-gradient-to-br from-emerald-400 to-cyan-400'
+                            : 'bg-gradient-to-br from-red-400 to-orange-400'
                         }`}>
                         {status === 'verifying' ? (
                             <Loader2 className="w-9 h-9 text-white animate-spin" />

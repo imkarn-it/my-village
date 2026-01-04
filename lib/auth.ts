@@ -43,16 +43,24 @@ async function authenticateUser(
         },
     })
 
-    if (!user?.password) {
+    if (!user) {
+        console.warn(`[Auth] User not found: ${email}`)
+        return null
+    }
+
+    if (!user.password) {
+        console.warn(`[Auth] User has no password: ${email}`)
         return null
     }
 
     const passwordsMatch = await bcrypt.compare(password, user.password)
 
     if (!passwordsMatch) {
+        console.warn(`[Auth] Password mismatch for: ${email}`)
         return null
     }
 
+    console.log(`[Auth] ✅ Authenticated: ${email} (${user.role})`)
     return {
         id: user.id,
         email: user.email,

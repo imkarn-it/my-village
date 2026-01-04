@@ -46,7 +46,7 @@ export default function RegisterPage(): React.JSX.Element {
         }
 
         try {
-            const { error } = await api.auth.register.post({
+            const { error } = await api.user.register.post({
                 name,
                 email,
                 password,

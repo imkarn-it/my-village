@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building2, Lock, Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react"
 import { toast } from "sonner"
+import { api } from "@/lib/api/client"
 
 function ResetPasswordContent(): React.JSX.Element {
     const router = useRouter()
@@ -32,9 +33,10 @@ function ResetPasswordContent(): React.JSX.Element {
         // Verify token
         async function verifyToken() {
             try {
-                const response = await fetch(`/api/auth/verify-reset-token?token=${token}`)
-                const data = await response.json()
-                setIsValidToken(data.valid)
+                const { data } = await api.user["verify-reset-token"].get({
+                    query: { token: token! }
+                })
+                setIsValidToken(data?.valid ?? false)
             } catch {
                 setIsValidToken(false)
             }
@@ -59,20 +61,17 @@ function ResetPasswordContent(): React.JSX.Element {
         setIsPending(true)
 
         try {
-            const response = await fetch("/api/auth/reset-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, password }),
+            const { data, error } = await api.user["reset-password"].post({
+                token: token!,
+                password
             })
 
-            const data = await response.json()
-
-            if (data.success) {
+            if (data?.success) {
                 setIsSuccess(true)
                 toast.success("รีเซ็ตรหัสผ่านสำเร็จ")
                 setTimeout(() => router.push("/login"), 3000)
             } else {
-                toast.error(data.error || "เกิดข้อผิดพลาด กรุณาลองใหม่")
+                toast.error(error?.value ? String(error.value) : "เกิดข้อผิดพลาด กรุณาลองใหม่")
             }
         } catch {
             toast.error("เกิดข้อผิดพลาดในการรีเซ็ตรหัสผ่าน")

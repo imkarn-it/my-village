@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building2, Mail, Loader2, ArrowLeft, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
+import { api } from "@/lib/api/client"
 
 export default function ForgotPasswordPage(): React.JSX.Element {
     const [isPending, setIsPending] = useState(false)
@@ -19,19 +20,13 @@ export default function ForgotPasswordPage(): React.JSX.Element {
         setIsPending(true)
 
         try {
-            const response = await fetch("/api/auth/forgot-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
-            })
+            const { data, error } = await api.user["forgot-password"].post({ email })
 
-            const data = await response.json()
-
-            if (data.success) {
+            if (data?.success) {
                 setIsSuccess(true)
                 toast.success("ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว")
             } else {
-                toast.error(data.error || "เกิดข้อผิดพลาด กรุณาลองใหม่")
+                toast.error(error?.value ? String(error.value) : "เกิดข้อผิดพลาด กรุณาลองใหม่")
             }
         } catch {
             toast.error("เกิดข้อผิดพลาดในการส่งคำขอ")

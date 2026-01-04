@@ -1,9 +1,7 @@
-fix: Resolve Auth.js Drizzle adapter compatibility with Proxy object
+fix: Rename Elysia auth routes to avoid conflict with NextAuth
 
-- Updated lib/auth.ts:
-  - Used getDb() to pass the real Drizzle instance to DrizzleAdapter.
-  - Auth.js adapter does not support Proxy objects and throws "Unsupported database type".
-- Updated lib/db/index.ts:
-  - Improved Proxy logic to handle special properties (constructor, symbols).
-  - Added documentation for getDb() as the safe way to get the real instance.
-- Verified: Local build now passes successfully (Exit code: 0).
+- Renamed Elysia auth endpoints from /api/auth/* to /api/user/* in app/api/[[...slugs]]/route.ts.
+- This fixes the "UnknownAction" error caused by conflict with NextAuth's catch-all route at /api/auth/[...nextauth].
+- Updated register, forgot-password, reset-password, and verify-email pages to use the new /api/user/* endpoints.
+- Switched to using the type-safe Eden Treaty client for these API calls.
+- Added debug logs to lib/auth.ts to help diagnose "CredentialsSignin" errors in CI.

@@ -47,7 +47,7 @@ const app = new Elysia({ prefix: '/api' })
     })
 
     // Auth endpoints
-    .post('/auth/register', async ({ body }) => {
+    .post('/user/register', async ({ body }) => {
         const { email, password, name } = body
 
         // Check if user exists
@@ -152,7 +152,7 @@ const app = new Elysia({ prefix: '/api' })
     })
 
     // Password Reset - Forgot Password
-    .post('/auth/forgot-password', async ({ body }) => {
+    .post('/user/forgot-password', async ({ body }) => {
         const { email } = body
 
         const user = await db.query.users.findFirst({
@@ -195,7 +195,7 @@ const app = new Elysia({ prefix: '/api' })
     })
 
     // Verify Reset Token
-    .get('/auth/verify-reset-token', async ({ query }) => {
+    .get('/user/verify-reset-token', async ({ query }) => {
         const token = query.token
 
         if (!token) {
@@ -222,7 +222,7 @@ const app = new Elysia({ prefix: '/api' })
     })
 
     // Reset Password
-    .post('/auth/reset-password', async ({ body }) => {
+    .post('/user/reset-password', async ({ body }) => {
         const { token, password } = body
 
         const resetToken = await db.query.passwordResetTokens.findFirst({
@@ -264,7 +264,7 @@ const app = new Elysia({ prefix: '/api' })
     })
 
     // Verify Email (Simulated)
-    .get('/auth/verify-email', async ({ query }) => {
+    .get('/user/verify-email', async ({ query }) => {
         const token = query.token
 
         if (!token) {
