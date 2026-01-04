@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 
 export async function POST() {
     try {
+        // Dynamic imports to prevent DATABASE_URL error during build
+        const { auth } = await import('@/lib/auth')
+        const { NotificationService } = await import('@/lib/services/notification.service')
+
         const session = await auth()
         if (!session?.user?.id) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
         }
-
-        // Dynamic import to prevent DATABASE_URL error during build
-        const { NotificationService } = await import('@/lib/services/notification.service')
 
         const notifications = await NotificationService.markAllAsRead(session.user.id)
 
