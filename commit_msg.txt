@@ -1,13 +1,9 @@
-fix: Setup GitHub Actions for E2E testing and fix API validation
+fix: Resolve Auth.js Drizzle adapter compatibility with Proxy object
 
-- Updated .github/workflows/test.yml:
-  - Added PostgreSQL service for E2E tests.
-  - Added AUTH_SECRET and DATABASE_URL environment variables.
-  - Added database setup and e2e:seed steps.
-  - Restricted E2E tests to Chromium in CI for faster runs.
-- Fixed app/api/[[...slugs]]/route.ts:
-  - Updated bill creation validation to accept both string and number for 'amount'.
-  - Ensured 'amount' is converted to string before inserting into DB.
-- Refactored lib/db/index.ts:
-  - Used a Proxy for the db instance to provide clear error messages if accessed without DATABASE_URL.
-  - Maintained compatibility with Auth.js by conditionally using the DrizzleAdapter.
+- Updated lib/auth.ts:
+  - Used getDb() to pass the real Drizzle instance to DrizzleAdapter.
+  - Auth.js adapter does not support Proxy objects and throws "Unsupported database type".
+- Updated lib/db/index.ts:
+  - Improved Proxy logic to handle special properties (constructor, symbols).
+  - Added documentation for getDb() as the safe way to get the real instance.
+- Verified: Local build now passes successfully (Exit code: 0).

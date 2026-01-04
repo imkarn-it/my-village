@@ -26,20 +26,27 @@ if (connectionString) {
 // Export the db instance - uses a Proxy to provide better error messages if accessed when DATABASE_URL is missing
 export const db = new Proxy({} as DbClient, {
     get(target, prop) {
-        if (!_db) {
-            // Special case for some Drizzle internals or checks if needed
-            if (prop === 'then') return undefined
-
-            throw new Error(
-                `❌ Database connection failed: Cannot access 'db.${String(prop)}' because DATABASE_URL is not defined. ` +
-                `Check your environment variables.`
-            )
+        // If db is available, return the real property
+        if (_db) {
+            return (_db as any)[prop]
         }
-        return (_db as any)[prop]
+
+        // Special case for some Drizzle internals or checks
+        if (prop === 'then' || prop === 'constructor' || typeof prop === 'symbol') {
+            return undefined
+        }
+
+        throw new Error(
+            `❌ Database connection failed: Cannot access 'db.${String(prop)}' because DATABASE_URL is not defined. ` +
+            `Check your environment variables.`
+        )
     }
 })
 
-// Safe getter that throws a helpful error if db is not initialized
+/**
+ * Safe getter that returns the REAL Drizzle instance.
+ * Use this when passing the db to external libraries like Auth.js
+ */
 export function getDb(): DbClient {
     if (!_db) {
         throw new Error('DATABASE_URL is not defined - database is not available')

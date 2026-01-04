@@ -3,7 +3,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
 import { z } from "zod"
-import { db, isDatabaseAvailable } from "@/lib/db"
+import { db, isDatabaseAvailable, getDb } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import bcrypt from "bcryptjs"
@@ -64,7 +64,8 @@ async function authenticateUser(
 
 // Only use DrizzleAdapter if database is available
 // During build without DATABASE_URL, use JWT-only mode
-const adapter = isDatabaseAvailable() ? DrizzleAdapter(db) : undefined
+// Use getDb() to pass the REAL instance, as Auth.js doesn't support Proxy objects
+const adapter = isDatabaseAvailable() ? DrizzleAdapter(getDb()) : undefined
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
