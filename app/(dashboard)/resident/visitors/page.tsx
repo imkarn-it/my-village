@@ -62,6 +62,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { QRCodeDisplay } from "@/components/ui/qr-code-display"
+import { withFeaturePage } from "@/lib/features"
 
 const getStatusBadge = (status: string) => {
     switch (status) {
@@ -90,7 +91,7 @@ const getStatusBadge = (status: string) => {
     }
 };
 
-export default function VisitorsPage(): React.JSX.Element {
+function VisitorsPage(): React.JSX.Element {
     const [visitors, setVisitors] = useState<Visitor[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [units, setUnits] = useState<Unit[]>([])
@@ -483,3 +484,5 @@ export default function VisitorsPage(): React.JSX.Element {
         </div>
     );
 }
+
+export default withFeaturePage('visitors')(VisitorsPage);

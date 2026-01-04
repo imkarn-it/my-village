@@ -20,6 +20,7 @@ import {
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 import { toast } from "sonner";
+import { withFeaturePage } from "@/lib/features";
 
 type TransportRequest = {
     id: string;
@@ -112,7 +113,7 @@ const transportProviders = [
     }
 ];
 
-export default function ResidentTransportPage() {
+function ResidentTransportPage() {
     const [requests, setRequests] = useState<TransportRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [showNewRequestForm, setShowNewRequestForm] = useState(false);
@@ -607,8 +608,8 @@ export default function ResidentTransportPage() {
                                         >
                                             <Star
                                                 className={`w-8 h-8 ${star <= (selectedRequest.rating || 0)
-                                                        ? "text-yellow-400 fill-current"
-                                                        : "text-gray-300"
+                                                    ? "text-yellow-400 fill-current"
+                                                    : "text-gray-300"
                                                     }`}
                                             />
                                         </button>
@@ -654,3 +655,5 @@ export default function ResidentTransportPage() {
         </div>
     );
 }
+
+export default withFeaturePage('transport')(ResidentTransportPage);

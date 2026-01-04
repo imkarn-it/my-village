@@ -26,6 +26,7 @@ import { api } from "@/lib/api/client"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { th } from "date-fns/locale"
+import { withFeaturePage } from "@/lib/features"
 
 interface Parcel {
     id: string;
@@ -42,7 +43,7 @@ interface Unit {
     unitNumber: string;
 }
 
-export default function ParcelsPage(): React.JSX.Element {
+function ParcelsPage(): React.JSX.Element {
     const [parcels, setParcels] = useState<Parcel[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [units, setUnits] = useState<Unit[]>([])
@@ -307,3 +308,5 @@ export default function ParcelsPage(): React.JSX.Element {
         </div>
     );
 }
+
+export default withFeaturePage('parcels')(ParcelsPage);

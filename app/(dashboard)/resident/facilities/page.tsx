@@ -21,6 +21,7 @@ import {
     MapPin,
 } from "lucide-react";
 import { api } from "@/lib/api/client";
+import { withFeaturePage } from "@/lib/features";
 
 type Facility = {
     id: string;
@@ -68,7 +69,7 @@ const getColor = (name: string) => {
     return "from-green-400 to-emerald-500";
 };
 
-export default function FacilitiesPage() {
+function FacilitiesPage() {
     const [facilities, setFacilities] = useState<Facility[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -254,3 +255,5 @@ export default function FacilitiesPage() {
         </div>
     );
 }
+
+export default withFeaturePage('facilities')(FacilitiesPage);

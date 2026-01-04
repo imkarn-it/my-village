@@ -24,6 +24,7 @@ import {
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 import { api } from "@/lib/api/client";
+import { withFeaturePage } from "@/lib/features";
 
 type SupportTicket = {
     id: string;
@@ -54,7 +55,7 @@ const getStatusBadge = (status: string) => {
     }
 };
 
-export default function SupportPage() {
+function SupportPage() {
     const router = useRouter();
     const [tickets, setTickets] = useState<SupportTicket[]>([]);
     const [loading, setLoading] = useState(true);
@@ -302,3 +303,5 @@ export default function SupportPage() {
         </div>
     );
 }
+
+export default withFeaturePage('support')(SupportPage);
