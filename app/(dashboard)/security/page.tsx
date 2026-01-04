@@ -214,7 +214,7 @@ export default async function SecurityDashboard(): Promise<React.JSX.Element> {
                     </CardHeader>
                     <CardContent className="p-0">
                         {recentVisitorsList.length > 0 ? (
-                            recentVisitorsList.map(({ visitor, unit }, index) => (
+                            recentVisitorsList.map(({ visitor, unit }: typeof recentVisitorsList[number], index: number) => (
                                 <div
                                     key={visitor.id}
                                     className={`flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors ${index !== recentVisitorsList.length - 1 ? "border-b border-slate-200 dark:border-slate-700/30" : ""
@@ -269,7 +269,7 @@ export default async function SecurityDashboard(): Promise<React.JSX.Element> {
                     </CardHeader>
                     <CardContent className="p-0">
                         {pendingParcelsList.length > 0 ? (
-                            pendingParcelsList.map(({ parcel, unit }, index) => (
+                            pendingParcelsList.map(({ parcel, unit }: typeof pendingParcelsList[number], index: number) => (
                                 <div
                                     key={parcel.id}
                                     className={`flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors ${index !== pendingParcelsList.length - 1 ? "border-b border-slate-200 dark:border-slate-700/30" : ""

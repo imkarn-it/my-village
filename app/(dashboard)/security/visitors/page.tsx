@@ -95,7 +95,7 @@ export default async function VisitorsPage({ searchParams }: VisitorsPageProps):
                     </TableHeader>
                     <TableBody>
                         {visitorsData.length > 0 ? (
-                            visitorsData.map(({ visitor, unit }) => (
+                            visitorsData.map(({ visitor, unit }: typeof visitorsData[number]) => (
                                 <TableRow key={visitor.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                     <TableCell>
                                         <div className="flex items-center gap-3">

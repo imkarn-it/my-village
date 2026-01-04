@@ -84,7 +84,7 @@ export default async function ResidentDashboard(): Promise<React.JSX.Element> {
 
     // Calculate totals
     const totalParcels = pendingParcels.length;
-    const totalBillsAmount = pendingBills.reduce((sum, item) => sum + Number(item.bills.amount), 0);
+    const totalBillsAmount = pendingBills.reduce((sum: number, item: typeof pendingBills[number]) => sum + Number(item.bills.amount), 0);
     const totalBillsCount = pendingBills.length;
     const totalBookings = upcomingBookings.length;
 
@@ -222,7 +222,7 @@ export default async function ResidentDashboard(): Promise<React.JSX.Element> {
                         </Link>
                     </CardHeader>
                     <CardContent className="p-0">
-                        {latestAnnouncements.map((item, index) => (
+                        {latestAnnouncements.map((item: typeof latestAnnouncements[number], index: number) => (
                             <div
                                 key={item.id}
                                 className={`flex items-start justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer ${index !== latestAnnouncements.length - 1 ? "border-b border-slate-200 dark:border-slate-700/30" : ""
@@ -264,7 +264,7 @@ export default async function ResidentDashboard(): Promise<React.JSX.Element> {
                         </Link>
                     </CardHeader>
                     <CardContent className="p-0">
-                        {pendingParcels.map((item, index) => (
+                        {pendingParcels.map((item: typeof pendingParcels[number], index: number) => (
                             <div
                                 key={item.parcels.id}
                                 className={`flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer ${index !== pendingParcels.length - 1 ? "border-b border-slate-200 dark:border-slate-700/30" : ""
@@ -311,7 +311,7 @@ export default async function ResidentDashboard(): Promise<React.JSX.Element> {
                         </Link>
                     </CardHeader>
                     <CardContent className="p-0">
-                        {pendingBills.map((item, index) => (
+                        {pendingBills.map((item: typeof pendingBills[number], index: number) => (
                             <div
                                 key={item.bills.id}
                                 className={`flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer ${index !== pendingBills.length - 1 ? "border-b border-slate-200 dark:border-slate-700/30" : ""
@@ -360,7 +360,7 @@ export default async function ResidentDashboard(): Promise<React.JSX.Element> {
                         </Link>
                     </CardHeader>
                     <CardContent className="p-0">
-                        {upcomingBookings.map((item, index) => (
+                        {upcomingBookings.map((item: typeof upcomingBookings[number], index: number) => (
                             <div
                                 key={item.bookings.id}
                                 className={`flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer ${index !== upcomingBookings.length - 1 ? "border-b border-slate-200 dark:border-slate-700/30" : ""

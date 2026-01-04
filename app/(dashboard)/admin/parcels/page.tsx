@@ -129,7 +129,7 @@ export default async function ParcelsPage({ searchParams }: ParcelsPageProps): P
                     </TableHeader>
                     <TableBody>
                         {parcelsData.length > 0 ? (
-                            parcelsData.map(({ parcel, unit, receiver }) => (
+                            parcelsData.map(({ parcel, unit, receiver }: typeof parcelsData[number]) => (
                                 <TableRow key={parcel.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                     <TableCell>
                                         <div className="flex items-center gap-3">

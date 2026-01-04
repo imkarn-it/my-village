@@ -197,7 +197,7 @@ export default async function AdminDashboard(): Promise<React.JSX.Element> {
     ]
 
     const activities: readonly ActivityItem[] = [
-        ...recentParcels.map((p) => ({
+        ...recentParcels.map((p: typeof recentParcels[number]) => ({
             id: `parcel-${p.id}`,
             type: "parcel",
             message: `พัสดุใหม่ - ${p.courier} (${p.trackingNumber})`,
@@ -206,7 +206,7 @@ export default async function AdminDashboard(): Promise<React.JSX.Element> {
             color: "text-emerald-500 dark:text-emerald-400",
             timestamp: p.receivedAt ? new Date(p.receivedAt).getTime() : 0,
         })),
-        ...recentMaintenance.map((m) => ({
+        ...recentMaintenance.map((m: typeof recentMaintenance[number]) => ({
             id: `maintenance-${m.id}`,
             type: "maintenance",
             message: `แจ้งซ่อมใหม่ - ${m.title}`,
@@ -292,8 +292,8 @@ export default async function AdminDashboard(): Promise<React.JSX.Element> {
                                     <div
                                         key={activity.id}
                                         className={`flex items-start gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer ${index !== activities.length - 1
-                                                ? "border-b border-slate-200 dark:border-slate-700/30"
-                                                : ""
+                                            ? "border-b border-slate-200 dark:border-slate-700/30"
+                                            : ""
                                             }`}
                                     >
                                         <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
@@ -330,8 +330,8 @@ export default async function AdminDashboard(): Promise<React.JSX.Element> {
                             <div
                                 key={task.id}
                                 className={`flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer ${index !== MOCK_PENDING_TASKS.length - 1
-                                        ? "border-b border-slate-200 dark:border-slate-700/30"
-                                        : ""
+                                    ? "border-b border-slate-200 dark:border-slate-700/30"
+                                    : ""
                                     }`}
                             >
                                 <div className="flex items-center gap-3">

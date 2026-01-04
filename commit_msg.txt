@@ -1,1 +1,8 @@
-fix: Switch to direct eslint usage and native flat config to fix CI failure
+fix: Resolve DATABASE_URL build error with lazy db initialization and TypeScript fixes
+
+- Modified lib/db/index.ts to use properly typed lazy proxy for db
+- Changed upload and upload-payment-slip routes to use dynamic auth import
+- Added explicit TypeScript type annotations to map/reduce callbacks in:
+  - admin/page.tsx, admin/parcels/page.tsx
+  - resident/page.tsx, security/page.tsx
+  - security/alerts/page.tsx, security/visitors/page.tsx

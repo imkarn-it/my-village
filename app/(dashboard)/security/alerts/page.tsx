@@ -32,7 +32,7 @@ export default async function SecurityAlertsPage(): Promise<React.JSX.Element> {
 
             <div className="grid gap-4">
                 {alerts.length > 0 ? (
-                    alerts.map(({ alert, user, unit }) => (
+                    alerts.map(({ alert, user, unit }: typeof alerts[number]) => (
                         <Card key={alert.id} className={`border-l-4 ${alert.status === 'active' ? 'border-l-red-500 bg-red-50 dark:bg-red-900/10' : 'border-l-slate-200 dark:border-l-slate-700'}`}>
                             <CardContent className="p-6">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
