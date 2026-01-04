@@ -8,6 +8,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 const mockFetch = vi.fn()
 global.fetch = mockFetch
 
+// Mock database to prevent DATABASE_URL error in CI
+vi.mock('@/lib/db', () => ({
+    db: {
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockResolvedValue([]),
+        query: {},
+    },
+}))
+
 // ==========================================
 // Client Cache Tests
 // ==========================================

@@ -1,4 +1,21 @@
 import { describe, test, expect, vi } from 'vitest'
+
+// Mock database to prevent DATABASE_URL error in CI
+vi.mock('@/lib/db', () => ({
+    db: {
+        delete: vi.fn().mockReturnThis(),
+        insert: vi.fn().mockReturnThis(),
+        values: vi.fn().mockResolvedValue({}),
+        where: vi.fn().mockResolvedValue([]),
+        returning: vi.fn().mockResolvedValue([]),
+        query: {
+            passwordResetTokens: {
+                findFirst: vi.fn().mockResolvedValue(null),
+            },
+        },
+    },
+}))
+
 import { generateOTP } from '../otp'
 
 describe('OTP Utility', () => {
