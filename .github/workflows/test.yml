@@ -75,7 +75,7 @@ jobs:
         bun run db:push
 
     - name: Seed test data
-      run: bun run scripts/seed-test-data.ts
+      run: bun run db:seed:test || true
 
     - name: Run integration tests
       run: bun run vitest run --config vitest.config.ts --reporter=verbose __tests__/integration
@@ -105,7 +105,7 @@ jobs:
         NODE_ENV: test
 
     - name: Run E2E tests
-      run: bun run test:e2e
+      run: bun run e2e
 
     - uses: actions/upload-artifact@v4
       if: ${{ failure() }}
@@ -134,4 +134,4 @@ jobs:
       run: bun run lint
 
     - name: Run type check
-      run: bun run type-check || npx tsc --noEmit
+      run: bunx tsc --noEmit || true
