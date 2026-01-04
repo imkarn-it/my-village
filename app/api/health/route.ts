@@ -1,4 +1,3 @@
-import { db } from '@/lib/db'
 import { sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
@@ -53,6 +52,8 @@ async function checkDatabase(): Promise<HealthCheck> {
     const start = Date.now()
 
     try {
+        // Dynamic import to prevent DATABASE_URL error during build
+        const { db } = await import('@/lib/db')
         await db.execute(sql`SELECT 1`)
         return {
             status: 'ok',
