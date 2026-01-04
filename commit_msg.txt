@@ -1,8 +1,6 @@
-fix: Resolve DATABASE_URL build error with lazy db initialization and TypeScript fixes
+fix: Resolve Auth.js DrizzleAdapter compatibility with build-time db availability check
 
-- Modified lib/db/index.ts to use properly typed lazy proxy for db
-- Changed upload and upload-payment-slip routes to use dynamic auth import
-- Added explicit TypeScript type annotations to map/reduce callbacks in:
-  - admin/page.tsx, admin/parcels/page.tsx
-  - resident/page.tsx, security/page.tsx
-  - security/alerts/page.tsx, security/visitors/page.tsx
+- Modified lib/db/index.ts to export real drizzle instance (null when DATABASE_URL missing)
+- Added isDatabaseAvailable() and getDb() helper functions
+- Updated lib/auth.ts to conditionally use DrizzleAdapter only when database is available
+- Build now passes without DATABASE_URL in CI environment

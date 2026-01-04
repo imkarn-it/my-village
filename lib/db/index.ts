@@ -11,35 +11,35 @@ if (!process.env.DATABASE_URL) {
 
 const connectionString = process.env.DATABASE_URL
 
-// Only throw error at runtime, not during build
-// During build, Next.js collects page data which shouldn't require DB
-let pool: Pool | null = null
-let _db: ReturnType<typeof drizzle<typeof schema>> | null = null
-
-if (connectionString) {
-    pool = new Pool({ connectionString })
-    _db = drizzle(pool, { schema })
-}
-
 // Type for the db client
 export type DbClient = ReturnType<typeof drizzle<typeof schema>>
 
-// Create a properly typed proxy that throws at runtime if DATABASE_URL is missing
-// This allows the build to succeed while still catching configuration errors at runtime
-const dbProxy = new Proxy({} as DbClient, {
-    get(_target, prop) {
-        if (!connectionString) {
-            throw new Error('DATABASE_URL is not defined')
-        }
-        if (!_db) {
-            throw new Error('Database not initialized')
-        }
-        return (_db as any)[prop]
-    }
-})
+// Create db instance only if DATABASE_URL is available
+let _pool: Pool | null = null
+let _db: DbClient | null = null
 
-// Export db - properly typed as DbClient
-export const db: DbClient = _db ?? dbProxy
+if (connectionString) {
+    _pool = new Pool({ connectionString })
+    _db = drizzle(_pool, { schema })
+}
+
+// Export the db instance - may be null during build if no DATABASE_URL
+// Runtime code should handle null or use getDb() for safety
+export const db = _db as DbClient
+
+// Safe getter that throws a helpful error if db is not initialized
+export function getDb(): DbClient {
+    if (!_db) {
+        throw new Error('DATABASE_URL is not defined - database is not available')
+    }
+    return _db
+}
+
+// Check if database is available
+export function isDatabaseAvailable(): boolean {
+    return _db !== null
+}
+
 
 
 

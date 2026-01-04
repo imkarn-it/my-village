@@ -3,7 +3,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
 import { z } from "zod"
-import { db } from "@/lib/db"
+import { db, isDatabaseAvailable } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import bcrypt from "bcryptjs"
@@ -26,6 +26,11 @@ async function authenticateUser(
     email: string,
     password: string
 ): Promise<{ id: string; email: string; name: string | null; role: string; projectId: string | null } | null> {
+    if (!isDatabaseAvailable()) {
+        console.warn('Database not available for authentication')
+        return null
+    }
+
     const user = await db.query.users.findFirst({
         where: eq(users.email, email),
         columns: {
@@ -57,10 +62,14 @@ async function authenticateUser(
     }
 }
 
+// Only use DrizzleAdapter if database is available
+// During build without DATABASE_URL, use JWT-only mode
+const adapter = isDatabaseAvailable() ? DrizzleAdapter(db) : undefined
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
     secret: process.env.AUTH_SECRET,
-    adapter: DrizzleAdapter(db),
+    adapter,
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
