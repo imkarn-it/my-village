@@ -1,20 +1,4 @@
 # My Village - Project Context
-
-> **Last Updated:** 2026-01-02  
-> **Version:** 0.1.0 | **Build:** 86 pages | **Tests:** 370 unit + 118 E2E
-
----
-
-## 🤖 AI Assistant Instructions
-
-### Language Preference
-**ALWAYS communicate in Thai** unless explicitly asked otherwise.
-
-### Next.js Development Setup
-When starting work on a Next.js project, **ALWAYS call the init tool from next-devtools-mcp FIRST** to set up proper context and establish documentation requirements. Do this automatically without being asked.
-
-### UI Components Priority
-**ALWAYS use shadcn/ui components first** when implementing UI features:
 1. **shadcn/ui** (built with Radix UI + TailwindCSS) - Primary choice
 2. Other libraries only if shadcn/ui doesn't have the required component
 
@@ -45,6 +29,8 @@ Without me having to explicitly ask.
   - Command: `cmd /c bun run test`
   - `bun test` uses bun's test runner which includes node_modules files
   - `bun run test` uses vitest with proper config
+- **Linting:** ALWAYS use `bun run lint` (runs `eslint .`)
+  - Command: `cmd /c bun run lint`
 
 
 ---
