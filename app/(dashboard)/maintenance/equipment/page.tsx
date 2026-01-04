@@ -39,6 +39,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { api } from "@/lib/api/client";
+import { useSession } from "next-auth/react";
 
 type Equipment = {
     id: string;
@@ -105,6 +106,7 @@ const mockMaintenanceRecords: MaintenanceRecord[] = [
 ];
 
 export default function EquipmentPage() {
+    const { data: session } = useSession();
     const [equipment, setEquipment] = useState<Equipment[]>([]);
     const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>(mockMaintenanceRecords);
 
@@ -426,7 +428,7 @@ export default function EquipmentPage() {
                             type: formData.get('type') as string,
                             location: formData.get('location') as string,
                             notes: formData.get('notes') as string,
-                            projectId: 'default-project',
+                            projectId: (session?.user as any)?.projectId,
                         };
 
                         try {

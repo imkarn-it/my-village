@@ -18,9 +18,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "@/lib/api/client";
+import { useSession } from "next-auth/react";
 
 export default function NewFacilityPage() {
     const router = useRouter();
+    const { data: session } = useSession();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
@@ -49,7 +51,7 @@ export default function NewFacilityPage() {
                 maxCapacity: formData.maxCapacity ? parseInt(formData.maxCapacity) : undefined,
                 requiresApproval: formData.requiresApproval,
                 isActive: formData.isActive,
-                projectId: "default-project", // TODO: Get from session
+                projectId: (session?.user as any)?.projectId,
             };
 
             const { data } = await api.facilities.post(payload);

@@ -1,7 +1,7 @@
-fix: Rename Elysia auth routes to avoid conflict with NextAuth
+fix: Resolve UUID validation error in registration and improve projectId handling
 
-- Renamed Elysia auth endpoints from /api/auth/* to /api/user/* in app/api/[[...slugs]]/route.ts.
-- This fixes the "UnknownAction" error caused by conflict with NextAuth's catch-all route at /api/auth/[...nextauth].
-- Updated register, forgot-password, reset-password, and verify-email pages to use the new /api/user/* endpoints.
-- Switched to using the type-safe Eden Treaty client for these API calls.
-- Added debug logs to lib/auth.ts to help diagnose "CredentialsSignin" errors in CI.
+- Fixed registration failure caused by invalid UUID string 'default-project' in app/api/[[...slugs]]/route.ts.
+- Updated registration logic to find the first available project or create a default one with a valid UUID.
+- Updated announcements endpoint to handle missing projectId by falling back to the first available project.
+- Updated NewFacilityPage and EquipmentPage to use projectId from the user's session via useSession hook.
+- Removed all occurrences of hardcoded 'default-project' UUID string.

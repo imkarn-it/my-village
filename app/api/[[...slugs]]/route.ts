@@ -61,12 +61,22 @@ const app = new Elysia({ prefix: '/api' })
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
+        // Get first project or create default
+        let project = await db.query.projects.findFirst()
+        if (!project) {
+            const [newProject] = await db.insert(projects).values({
+                name: 'Default Project',
+                type: 'village',
+            }).returning()
+            project = newProject
+        }
+
         const [user] = await db.insert(users).values({
             email,
             password: hashedPassword,
             name,
             role: 'resident', // Default role
-            projectId: 'default-project',
+            projectId: project.id,
         }).returning({
             id: users.id,
             email: users.email,
@@ -738,10 +748,17 @@ const app = new Elysia({ prefix: '/api' })
         if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'super_admin')) {
             return { success: false, error: 'Forbidden' }
         }
+        // Get project ID from session or fallback to first project
+        let projectId = (session.user as any).projectId
+        if (!projectId || projectId === 'default-project') {
+            const project = await db.query.projects.findFirst()
+            projectId = project?.id
+        }
+
         const [result] = await db.insert(announcements).values({
             ...body,
             createdBy: session.user.id,
-            projectId: (session.user as any).projectId || 'default-project',
+            projectId: projectId,
         }).returning()
 
         // Audit log
