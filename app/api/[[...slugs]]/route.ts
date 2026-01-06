@@ -59,7 +59,9 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Email already exists' }
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = typeof Bun !== 'undefined'
+            ? await Bun.password.hash(password)
+            : await bcrypt.hash(password, 10)
 
         // Get first project or create default
         let project = await db.query.projects.findFirst()
@@ -112,7 +114,9 @@ const app = new Elysia({ prefix: '/api' })
                 where: eq(users.email, email)
             })
             if (!user && email === 'admin@test.com') {
-                const hashedPassword = await bcrypt.hash('TestAdmin123!', 10)
+                const hashedPassword = typeof Bun !== 'undefined'
+                    ? await Bun.password.hash('TestAdmin123!')
+                    : await bcrypt.hash('TestAdmin123!', 10)
                 const [newUser] = await db.insert(users).values({
                     email,
                     password: hashedPassword,
@@ -128,7 +132,9 @@ const app = new Elysia({ prefix: '/api' })
                 return { success: false, error: 'Invalid credentials' }
             }
 
-            const isValid = await bcrypt.compare(password, user.password)
+            const isValid = typeof Bun !== 'undefined'
+                ? await Bun.password.verify(password, user.password)
+                : await bcrypt.compare(password, user.password)
             if (!isValid) {
                 set.status = 401
                 return { success: false, error: 'Invalid credentials' }
@@ -750,7 +756,7 @@ const app = new Elysia({ prefix: '/api' })
         }
         // Get project ID from session or fallback to first project
         let projectId = (session.user as any).projectId
-        if (!projectId || projectId === 'default-project') {
+        if (!projectId) {
             const project = await db.query.projects.findFirst()
             projectId = project?.id
         }

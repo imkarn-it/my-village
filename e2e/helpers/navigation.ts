@@ -41,6 +41,5 @@ export async function navigateTo(page: Page, href: string) {
 
     // Fallback: direct navigation if UI interaction fails or link is still not visible
     // This ensures the test can proceed even if the UI interaction is flaky
-    await page.waitForTimeout(1000)
     await page.goto(href, { timeout: 60000, waitUntil: 'domcontentloaded' })
 }

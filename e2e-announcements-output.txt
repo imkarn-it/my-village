@@ -1,0 +1,394 @@
+$ playwright test "e2e/announcements.spec.ts" 
+[1A[2K[2m[WebServer] [22m[0m[2m[35m$[0m [2m[1mnext dev[0m
+
+[1A[2K[2m[WebServer] [22m[33m[1m⚠[22m[39m The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[1A[2K[2m[WebServer] [22m(node:31104) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+[2m[WebServer] [22m(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+Running 10 tests using 10 workers
+
+[1A[2K[1/10] [chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[1A[2K[2/10] [chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[1A[2K[3/10] [firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[1A[2K[4/10] [webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[1A[2K[5/10] [Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[1A[2K[6/10] [webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[1A[2K[7/10] [firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[1A[2K[8/10] [Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[1A[2K[9/10] [Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[1A[2K[10/10] [Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[1A[2K[chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Logging in as admin (admin@test.com)
+
+[1A[2K[E2E] Manual login for admin
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Logging in as resident (resident@test.com)
+
+[1A[2K[E2E] Manual login for resident
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Logging in as admin (admin@test.com)
+
+[1A[2K[E2E] Manual login for admin
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Logging in as resident (resident@test.com)
+
+[1A[2K[E2E] Manual login for resident
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Logging in as resident (resident@test.com)
+
+[1A[2K[E2E] Manual login for resident
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Logging in as admin (admin@test.com)
+
+[1A[2K[E2E] Manual login for admin
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Logging in as admin (admin@test.com)
+
+[1A[2K[E2E] Manual login for admin
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Logging in as resident (resident@test.com)
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 1: Navigating to login page
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Manual login for resident
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Logging in as resident (resident@test.com)
+
+[1A[2K[E2E] Manual login for resident
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Logging in as admin (admin@test.com)
+
+[1A[2K[E2E] Manual login for admin
+
+[1A[2K[E2E] Step 1: Navigating to login page
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 3: Filling email
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 3: Filling email
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 3: Filling email
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 3: Filling email
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 3: Filling email
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 4: Filling password
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 4: Filling password
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 3: Filling email
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 3: Filling email
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 3: Filling email
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 4: Filling password
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 4: Filling password
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 2: Waiting for form hydration
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 5: Submitting form
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 5: Submitting form
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 5: Submitting form
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 5: Submitting form
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 4: Filling password
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 4: Filling password
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 4: Filling password
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 4: Filling password
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 3: Filling email
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 3: Filling email
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 6: Waiting for result
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 6: Waiting for result
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 5: Submitting form
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 4: Filling password
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 4: Filling password
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 5: Submitting form
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 5: Submitting form
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 6: Waiting for result
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 6: Waiting for result
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 5: Submitting form
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 5: Submitting form
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 5: Submitting form
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 6: Waiting for result
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 6: Waiting for result
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 6: Waiting for result
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 6: Waiting for result
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 6: Waiting for result
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 6: Waiting for result
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 7: Waiting for redirect
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 8: Final URL = http://localhost:3000/resident
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/resident
+
+[1A[2K[Mobile Chrome] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 8: Final URL = http://localhost:3000/admin
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/admin
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 8: Final URL = http://localhost:3000/admin
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/admin
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 8: Final URL = http://localhost:3000/resident
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/resident
+
+[1A[2K[chromium] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 8: Final URL = http://localhost:3000/admin
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/admin
+
+[1A[2K[webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 8: Final URL = http://localhost:3000/resident
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/resident
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 8: Final URL = http://localhost:3000/resident
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/resident
+
+[1A[2K[Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 8: Final URL = http://localhost:3000/admin
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/admin
+
+[1A[2K  1) [Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements 
+
+    [31mTest timeout of 30000ms exceeded while running "beforeEach" hook.[39m
+
+      24 |
+      25 |     test.describe('Resident Announcement View', () => {
+    > 26 |         test.beforeEach(async ({ page }) => {
+         |              ^
+      27 |             await login(page, 'resident')
+      28 |         })
+      29 |
+        at D:\my-village\village-app\e2e\announcements.spec.ts:26:14
+
+    Error Context: test-results\announcements-Announcement-3da91-ident-to-view-announcements-Mobile-Safari\error-context.md
+
+
+[1A[2K  2) [Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement 
+
+    [31mTest timeout of 30000ms exceeded while running "beforeEach" hook.[39m
+
+       6 |
+       7 |     test.describe('Admin Announcement Management', () => {
+    >  8 |         test.beforeEach(async ({ page }) => {
+         |              ^
+       9 |             await login(page, 'admin')
+      10 |         })
+      11 |
+        at D:\my-village\village-app\e2e\announcements.spec.ts:8:14
+
+    Error Context: test-results\announcements-Announcement-d8950-o-create-a-new-announcement-Mobile-Safari\error-context.md
+
+
+[1A[2K  3) [webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements 
+
+    [31mTest timeout of 30000ms exceeded while running "beforeEach" hook.[39m
+
+      24 |
+      25 |     test.describe('Resident Announcement View', () => {
+    > 26 |         test.beforeEach(async ({ page }) => {
+         |              ^
+      27 |             await login(page, 'resident')
+      28 |         })
+      29 |
+        at D:\my-village\village-app\e2e\announcements.spec.ts:26:14
+
+    Error Context: test-results\announcements-Announcement-3da91-ident-to-view-announcements-webkit\error-context.md
+
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement
+[E2E] Step 8: Final URL = http://localhost:3000/admin
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/admin
+
+[1A[2K[firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements
+[E2E] Step 8: Final URL = http://localhost:3000/resident
+
+[1A[2K[E2E] ✅ Login successful -> http://localhost:3000/resident
+
+[1A[2K  4) [firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements 
+
+    [31mTest timeout of 30000ms exceeded while running "beforeEach" hook.[39m
+
+      24 |
+      25 |     test.describe('Resident Announcement View', () => {
+    > 26 |         test.beforeEach(async ({ page }) => {
+         |              ^
+      27 |             await login(page, 'resident')
+      28 |         })
+      29 |
+        at D:\my-village\village-app\e2e\announcements.spec.ts:26:14
+
+    Error Context: test-results\announcements-Announcement-3da91-ident-to-view-announcements-firefox\error-context.md
+
+
+[1A[2K  4 failed
+    [firefox] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements 
+    [webkit] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements 
+    [Mobile Safari] › e2e\announcements.spec.ts:12:13 › Announcements System › Admin Announcement Management › should allow admin to create a new announcement 
+    [Mobile Safari] › e2e\announcements.spec.ts:30:13 › Announcements System › Resident Announcement View › should allow resident to view announcements 
+  6 passed (37.9s)
+error: script "e2e" exited with code 1

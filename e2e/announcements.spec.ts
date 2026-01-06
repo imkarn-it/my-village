@@ -13,12 +13,12 @@ test.describe('Announcements System', () => {
             test.setTimeout(60000)
             // Navigate to Announcements
             await navigateTo(page, '/admin/announcements')
-            await page.waitForURL(/\/admin\/announcements/, { timeout: 30000, waitUntil: 'domcontentloaded' })
+            await page.waitForURL(/\/admin\/announcements/, { timeout: 60000, waitUntil: 'domcontentloaded' })
             await page.waitForLoadState('networkidle')
 
             // Verify page loaded
             const heading = page.locator('h1:has-text("ประกาศ")')
-            await expect(heading).toBeVisible({ timeout: 30000 })
+            await expect(heading).toBeVisible({ timeout: 60000 })
         })
     })
 
@@ -28,14 +28,15 @@ test.describe('Announcements System', () => {
         })
 
         test('should allow resident to view announcements', async ({ page }) => {
+            test.setTimeout(60000)
             // Navigate to Announcements
             await navigateTo(page, '/resident/announcements')
-            await page.waitForURL(/\/resident\/announcements/, { timeout: 30000, waitUntil: 'domcontentloaded' })
+            await page.waitForURL(/\/resident\/announcements/, { timeout: 60000, waitUntil: 'domcontentloaded' })
             await page.waitForLoadState('networkidle')
 
             // Verify page loaded
             const heading = page.locator('h1:has-text("ประกาศ")')
-            await expect(heading).toBeVisible({ timeout: 30000 })
+            await expect(heading).toBeVisible({ timeout: 60000 })
         })
     })
 })

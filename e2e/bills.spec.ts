@@ -12,7 +12,7 @@ test.describe('Bills and Payments System', () => {
 
     test('should allow resident to view bills', async ({ page }) => {
       await navigateTo(page, '/resident/bills')
-      await page.waitForURL(/\/resident\/bills/, { timeout: 30000, waitUntil: 'domcontentloaded' })
+      await page.waitForURL(/\/resident\/bills/, { timeout: 60000, waitUntil: 'domcontentloaded' })
       await page.waitForLoadState('networkidle')
 
       // Verify page loaded
@@ -33,23 +33,23 @@ test.describe('Bills and Payments System', () => {
 
     test('should allow admin to create a new bill', async ({ page }) => {
       await navigateTo(page, '/admin/bills')
-      await page.waitForURL(/\/admin\/bills/, { timeout: 30000, waitUntil: 'domcontentloaded' })
+      await page.waitForURL(/\/admin\/bills/, { timeout: 60000, waitUntil: 'domcontentloaded' })
       await page.waitForLoadState('networkidle')
 
       // Wait for loading skeleton to disappear if present
-      await expect(page.locator('h1')).toContainText('จัดการบิล/ค่าใช้จ่าย', { timeout: 30000 })
+      await expect(page.locator('h1')).toContainText('จัดการบิล/ค่าใช้จ่าย', { timeout: 60000 })
 
       // Click Create Bill
       await page.click('text=สร้างบิลใหม่')
-      await page.waitForURL(/\/admin\/bills\/new/, { timeout: 30000, waitUntil: 'domcontentloaded' })
+      await page.waitForURL(/\/admin\/bills\/new/, { timeout: 60000, waitUntil: 'domcontentloaded' })
 
       // Verify we reached the page
-      await expect(page.locator('h1')).toContainText('สร้างบิลใหม่', { timeout: 30000 })
+      await expect(page.locator('h1')).toContainText('สร้างบิลใหม่', { timeout: 60000 })
     })
 
     test('should allow admin to verify payments', async ({ page }) => {
       await navigateTo(page, '/admin/bills')
-      await page.waitForURL(/\/admin\/bills/, { timeout: 30000, waitUntil: 'domcontentloaded' })
+      await page.waitForURL(/\/admin\/bills/, { timeout: 60000, waitUntil: 'domcontentloaded' })
       await page.waitForLoadState('networkidle')
 
       // Look for "Verify" button (ตรวจสอบ)

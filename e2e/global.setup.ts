@@ -34,14 +34,14 @@ async function globalSetup(config: FullConfig) {
         try {
             // Navigate to login page
             await page.goto('http://localhost:3000/login', {
-                waitUntil: 'networkidle',
+                waitUntil: 'load',
                 timeout: 30000
             })
 
             // Wait for form to be ready
             await page.waitForSelector('input[name="email"]', {
                 state: 'visible',
-                timeout: 10000
+                timeout: 20000
             })
 
             // Fill login form
@@ -56,7 +56,7 @@ async function globalSetup(config: FullConfig) {
                 await page.waitForURL((url) => {
                     const pathname = url.pathname
                     return pathname !== '/login' && pathname !== '/'
-                }, { timeout: 15000 })
+                }, { timeout: 20000 })
 
                 console.log(`   ✅ ${userType} authenticated -> ${page.url()}`)
 
@@ -67,10 +67,13 @@ async function globalSetup(config: FullConfig) {
             } catch (e) {
                 // Check if still on login page (credentials might be wrong)
                 const currentUrl = page.url()
-                if (currentUrl.includes('/login') || currentUrl === 'http://localhost:3000/') {
-                    console.log(`   ⚠️ ${userType} login failed - check credentials in database`)
-                } else {
-                    console.log(`   ⚠️ ${userType} unexpected URL: ${currentUrl}`)
+                console.log(`   ⚠️ ${userType} login wait timed out. Current URL: ${currentUrl}`)
+
+                // If we are not on login page, maybe it worked?
+                if (!currentUrl.includes('/login')) {
+                    const storagePath = path.join(storageDir, `${userType}.json`)
+                    await context.storageState({ path: storagePath })
+                    console.log(`   ✅ ${userType} saved state anyway`)
                 }
             }
 

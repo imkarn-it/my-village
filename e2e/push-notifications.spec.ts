@@ -3,18 +3,13 @@
  * Tests for OneSignal push notification permission flow
  */
 import { test, expect } from '@playwright/test'
+import { login } from './helpers/auth'
 
 test.describe('Push Notifications', () => {
     test.describe('Push Permission UI', () => {
         test('should show push permission button in header', async ({ page }) => {
             // Login as resident
-            await page.goto('/login')
-            await page.fill('input[name="email"]', 'resident@test.com')
-            await page.fill('input[name="password"]', 'TestResident123!')
-            await page.click('button[type="submit"]')
-
-            // Wait for navigation
-            await page.waitForURL(/\/resident/, { timeout: 10000 })
+            await login(page, 'resident')
 
             // Look for push permission button
             const pushButton = page.locator('button:has-text("เปิดแจ้งเตือน"), [data-testid="push-permission"]')
@@ -30,12 +25,7 @@ test.describe('Push Notifications', () => {
             await context.grantPermissions([])
 
             // Login
-            await page.goto('/login')
-            await page.fill('input[name="email"]', 'resident@test.com')
-            await page.fill('input[name="password"]', 'TestResident123!')
-            await page.click('button[type="submit"]')
-
-            await page.waitForURL(/\/resident/, { timeout: 10000 })
+            await login(page, 'resident')
 
             // Try to find and click push button
             const pushButton = page.locator('button:has-text("เปิดแจ้งเตือน")')
@@ -53,12 +43,7 @@ test.describe('Push Notifications', () => {
     test.describe('Push API Integration', () => {
         test('notification API should be accessible', async ({ page }) => {
             // Login first
-            await page.goto('/login')
-            await page.fill('input[name="email"]', 'resident@test.com')
-            await page.fill('input[name="password"]', 'TestResident123!')
-            await page.click('button[type="submit"]')
-
-            await page.waitForURL(/\/resident/, { timeout: 10000 })
+            await login(page, 'resident')
 
             // Check notifications endpoint
             const response = await page.request.get('/api/notifications')
@@ -77,12 +62,7 @@ test.describe('Push Notifications', () => {
     test.describe('Security Dashboard Push', () => {
         test('security should see SOS alerts section', async ({ page }) => {
             // Login as security
-            await page.goto('/login')
-            await page.fill('input[name="email"]', 'security@test.com')
-            await page.fill('input[name="password"]', 'TestSecurity123!')
-            await page.click('button[type="submit"]')
-
-            await page.waitForURL(/\/security/, { timeout: 10000 })
+            await login(page, 'security')
 
             // Navigate to SOS page
             await page.goto('/security/sos')

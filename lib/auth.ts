@@ -44,19 +44,25 @@ async function authenticateUser(
     })
 
     if (!user) {
-        console.warn(`[Auth] User not found: ${email}`)
+        console.warn(`[Auth] ❌ User not found: ${email}`)
         return null
     }
 
     if (!user.password) {
-        console.warn(`[Auth] User has no password: ${email}`)
+        console.warn(`[Auth] ❌ User has no password: ${email}`)
         return null
     }
 
-    const passwordsMatch = await bcrypt.compare(password, user.password)
+    // Use Bun's native password verification if available (much faster and more reliable in Bun)
+    let passwordsMatch = false
+    if (typeof Bun !== 'undefined') {
+        passwordsMatch = await Bun.password.verify(password, user.password)
+    } else {
+        passwordsMatch = await bcrypt.compare(password, user.password)
+    }
 
     if (!passwordsMatch) {
-        console.warn(`[Auth] Password mismatch for: ${email}`)
+        console.warn(`[Auth] ❌ Password mismatch for: ${email}`)
         return null
     }
 

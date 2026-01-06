@@ -1,4 +1,9 @@
 import { test, expect } from '@playwright/test'
+import { login } from './helpers/auth'
+
+test.beforeEach(async ({ page }) => {
+    await login(page, 'superadmin')
+})
 
 test.describe('Super Admin Dashboard', () => {
     test('super admin routes should not return 500 error', async ({ page }) => {

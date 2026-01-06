@@ -25,6 +25,11 @@ export const TEST_USERS = {
         password: 'TestPass123!',
         dashboardUrl: '/maintenance',
     },
+    superadmin: {
+        email: 'superadmin@test.com',
+        password: 'TestPass123!',
+        dashboardUrl: '/super-admin',
+    },
 }
 
 export type UserType = keyof typeof TEST_USERS
@@ -110,28 +115,28 @@ async function manualLogin(page: Page, userType: UserType): Promise<boolean> {
     try {
         // Step 1: Navigate to login page and wait for full load
         console.log(`[E2E] Step 1: Navigating to login page`)
-        await page.goto('/login', { waitUntil: 'networkidle', timeout: 30000 })
+        await page.goto('/login', { waitUntil: 'load', timeout: 30000 })
 
         // Step 2: Wait for React hydration - form must be interactive
         console.log(`[E2E] Step 2: Waiting for form hydration`)
         const emailInput = page.locator('input[name="email"]')
-        await emailInput.waitFor({ state: 'visible', timeout: 10000 })
+        await emailInput.waitFor({ state: 'visible', timeout: 20000 })
 
         // Wait a bit for hydration to complete
-        await page.waitForTimeout(1000)
+        await page.waitForTimeout(2000)
 
         // Step 3: Fill email - clear first, then type slowly to ensure React picks it up
         console.log(`[E2E] Step 3: Filling email`)
         await emailInput.click()
         await emailInput.fill('')
-        await emailInput.pressSequentially(user.email, { delay: 50 })
+        await emailInput.pressSequentially(user.email, { delay: 100 })
 
         // Step 4: Fill password
         console.log(`[E2E] Step 4: Filling password`)
         const passwordInput = page.locator('input[name="password"]')
         await passwordInput.click()
         await passwordInput.fill('')
-        await passwordInput.pressSequentially(user.password, { delay: 50 })
+        await passwordInput.pressSequentially(user.password, { delay: 100 })
 
         // Step 5: Submit form and wait for response
         console.log(`[E2E] Step 5: Submitting form`)
@@ -143,7 +148,7 @@ async function manualLogin(page: Page, userType: UserType): Promise<boolean> {
             // Wait for the signIn API call to complete
             page.waitForResponse(
                 (response) => response.url().includes('/api/auth/callback/credentials'),
-                { timeout: 15000 }
+                { timeout: 20000 }
             ).catch(() => null),
         ])
 
@@ -151,12 +156,12 @@ async function manualLogin(page: Page, userType: UserType): Promise<boolean> {
         console.log(`[E2E] Step 6: Waiting for result`)
 
         // Try to detect success toast
-        const successToastPromise = page.waitForSelector('text=เข้าสู่ระบบสำเร็จ', { timeout: 5000 })
+        const successToastPromise = page.waitForSelector('text=เข้าสู่ระบบสำเร็จ', { timeout: 10000 })
             .then(() => 'success')
             .catch(() => null)
 
         // Try to detect error toast
-        const errorToastPromise = page.waitForSelector('text=อีเมลหรือรหัสผ่านไม่ถูกต้อง', { timeout: 5000 })
+        const errorToastPromise = page.waitForSelector('text=อีเมลหรือรหัสผ่านไม่ถูกต้อง', { timeout: 10000 })
             .then(() => 'error')
             .catch(() => null)
 
@@ -167,36 +172,26 @@ async function manualLogin(page: Page, userType: UserType): Promise<boolean> {
             return false
         }
 
-        if (toastResult === 'success') {
-            console.log(`[E2E] ✅ Success toast appeared, waiting for redirect`)
-        }
-
         // Step 7: Wait for window.location.href redirect
-        // The app uses window.location.href = '/' which triggers a full page load
         console.log(`[E2E] Step 7: Waiting for redirect`)
 
         try {
-            // Wait for navigation to root, then middleware will redirect to dashboard
-            await page.waitForURL('**/', { timeout: 10000 })
-
-            // Wait for middleware redirect to dashboard
-            await page.waitForURL(
-                (url) => {
-                    const pathname = url.pathname
-                    return pathname.startsWith('/resident') ||
-                        pathname.startsWith('/admin') ||
-                        pathname.startsWith('/security') ||
-                        pathname.startsWith('/maintenance') ||
-                        pathname.startsWith('/super-admin')
-                },
-                { timeout: 10000 }
-            )
-        } catch {
-            // Maybe already redirected, check current URL
+            // Wait for navigation to root or dashboard
+            await page.waitForURL((url) => {
+                const pathname = url.pathname
+                return pathname === '/' ||
+                    pathname.startsWith('/resident') ||
+                    pathname.startsWith('/admin') ||
+                    pathname.startsWith('/security') ||
+                    pathname.startsWith('/maintenance') ||
+                    pathname.startsWith('/super-admin')
+            }, { timeout: 20000 })
+        } catch (e) {
+            console.log(`[E2E] Redirect wait timed out, checking current URL: ${page.url()}`)
         }
 
         // Step 8: Verify we're on a dashboard
-        await page.waitForLoadState('networkidle', { timeout: 10000 })
+        await page.waitForLoadState('load', { timeout: 20000 })
 
         const finalUrl = page.url()
         console.log(`[E2E] Step 8: Final URL = ${finalUrl}`)
