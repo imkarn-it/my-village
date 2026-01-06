@@ -59,8 +59,8 @@ const app = new Elysia({ prefix: '/api' })
             return { success: false, error: 'Email already exists' }
         }
 
-        const hashedPassword = typeof Bun !== 'undefined'
-            ? await Bun.password.hash(password)
+        const hashedPassword = typeof (globalThis as any).Bun !== 'undefined'
+            ? await (globalThis as any).Bun.password.hash(password)
             : await bcrypt.hash(password, 10)
 
         // Get first project or create default
@@ -114,8 +114,8 @@ const app = new Elysia({ prefix: '/api' })
                 where: eq(users.email, email)
             })
             if (!user && email === 'admin@test.com') {
-                const hashedPassword = typeof Bun !== 'undefined'
-                    ? await Bun.password.hash('TestAdmin123!')
+                const hashedPassword = typeof (globalThis as any).Bun !== 'undefined'
+                    ? await (globalThis as any).Bun.password.hash('TestAdmin123!')
                     : await bcrypt.hash('TestAdmin123!', 10)
                 const [newUser] = await db.insert(users).values({
                     email,
@@ -132,8 +132,8 @@ const app = new Elysia({ prefix: '/api' })
                 return { success: false, error: 'Invalid credentials' }
             }
 
-            const isValid = typeof Bun !== 'undefined'
-                ? await Bun.password.verify(password, user.password)
+            const isValid = typeof (globalThis as any).Bun !== 'undefined'
+                ? await (globalThis as any).Bun.password.verify(password, user.password)
                 : await bcrypt.compare(password, user.password)
             if (!isValid) {
                 set.status = 401

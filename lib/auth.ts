@@ -55,8 +55,8 @@ async function authenticateUser(
 
     // Use Bun's native password verification if available (much faster and more reliable in Bun)
     let passwordsMatch = false
-    if (typeof Bun !== 'undefined') {
-        passwordsMatch = await Bun.password.verify(password, user.password)
+    if (typeof (globalThis as any).Bun !== 'undefined') {
+        passwordsMatch = await (globalThis as any).Bun.password.verify(password, user.password)
     } else {
         passwordsMatch = await bcrypt.compare(password, user.password)
     }
