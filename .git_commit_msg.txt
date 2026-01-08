@@ -1,0 +1,5 @@
+fix: Bun type error for build
+
+- Changed typeof Bun to typeof (globalThis as any).Bun
+- Fixed in route.ts and lib/auth.ts
+- Build now passes on Next.js 16

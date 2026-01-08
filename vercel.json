@@ -1,4 +1,34 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "bunVersion": "1.3.4"
+    "bunVersion": "1.3.5",
+    "buildCommand": "bun run build",
+    "installCommand": "bun install",
+    "framework": "nextjs",
+    "regions": [
+        "sin1"
+    ],
+    "functions": {
+        "app/api/**/*": {
+            "maxDuration": 30
+        }
+    },
+    "headers": [
+        {
+            "source": "/api/(.*)",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                },
+                {
+                    "key": "Access-Control-Allow-Methods",
+                    "value": "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+                },
+                {
+                    "key": "Access-Control-Allow-Headers",
+                    "value": "Content-Type, Authorization"
+                }
+            ]
+        }
+    ]
 }

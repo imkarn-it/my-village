@@ -63,6 +63,23 @@
 
 ---
 
+## 🚀 Deployment
+
+### Quick Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-repo/village-app)
+
+### Manual Deployment
+
+1. **Push to GitHub** - ตรวจสอบว่า CI ผ่านทุก tests
+2. **Import to Vercel** - เชื่อมต่อ GitHub repo
+3. **Set Environment Variables** - ดู [DEPLOYMENT.md](./DEPLOYMENT.md)
+4. **Deploy** - Vercel auto-deploy เมื่อ push to main
+
+📖 ดูคู่มือ deployment ฉบับเต็มที่ [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+---
+
 ## 🚀 การติดตั้ง
 
 ### ความต้องการ
